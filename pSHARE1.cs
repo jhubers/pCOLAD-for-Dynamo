@@ -150,12 +150,12 @@ namespace pCOLADnamespace
         [IsVisibleInDynamoLibrary(false)]
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
-            Assembly myDataCollectorLoad = Assembly.LoadFrom("C:\\Program Files\\Dynamo 0.8\\nodes\\MyDataCollector.dll");
-            System.Type myDataCollectorType = myDataCollectorLoad.GetType("MyDataCollectorClass");
+            //Assembly myDataCollectorLoad = Assembly.LoadFrom("C:\\Program Files\\Dynamo 0.8\\nodes\\MyDataCollector.dll");
+            //System.Type myDataCollectorType = myDataCollectorLoad.GetType("MyDataCollectorClass");
             //myDataCollectorType.GetMethod("pSHAREinputs");
-            object myDataCollectorInstance = Activator.CreateInstance(myDataCollectorType);
+            //object myDataCollectorInstance = Activator.CreateInstance(myDataCollectorType);
             //myDataCollectorInstance.GetType("MyDataCollectorClass").GetMethod("pSHAREinputs");
-            MethodInfo myStatic = myDataCollectorType.GetMethod("pSHAREinputs");
+            //MethodInfo myStatic = myDataCollectorType.GetMethod("pSHAREinputs");
 
             var t = new Func<List<string>, string, string, string, List<string>>(MyDataCollector.MyDataCollectorClass.pSHAREinputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
