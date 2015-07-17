@@ -137,6 +137,9 @@ namespace pCOLADnamespace
             List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
             // the headings should become flexible in future!!!!!!!!!!
             var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
+
+            // tables merge if headings correspond!!!!!!!!!!
+            //var headings = AstFactory.BuildStringNode("Comments;Parameter;New Value;Obstruction;Old Value");
             var semiColon = AstFactory.BuildStringNode(";");
             foreach (AssociativeNode InputItem in inputAstNodes)
             {

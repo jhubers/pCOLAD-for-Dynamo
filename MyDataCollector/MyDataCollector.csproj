@@ -68,7 +68,8 @@
   <PropertyGroup>
     <PostBuildEvent>REM the echo f is needed if the file doesn't exist yet it tells the compiler that it is a file to be copied, and  not a directory 
 REM echo f |xcopy /r /y “$(TargetPath)” “C:\Program Files\Dynamo 0.8\nodes\$(TargetName).dll”
-REM echo f |xcopy /r /y “$(TargetDir)$(TargetName).pdb” “C:\Program Files\Dynamo 0.7\nodes\$(TargetName).pdb”</PostBuildEvent>
+REM echo f |xcopy /r /y “$(TargetDir)$(TargetName).pdb” “C:\Program Files\Dynamo 0.8\nodes\$(TargetName).pdb”
+REM echo f |xcopy /r /y “$(SolutionDir)\DynamoPackages\pCOLADpackage\*.*” “D:\Temp”</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

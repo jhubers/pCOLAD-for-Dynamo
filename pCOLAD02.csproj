@@ -70,6 +70,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -82,6 +83,7 @@
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Functions.cs" />
     <Compile Include="MakeInputList.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">
@@ -135,7 +137,6 @@
     <ProjectReference Include="MyDataCollector\MyDataCollector.csproj">
       <Project>{497fc54c-6433-47f2-b92e-e500bc0df80e}</Project>
       <Name>MyDataCollector</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -162,11 +163,13 @@ Other similar extension points exist, see Microsoft.Common.targets.
       <Pdbs Include="$(OutDir)*.pdb" />
       <Xmls Include="$(OutDir)*.xml" />
       <Configs Include="$(OutDir)*.config" />
+      <Pack Include="$(SolutionDir)\DynamoPackages\pCOLADpackage\**\*.*" />
     </ItemGroup>
     <Copy SourceFiles="@(Dlls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
     <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
     <Copy SourceFiles="@(Xmls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
     <Copy SourceFiles="@(Configs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
+    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\0.8\packages\pCOLADpackage\%(RecursiveDir)" />
     <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\dyf" />
     <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\extra" />
   </Target>

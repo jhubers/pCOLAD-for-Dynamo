@@ -13,7 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Dynamo.Wpf;
 using System.Reflection;
-//just te see if GitHub updates correctly
+using ProtoCore.SyntaxAnalysis;
 
 
 namespace pCOLADnamespace
@@ -148,6 +148,22 @@ namespace pCOLADnamespace
         /// <param name="inputAstNodes"></param>
         /// <returns></return
         [IsVisibleInDynamoLibrary(false)]
+
+        //public override AssociativeAstVisitor
+        //{
+        //    AssociativeAstVisitor visitor;
+        //}
+
+        //public override void Accept(AssociativeAstVisitor visitor)
+        //{
+
+        //    var t = new Func<List<string>, string, string, string, List<string>>(MyDataCollector.MyDataCollectorClass.pSHAREinputs);
+        //    //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
+        //    var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
+        //    visitor.Visit(funcNode);
+        //    //visitor.VisitThisPointerNode(this);
+        //}
+
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             //Assembly myDataCollectorLoad = Assembly.LoadFrom("C:\\Program Files\\Dynamo 0.8\\nodes\\MyDataCollector.dll");
@@ -156,14 +172,31 @@ namespace pCOLADnamespace
             //object myDataCollectorInstance = Activator.CreateInstance(myDataCollectorType);
             //myDataCollectorInstance.GetType("MyDataCollectorClass").GetMethod("pSHAREinputs");
             //MethodInfo myStatic = myDataCollectorType.GetMethod("pSHAREinputs");
-
-            var t = new Func<List<string>, string, string, string, List<string>>(MyDataCollector.MyDataCollectorClass.pSHAREinputs);
+            var t = new Func<List<List<string>>, string, string, string, List<List<string>>>(MyDataCollector.MyDataCollectorClass.pSHAREinputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
-            //To be done: take out only the parameter names and on the next line the value
+            //List<string> a = new List<string>();
+            //string b = string.Empty;
+            //string c = string.Empty;
+            //string d = string.Empty;
+            //MyDataCollector.MyDataCollectorClass.pSHAREinputs(a,b,c,d);
 
-            return new[] { AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)};
+            //ProtoCore.SyntaxAnalysis.AssociativeAstVisitor _visitor;
+            //_visitor.DefaultVisit(funcNode);
+            //funcNode.Accept(_visitor);
+
+
+
+            //Why this only works second run? Because the function is only called during node construction            
+            //List<string> test = MyDataCollector.MyDataCollectorClass.output;
+            return new[] 
+            { 
+                AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
+                //everything below this is not reachable
+                //List<string> test = MyDataCollector.MyDataCollectorClass.output
+             };
         }
+
         ///// <summary>
         ///// the PropertyChange event is used to update the binding to CSV display
         ///// but it turns out that it was inherited by the NodeModel class
@@ -175,75 +208,45 @@ namespace pCOLADnamespace
         /// </summary>
         public void openCSV()
         {
-            //make sure that the table doesn't exist. Otherwise just show it.
-            //however!!!!! if through the control it was changed...
-            if (myDataTable == null)
+            myDataTable = new DataTable();
+            List<string> csvList = new List<string>();
+            //first make a List<string> out of the csv-file (because pCOLLECTs are also turned into List<string>
+            //then turn List<string> into a DataTable with Functions.ListToTable
+            try
             {
-                myDataTable = new DataTable();
-                try
+                StreamReader myStream = new StreamReader(inputFile);
+                string line = "";
+                int i = 0;
+                while (line != null)
                 {
-                    StreamReader myStream = new StreamReader(inputFile);
-                    string line = "";
-                    int i = 0;
-                    while (line != null)
+                    line = myStream.ReadLine();
+                    if (line == null)
                     {
-                        line = myStream.ReadLine();
-                        if (line == null)
-                        {
-                            break;
-                        }
-                        string[] words = line.Split(new Char[] { ';' });
-                        if (i == 0) //this contains the headers. Also might be used to create properties for Parameter class.
-                        {
-                            // add a checbox column for easy setting obstruction field
-                            myDataTable.Columns.Add("Accepted", typeof(bool));
-                            foreach (var word in words)
-                            {
-                                //add a column for every header with (name, text)
-                                myDataTable.Columns.Add(word, typeof(string));
-                            }
-                        }
-                        else
-                        {
-                            //add a row to the datatable
-                            DataRow row = myDataTable.NewRow();
-                            int x = 1;
-                            foreach (var word in words)
-                            {
-                                row[x] = word;
-                                if (myDataTable.Columns.IndexOf("Obstruction") == x)
-                                {
-                                    if (word == "")
-                                    {
-                                        row["Accepted"] = true;
-                                    }
-                                    else
-                                    {
-                                        row["Accepted"] = false;
-                                    }
-                                }
-                                x += 1;
-                            }
-                            myDataTable.Rows.Add(row);
-                        }
-                        i += 1;
+                        break;
                     }
+                    csvList.Add(line);
+                    i += 1;
                 }
-
-                catch (FileNotFoundException)
-                {
-                    MessageBox.Show("We couldn't find the file. Are you sure it exists?");
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    MessageBox.Show("We couldn't find the file. Are you sure the directory exists?");
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
-                }
-                //make sure that control doesn't exist.
+                myDataTable = Functions.ListToTable(csvList);
             }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("We couldn't find the file. Are you sure it exists?");
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("We couldn't find the file. Are you sure the directory exists?");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
+            }
+            ////}
+            //ShowCSV();
+        }
+        public void ShowCSV()
+        {
+            //make sure that control doesn't exist.
             try
             {
                 //check if the control exist already
@@ -256,7 +259,6 @@ namespace pCOLADnamespace
                         w.Activate();
                     }
                 }
-
                 if (!isCSVControlOpen)
                 {
                     this.myPropDataTable = myDataTable;
@@ -273,6 +275,7 @@ namespace pCOLADnamespace
                 MessageBox.Show("Exception source: {0}", e.Source);
             }
         }
+
 
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>
         {
@@ -297,6 +300,7 @@ namespace pCOLADnamespace
             /// Here you can do any cleanup you require if you've assigned callbacks for particular 
             /// UI events on your node.
             /// </summary>
+
             public void Dispose() { }
 
         }
@@ -336,7 +340,38 @@ namespace pCOLADnamespace
             {
                 On = true;
                 //and show the *.csv file
+                
+                //putting the CSV-file in myDataTable should be done before you build pSHARE, because the parameters
+                //should be in its output. But you also have to add the inputs of the pCOLLECTs and with the actual method
+                //you get them only at the end of building the pSHARE node. So this is impossible.
+                //OR.... we can try to put it in MyDataCollector class. But... I need to access myDataTable when
+                // I change some values trough pCOLLECT or when selecting a check box in the display
+                // well I guess I can access myDataTable then as property in MyDataCollector!!!!!!!!!!!!
+
                 openCSV();
+                //add the parameters from pCOLLECTs -- but in fact all the parameters should be output of pSHARE!!!!!
+                //maybe easier to make DataTables of the pCOLLECT outputs, and then merge them together, and then merge
+                //with myDataTable that contains the CSV file, and then later checkt the differences
+                // with the old copy of the CSV file and display in red the differeces
+                //use a function to turn a list of strings consisting of ; seperated values, into a table
+                // while the first line contains the header names
+                //    //but you can not add the inputs of pCOLLECTS when building the output of pSHARE!!!!!!!!!!
+                //    //the inputs are only added after pSHARE is build
+                //    // I could maybe build a hidden node?????
+
+                // newParameters consist of lists that consist of a list with 1 line with headers and 1 line with ;-seperated values
+                List<List<string>> newParameters = MyDataCollector.MyDataCollectorClass.output;
+                //turn list of list of strings into List of DataTables
+                List<DataTable> newParamTables = new List<DataTable>();
+                newParamTables.Add(myDataTable);
+                foreach (List<string> ls in newParameters)
+                {
+                    DataTable newParamTable = Functions.ListToTable(ls);
+                    newParamTables.Add(newParamTable);
+                }
+                DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
+                myDataTable = TblUnion;
+                ShowCSV();
             }
             else
             {

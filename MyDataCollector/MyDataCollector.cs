@@ -5,38 +5,30 @@ using System.Text;
 
 namespace MyDataCollector
 {
+    [IsVisibleInDynamoLibrary(false)]
     public static class MyDataCollectorClass
     {
         //[IsVisibleInDynamoLibrary(false)]
-        public static List<string> pSHAREinputs(List<string> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
+        public static List<List<string>> output;
+        public static List<List<string>> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
-            //System.Windows.MessageBox.Show("The file path = " + _IfilePath);
-            //string convertList = _Ninputs.Concat();
-            //List<object> _pSHAREinputs = new List<object> { convertList, _IfilePath, _LfilePath, _owner };
-
             //The inputs of the pCOLLECTs must be added to the content of the csv file.
+            //So first load the csv file!!!!!!!!!!!!!here
+
+
+
             //Make an output of pSHARE consisting of a list of alternating parameter names and new values.
             //Unless a value is obstructed. Then add "Obstructed" as new value.
 
 
-            List<string> _pSHAREinputs = new List<string>();
-            foreach (string item in _Ninputs)
+            List<List<string>> pSHAREoutputs = new List<List<string>>();
+            foreach (List<string> item in _Ninputs)
             {
-               
-                _pSHAREinputs.Add(item);
+                pSHAREoutputs.Add(item);
             }
-            return _pSHAREinputs;
+            output = pSHAREoutputs;
+            return pSHAREoutputs;
         }
-        //public static string Concat(this IEnumerable<string> source)
-        //{
-        //    StringBuilder sb = new StringBuilder();
-        //    foreach (string s in source)
-        //    {
-        //        sb.Append(s + Environment.NewLine);
-        //    }
-        //    return sb.ToString();
-        //}
-
     }
 }
 
