@@ -9,6 +9,7 @@ using ProtoCore.AST.AssociativeAST;
 using Dynamo.Wpf;
 using System;
 using Dynamo.Nodes;
+using pCOLADnamespace;
 
 namespace pCOLADnamespace
 {

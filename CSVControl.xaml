@@ -13,7 +13,7 @@
         </Grid.RowDefinitions>
         <DataGrid Grid.Row="0" Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn" 
                   CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False"
-                  CanUserDeleteRows="False" 
+                  CanUserDeleteRows="False"
                   CurrentCell="{Binding CellInfo, Mode=TwoWay}"
                   SelectedIndex="{Binding RowIndex}" SelectionMode="Extended" VerticalAlignment="Top">
             <DataGrid.Columns >

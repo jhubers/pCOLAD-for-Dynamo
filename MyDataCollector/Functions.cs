@@ -7,9 +7,9 @@ using System.Windows;
 
 namespace pCOLADnamespace
 {
-    class Functions
+    public static class Functions
     {
-        public List<string> buildCommonMultiple(List<List<string>> listOfListOfStrings)
+        public static List<string> buildCommonMultiple(List<List<string>> listOfListOfStrings)
         {
             // builds the common multiple of parameter formats of several pCOLLECT outputs
             List<string> arFormat;
@@ -20,9 +20,9 @@ namespace pCOLADnamespace
                 arFormat = ls[0].Split(new Char[] { ';' }).ToList();
                 arUnion = arUnion.Union(arFormat).ToList();
             }
-            return new List<string>(arUnion);
+            return arUnion;
         }
-        public List<string> reformatList(List<string> LS, List<string> format)
+        public static List<string> reformatList(List<string> LS, List<string> format)
         {
             List<string> returnList = new List<string>();
             //do something with the returnList
@@ -57,7 +57,7 @@ namespace pCOLADnamespace
                     {
                         row[x] = word;
                         if (returnTable.Columns.IndexOf("Obstruction") == x)// that column might not be there !!!!!!!!!!!!
-                        {                            
+                        {
                             if (word == "")
                             {
                                 row["Accepted"] = true;
@@ -142,4 +142,3 @@ namespace pCOLADnamespace
         }
     }
 }
-

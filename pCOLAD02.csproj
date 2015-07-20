@@ -83,7 +83,6 @@
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Functions.cs" />
     <Compile Include="MakeInputList.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">
@@ -101,8 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="CSVControl.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="pCOLLECTcontrol.xaml">
       <SubType>Designer</SubType>
@@ -134,9 +133,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="MyDataCollector\MyDataCollector.csproj">
+    <ProjectReference Include="MyDataCollector\MyDataCollector02.csproj">
       <Project>{497fc54c-6433-47f2-b92e-e500bc0df80e}</Project>
-      <Name>MyDataCollector</Name>
+      <Name>MyDataCollector02</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

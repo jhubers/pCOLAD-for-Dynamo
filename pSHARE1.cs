@@ -14,6 +14,7 @@ using System.Windows.Input;
 using Dynamo.Wpf;
 using System.Reflection;
 using ProtoCore.SyntaxAnalysis;
+using pCOLADnamespace;
 
 
 namespace pCOLADnamespace
@@ -30,10 +31,8 @@ namespace pCOLADnamespace
         #region properties
         bool On = false;
         private string _OnOffButton;
-        // later replace with an input
-        string inputFile = "D:\\Temp\\test2.csv";
-        string userName = "Hans";
-        DataTable myDataTable;
+        //string userName = "Hans";
+        //DataTable myDataTable;
 
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
@@ -74,7 +73,7 @@ namespace pCOLADnamespace
             {
                 _isChecked = value;
                 //OnPropertyChanged("isChecked"); //this sets all checkboxes to checked...
-                DataRow dr = myDataTable.Rows[_rowIndex];
+                DataRow dr = MyDataCollectorClass.myDataTable.Rows[_rowIndex];
                 //also change the value in the hidden column "Accepted"
                 dr["Accepted"] = value;
                 string cellContent = dr["Obstruction"].ToString();
@@ -82,17 +81,17 @@ namespace pCOLADnamespace
                 {
                     if (cellContent == "")
                     {
-                        dr["Obstruction"] = userName;
+                        dr["Obstruction"] = MyDataCollectorClass.userName;
                     }
                     else
                     {
-                        dr["Obstruction"] += "," + userName;
+                        dr["Obstruction"] += "," + MyDataCollectorClass.userName;
                     }
                 }
                 else
                 {
                     // remove username from the cell
-                    cellContent = cellContent.Replace(userName, "");
+                    cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                     //remove double and end commas
                     cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
                     dr["Obstruction"] = cellContent.Trim();
@@ -172,7 +171,7 @@ namespace pCOLADnamespace
             //object myDataCollectorInstance = Activator.CreateInstance(myDataCollectorType);
             //myDataCollectorInstance.GetType("MyDataCollectorClass").GetMethod("pSHAREinputs");
             //MethodInfo myStatic = myDataCollectorType.GetMethod("pSHAREinputs");
-            var t = new Func<List<List<string>>, string, string, string, List<List<string>>>(MyDataCollector.MyDataCollectorClass.pSHAREinputs);
+            var t = new Func<List<List<string>>, string, string, string, List<List<string>>>(MyDataCollectorClass.pSHAREinputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
             //List<string> a = new List<string>();
@@ -206,44 +205,6 @@ namespace pCOLADnamespace
         /// <summary>
         /// opens the csv file, turns it into a dataTable, and shows the CSV display
         /// </summary>
-        public void openCSV()
-        {
-            myDataTable = new DataTable();
-            List<string> csvList = new List<string>();
-            //first make a List<string> out of the csv-file (because pCOLLECTs are also turned into List<string>
-            //then turn List<string> into a DataTable with Functions.ListToTable
-            try
-            {
-                StreamReader myStream = new StreamReader(inputFile);
-                string line = "";
-                int i = 0;
-                while (line != null)
-                {
-                    line = myStream.ReadLine();
-                    if (line == null)
-                    {
-                        break;
-                    }
-                    csvList.Add(line);
-                    i += 1;
-                }
-                myDataTable = Functions.ListToTable(csvList);
-            }
-            catch (FileNotFoundException)
-            {
-                MessageBox.Show("We couldn't find the file. Are you sure it exists?");
-            }
-            catch (DirectoryNotFoundException)
-            {
-                MessageBox.Show("We couldn't find the file. Are you sure the directory exists?");
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
-            }
-            ////}
-            //ShowCSV();
-        }
         public void ShowCSV()
         {
             //make sure that control doesn't exist.
@@ -261,7 +222,7 @@ namespace pCOLADnamespace
                 }
                 if (!isCSVControlOpen)
                 {
-                    this.myPropDataTable = myDataTable;
+                    this.myPropDataTable = MyDataCollectorClass.myDataTable;
                     CSVControl _CSVControl = new CSVControl();
                     //bind the datatable to the xaml datagrid
                     _CSVControl.myXamlTable.ItemsSource = this.myPropDataTable.DefaultView;
@@ -347,8 +308,10 @@ namespace pCOLADnamespace
                 //OR.... we can try to put it in MyDataCollector class. But... I need to access myDataTable when
                 // I change some values trough pCOLLECT or when selecting a check box in the display
                 // well I guess I can access myDataTable then as property in MyDataCollector!!!!!!!!!!!!
-
-                openCSV();
+                MyDataCollectorClass.openCSV();// getData = new MyDataCollectorClass();
+                //getData.openCSV();
+                
+                //openCSV();
                 //add the parameters from pCOLLECTs -- but in fact all the parameters should be output of pSHARE!!!!!
                 //maybe easier to make DataTables of the pCOLLECT outputs, and then merge them together, and then merge
                 //with myDataTable that contains the CSV file, and then later checkt the differences
@@ -360,17 +323,18 @@ namespace pCOLADnamespace
                 //    // I could maybe build a hidden node?????
 
                 // newParameters consist of lists that consist of a list with 1 line with headers and 1 line with ;-seperated values
-                List<List<string>> newParameters = MyDataCollector.MyDataCollectorClass.output;
+                List<List<string>> newParameters = MyDataCollectorClass.output;
                 //turn list of list of strings into List of DataTables
                 List<DataTable> newParamTables = new List<DataTable>();
-                newParamTables.Add(myDataTable);
+
+                newParamTables.Add(MyDataCollectorClass.myDataTable);
                 foreach (List<string> ls in newParameters)
                 {
-                    DataTable newParamTable = Functions.ListToTable(ls);
+                    DataTable newParamTable = pCOLADnamespace.Functions.ListToTable(ls);
                     newParamTables.Add(newParamTable);
                 }
-                DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
-                myDataTable = TblUnion;
+                DataTable TblUnion = pCOLADnamespace.Functions.MergeAll(newParamTables, "Parameter");
+                MyDataCollectorClass.myDataTable = TblUnion;
                 ShowCSV();
             }
             else
@@ -381,14 +345,14 @@ namespace pCOLADnamespace
                 closeCSVControl();
                 //in order to not check the last selected row
                 //!!!!!!!!!!!!!still not right
-                if (_rowIndex == 0)
-                {
-                    _rowIndex = 1;
-                }
-                else
-                {
-                    _rowIndex = 0;
-                }
+                //if (_rowIndex == 0)
+                //{
+                //    _rowIndex = 1;
+                //}
+                //else
+                //{
+                //    _rowIndex = 0;
+                //}
             }
         }
 

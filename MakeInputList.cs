@@ -1,6 +1,6 @@
 ﻿//This method is used by all pCOLAD nodes.
 //pCOLLECT uses it to build an outputListProp which is used by pSHARE.
-//pSHARE uses it to build an input list from a (list of) PCOLLECT's output(s).
+//pSHARE uses it to build an input list from a (list of) PCOLLECT's output(s). NOT
 //pPARAM uses it to build an input list of the output of pSHARE
 using System.Collections.Generic;
 using Dynamo.Models;
