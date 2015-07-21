@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Autodesk.DesignScript.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows;
 
-namespace pCOLADnamespace
+namespace MyDataCollector
 {
+        [IsVisibleInDynamoLibrary(false)]
     public static class Functions
     {
         public static List<string> buildCommonMultiple(List<List<string>> listOfListOfStrings)

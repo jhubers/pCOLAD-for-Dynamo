@@ -14,7 +14,7 @@ using System.Windows.Input;
 using Dynamo.Wpf;
 using System.Reflection;
 using ProtoCore.SyntaxAnalysis;
-using pCOLADnamespace;
+using MyDataCollector;
 
 
 namespace pCOLADnamespace
@@ -31,8 +31,6 @@ namespace pCOLADnamespace
         #region properties
         bool On = false;
         private string _OnOffButton;
-        //string userName = "Hans";
-        //DataTable myDataTable;
 
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
@@ -148,62 +146,20 @@ namespace pCOLADnamespace
         /// <returns></return
         [IsVisibleInDynamoLibrary(false)]
 
-        //public override AssociativeAstVisitor
-        //{
-        //    AssociativeAstVisitor visitor;
-        //}
-
-        //public override void Accept(AssociativeAstVisitor visitor)
-        //{
-
-        //    var t = new Func<List<string>, string, string, string, List<string>>(MyDataCollector.MyDataCollectorClass.pSHAREinputs);
-        //    //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
-        //    var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
-        //    visitor.Visit(funcNode);
-        //    //visitor.VisitThisPointerNode(this);
-        //}
 
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
-            //Assembly myDataCollectorLoad = Assembly.LoadFrom("C:\\Program Files\\Dynamo 0.8\\nodes\\MyDataCollector.dll");
-            //System.Type myDataCollectorType = myDataCollectorLoad.GetType("MyDataCollectorClass");
-            //myDataCollectorType.GetMethod("pSHAREinputs");
-            //object myDataCollectorInstance = Activator.CreateInstance(myDataCollectorType);
-            //myDataCollectorInstance.GetType("MyDataCollectorClass").GetMethod("pSHAREinputs");
-            //MethodInfo myStatic = myDataCollectorType.GetMethod("pSHAREinputs");
             var t = new Func<List<List<string>>, string, string, string, List<List<string>>>(MyDataCollectorClass.pSHAREinputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
-            //List<string> a = new List<string>();
-            //string b = string.Empty;
-            //string c = string.Empty;
-            //string d = string.Empty;
-            //MyDataCollector.MyDataCollectorClass.pSHAREinputs(a,b,c,d);
-
-            //ProtoCore.SyntaxAnalysis.AssociativeAstVisitor _visitor;
-            //_visitor.DefaultVisit(funcNode);
-            //funcNode.Accept(_visitor);
-
-
-
-            //Why this only works second run? Because the function is only called during node construction            
-            //List<string> test = MyDataCollector.MyDataCollectorClass.output;
             return new[] 
             { 
                 AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
-                //everything below this is not reachable
-                //List<string> test = MyDataCollector.MyDataCollectorClass.output
              };
         }
 
-        ///// <summary>
-        ///// the PropertyChange event is used to update the binding to CSV display
-        ///// but it turns out that it was inherited by the NodeModel class
-        ///// and you can simply use the RaisPropertyChanged method
-        ///// </summary>
-
         /// <summary>
-        /// opens the csv file, turns it into a dataTable, and shows the CSV display
+        /// shows the CSV display
         /// </summary>
         public void ShowCSV()
         {
@@ -301,58 +257,13 @@ namespace pCOLADnamespace
             {
                 On = true;
                 //and show the *.csv file
-                
-                //putting the CSV-file in myDataTable should be done before you build pSHARE, because the parameters
-                //should be in its output. But you also have to add the inputs of the pCOLLECTs and with the actual method
-                //you get them only at the end of building the pSHARE node. So this is impossible.
-                //OR.... we can try to put it in MyDataCollector class. But... I need to access myDataTable when
-                // I change some values trough pCOLLECT or when selecting a check box in the display
-                // well I guess I can access myDataTable then as property in MyDataCollector!!!!!!!!!!!!
-                MyDataCollectorClass.openCSV();// getData = new MyDataCollectorClass();
-                //getData.openCSV();
-                
-                //openCSV();
-                //add the parameters from pCOLLECTs -- but in fact all the parameters should be output of pSHARE!!!!!
-                //maybe easier to make DataTables of the pCOLLECT outputs, and then merge them together, and then merge
-                //with myDataTable that contains the CSV file, and then later checkt the differences
-                // with the old copy of the CSV file and display in red the differeces
-                //use a function to turn a list of strings consisting of ; seperated values, into a table
-                // while the first line contains the header names
-                //    //but you can not add the inputs of pCOLLECTS when building the output of pSHARE!!!!!!!!!!
-                //    //the inputs are only added after pSHARE is build
-                //    // I could maybe build a hidden node?????
-
-                // newParameters consist of lists that consist of a list with 1 line with headers and 1 line with ;-seperated values
-                List<List<string>> newParameters = MyDataCollectorClass.output;
-                //turn list of list of strings into List of DataTables
-                List<DataTable> newParamTables = new List<DataTable>();
-
-                newParamTables.Add(MyDataCollectorClass.myDataTable);
-                foreach (List<string> ls in newParameters)
-                {
-                    DataTable newParamTable = pCOLADnamespace.Functions.ListToTable(ls);
-                    newParamTables.Add(newParamTable);
-                }
-                DataTable TblUnion = pCOLADnamespace.Functions.MergeAll(newParamTables, "Parameter");
-                MyDataCollectorClass.myDataTable = TblUnion;
                 ShowCSV();
             }
             else
             {
                 On = false;
                 //close *.csv display
-                //myDataTable = null;
                 closeCSVControl();
-                //in order to not check the last selected row
-                //!!!!!!!!!!!!!still not right
-                //if (_rowIndex == 0)
-                //{
-                //    _rowIndex = 1;
-                //}
-                //else
-                //{
-                //    _rowIndex = 0;
-                //}
             }
         }
 
