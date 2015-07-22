@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.ComponentModel;
 
 namespace MyDataCollector
 {
@@ -27,7 +28,7 @@ namespace MyDataCollector
             //openCSV() should run every time something changed in the input of pSHARE or 
             //when somebody changed the CSV-file.
             //But you should then always start with an empty myDataTable and csvList
-            //and only when the button is on you should get warnings!!!!!!!!!!
+            //and only when the button is on you should get warnings!!!
                 myDataTable = null;
                 csvList.Clear();
                 //first make a List<string> out of the csv-file (because pCOLLECTs are also turned into List<string>
@@ -49,22 +50,6 @@ namespace MyDataCollector
                     }
                     myStream.Dispose();
                     myDataTable = Functions.ListToTable(csvList);
-                    //add the outputs of pSHARE to myDataTable so they can be showed in the display
-                    List<List<string>> newParameters = MyDataCollectorClass.pSHAREoutputs;
-                    //turn list of list of strings into List of DataTables
-                    List<DataTable> newParamTables = new List<DataTable>();
-                    newParamTables.Add(MyDataCollectorClass.myDataTable);
-                    foreach (List<string> ls in newParameters)
-                    {
-                        DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
-                        newParamTables.Add(newParamTable);
-                    }
-                    DataTable TblUnion = MyDataCollector.Functions.MergeAll(newParamTables, "Parameter");
-                    MyDataCollectorClass.myDataTable = TblUnion;                    
-                    //check here with copy of csv table to set difference in red!!!!!!!!!
-
-
-
                 }
                 catch (FileNotFoundException)
                 {
@@ -79,20 +64,60 @@ namespace MyDataCollector
                     MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
                 }
             //    formPopulate = true;
+
         }
 
-        //public static List<List<string>> output = new List<List<string>>();
-        public static List<List<string>> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
+
+        public static void addNewPararemeters()
+        {
+            //add the outputs of pSHARE to myDataTable so they can be shown in the display
+            //but before you have to build the common multiple, or use the union of dataTables
+            //turn list of list of strings into List of DataTables
+            List<DataTable> newParamTables = new List<DataTable>();
+            newParamTables.Add(myDataTable);
+            foreach (List<string> ls in pSHAREoutputs)
+            {
+                DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
+                newParamTables.Add(newParamTable);
+            }
+            DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
+            myDataTable = TblUnion;
+            //check here with copy of csv table to set difference in red!!!
+
+        }
+        public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
             pSHAREoutputs.Clear();
             foreach (List<string> item in _Ninputs)
             {
                 pSHAREoutputs.Add(item);
             }
-            //The inputs of the pCOLLECTs must be added to the content of the csv file.
+            //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
             openCSV();
-            pSHAREoutputs.Insert(0, csvList);
-            return pSHAREoutputs;
+            addNewPararemeters();
+            List<string> pSHAREoutputList = new List<string>();
+            //now myDataTable contains the union of the csv file and the new parameters
+            //so, you can use the columns "Parameter" and "New Value"
+            for (int i = 0; i < myDataTable.Rows.Count ; i++)
+            {
+                pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("Parameter"));
+                pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("New Value"));
+            }
+            //when you change a parameter you should have immediate update of the display!!!
+            return pSHAREoutputList;
+        }
+        public static string pPARAMinputs(string _Parameter, List<string> _pSHAREoutput)
+        {
+            string pPARAMoutput = "";
+            for (int i = 0; i < _pSHAREoutput.Count; i++)
+            {
+                if (_pSHAREoutput[i] == _Parameter)
+                {
+                    pPARAMoutput = _pSHAREoutput[i + 1];
+                    break;
+                }
+            }
+                return pPARAMoutput;
         }
     }
 }

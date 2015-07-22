@@ -4,6 +4,8 @@ using Dynamo.Controls;
 using Dynamo.Models;
 using ProtoCore.AST.AssociativeAST;
 using Dynamo.Wpf;
+using MyDataCollector;
+using System;
 
 namespace pCOLADnamespace
 {
@@ -56,7 +58,7 @@ namespace pCOLADnamespace
             InPortData.Add(new PortData("O", "Output of pSHARE."));
             // Nodes can have an arbitrary number of inputs and outputs.
             // If you want more ports, just create more PortData objects.
-            OutPortData.Add(new PortData("V", "List of strings."));
+            OutPortData.Add(new PortData("V", "Value of the P input parameter"));
             //OutPortData.Add(new PortData("some awesome", "A result."));
 
             // This call is required to ensure that your ports are
@@ -96,97 +98,21 @@ namespace pCOLADnamespace
             // need to convey a failure of this node, then use
             // AstFactory.BuildNullNode to pass out null.
 
-            // Make a list from the inputs, using the MakeInputList class.
-            // In fact not used in pPARAM but needed in pSHARE and pPARAM
+            // Find the parameter 
 
-
-
-
-
-
-            //List<string> InputList = MakeInputList.InputList(Inputs);
-
-            //List<string> InputList = new List<string>();
-            //for (int i = 0; i < Inputs.Count ; i++)
-            //{
-            //    var item = Inputs[i];
-            //    Dynamo.Nodes.CodeBlockNodeModel itemValue = (Dynamo.Nodes.CodeBlockNodeModel)item.Item2;
-            //    string s = itemValue.Code;
-            //    //for some reason Dynamo puts "\" and \";" around the string
-            //    string sCleaned = s.Remove(s.Length - 2).Remove(0, 1);
-            //    InputList.Add(sCleaned);
-            //}
+            var t = new Func<string, List<string>, string>(MyDataCollectorClass.pPARAMinputs);
+            //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
+            var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
 
             // Using the AstFactory class, we can build AstNode objects
             // that assign doubles, assign function calls, build expression lists, etc.
 
-            //build a new output List<AssociativeNode>consisting of fieldnames seperated by ';' and
-            // on next inputAstNodes with ';' added
-            List<AssociativeNode> pPARAMtempList = new List<AssociativeNode>();
-            var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
-            var semiColon = AstFactory.BuildStringNode(";");
-            foreach (AssociativeNode InputItem in inputAstNodes)
-            {
-                List<AssociativeNode> arguments = new List<AssociativeNode>();
-                arguments.Add(InputItem);
-                arguments.Add(semiColon);
-                var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
-                //don't add ';' to the last one
-                if (inputAstNodes.IndexOf(InputItem) == inputAstNodes.Count - 1)
-                {
-                    pPARAMtempList.Add(InputItem);
-                }
-                else
-                {
-                    pPARAMtempList.Add(funcNode);
-                }
-            }
-            // now pPARAMtempList has the inputs followed by ';'
-            // but it should become one string so add the items together
-            List<AssociativeNode> pPARAMoutputList = new List<AssociativeNode>();
-            AssociativeNode A = pPARAMtempList[0];
-            for (int i = 0; i < pPARAMtempList.Count - 1; i++)
-            {
-                List<AssociativeNode> arguments = new List<AssociativeNode>();
-                arguments.Add(A);
-                arguments.Add(pPARAMtempList[i + 1]);
-                var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
-                A = funcNode;
-            }
-            pPARAMoutputList.Add(A);
-            pPARAMoutputList.Insert(0, headings);
-
-
-            //var test4 = TryGetInput(0, out System.Tuple < 0, NodeModel);
-            //var test3 = GetValue(0);
-            //string test = pPARAMtempList[0];
-            //also gives a temp and large number.........
-            // var test2 = AstFactory.BuildStringNode(pPARAMtempList[0].ToString()).value;
-            //var funcNode = AstFactory.BuildFunctionCall("%add", pPARAMtempList);
             return new[]
             {
                 // In these assignments, GetAstIdentifierForOutputIndex finds 
                 // the unique identifier which represents an output on this node
                 // and 'assigns' that variable the expression that you create.
-                
-                //// For the first node, we'll just pass through the 
-                //// input provided to this node.
-                //AstFactory.BuildAssignment(
-                //    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(inputAstNodes)),
-                // we output the headers and on next line the values seperated by ';'
-
-                AstFactory.BuildAssignment(
-                    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(pPARAMoutputList)),
-                
-                
-                //AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
-
-                
-                //// For the second node, we'll build a double node that 
-                //// passes along our value for awesome.
-                //AstFactory.BuildAssignment(
-                //    GetAstIdentifierForOutputIndex(1),
-                //    AstFactory.BuildDoubleNode(awesome))
+                AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)             
             };
         }
         /// <summary>

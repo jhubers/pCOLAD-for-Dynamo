@@ -15,6 +15,7 @@ using Dynamo.Wpf;
 using System.Reflection;
 using ProtoCore.SyntaxAnalysis;
 using MyDataCollector;
+using System.Windows.Data;
 
 
 namespace pCOLADnamespace
@@ -31,11 +32,25 @@ namespace pCOLADnamespace
         #region properties
         bool On = false;
         private string _OnOffButton;
+        CSVControl _CSVControl;
 
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
         /// </summary>
-        public DataTable myPropDataTable { get; set; }
+        private DataTable myPropDataTable;
+        public DataTable MyPropDataTable 
+        {
+            get { return myPropDataTable; }
+            set
+            {
+                myPropDataTable = value;
+                //The RaisePropertyChanged fires an event with the name "MyPropDataTable"
+                //The CSVControl.myXamlTable is listening to it for its itemSource
+                RaisePropertyChanged("MyPropDataTable");
+            }
+        }
+
+
         private int _rowIndex;
         public int RowIndex
         {
@@ -43,6 +58,10 @@ namespace pCOLADnamespace
             set
             {
                 _rowIndex = value;
+                if (_rowIndex < 0)
+                {
+                    _rowIndex = 0;
+                }
                 RaisePropertyChanged("RowIndex");
                 // MessageBox.Show(string.Format("Row: {0}", _rowIndex.ToString()));
             }
@@ -94,6 +113,9 @@ namespace pCOLADnamespace
                     cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
                     dr["Obstruction"] = cellContent.Trim();
                 }
+                //this causes endless loop
+                //MyDataCollectorClass.myDataTable.AcceptChanges();
+                //MyDataCollectorClass.myDataTable = MyPropDataTable;
             }
         }
         /// <summary>
@@ -133,6 +155,7 @@ namespace pCOLADnamespace
             OnOff = new DelegateCommand(ShowParams, CanShowParams);
             // update UI 
             OnOffButton = "Share";
+            
         }
 
         #endregion
@@ -149,7 +172,10 @@ namespace pCOLADnamespace
 
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
-            var t = new Func<List<List<string>>, string, string, string, List<List<string>>>(MyDataCollectorClass.pSHAREinputs);
+            //when you rerun the solution you should update the existing CSVcontrol!!!
+            //but if it is shown it should not dissappear!!!
+
+            var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
             return new[] 
@@ -158,9 +184,12 @@ namespace pCOLADnamespace
              };
         }
 
+        
+
         /// <summary>
         /// shows the CSV display
         /// </summary>
+
         public void ShowCSV()
         {
             //make sure that control doesn't exist.
@@ -173,16 +202,33 @@ namespace pCOLADnamespace
                     if (w is CSVControl)
                     {
                         isCSVControlOpen = true;
+                        w.Show();
                         w.Activate();
                     }
                 }
                 if (!isCSVControlOpen)
                 {
-                    this.myPropDataTable = MyDataCollectorClass.myDataTable;
-                    CSVControl _CSVControl = new CSVControl();
+                    //the CSVControl should be created only once, however to reflect changes in pSHARE...
+                    _CSVControl = new CSVControl();
+                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     //bind the datatable to the xaml datagrid
-                    _CSVControl.myXamlTable.ItemsSource = this.myPropDataTable.DefaultView;
+                    //_CSVControl.myXamlTable.ItemsSource = this.MyPropDataTable.DefaultView;
+                    ////Binding CSVControlBinding = new Binding("MyDataTableProp");
+                    ////CSVControlBinding.Mode = BindingMode.TwoWay;
+                    //_CSVControl.myXamlTable.ItemsSource = MyDataCollectorClass.myDataTable.DefaultView;
+                    ////_CSVControl.myXamlTable.SetBinding(DataGrid.ItemsSourceProperty, CSVControlBinding);
                     _CSVControl.DataContext = this;
+                    _CSVControl.Show();
+                }
+                else
+                {
+                    //_CSVControl.DataContext = MyDataCollectorClass.myDataTable;
+                    // works a bit better, but why should you set the ItemsSource again!!!
+
+
+                    //_CSVControl.myXamlTable.ItemsSource = MyDataCollectorClass.myDataTable.DefaultView;
+                    //_CSVControl.DataContext = this;
+                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     _CSVControl.Show();
                 }
             }
@@ -239,7 +285,8 @@ namespace pCOLADnamespace
             {
                 if (w is CSVControl)
                 {
-                    w.Close();
+                    w.Hide();
+                    //w.Close();
                 }
             }
         }
@@ -289,6 +336,8 @@ namespace pCOLADnamespace
         private void Share()
         {
             MessageBox.Show("Share button is Clicked");
+            //write myDataTable to the csv file!!!
+
         }
         #endregion
 

@@ -44,10 +44,13 @@ namespace MyDataCollector
                 {
                     // add a checbox column for easy setting obstruction field
                     returnTable.Columns.Add("Accepted", typeof(bool));
-                    foreach (var word in words)
+                    foreach (string word in words)
                     {
                         //add a column for every header with (name, text)
-                        returnTable.Columns.Add(word, typeof(string));
+                        string newWord = word;
+                        //change the pCOLLECT "Value" column into "New Value"
+                        if (word == "Value") { newWord = "New Value"; }
+                        returnTable.Columns.Add(newWord, typeof(string));
                     }
                 }
                 else
@@ -58,7 +61,7 @@ namespace MyDataCollector
                     foreach (var word in words)
                     {
                         row[x] = word;
-                        if (returnTable.Columns.IndexOf("Obstruction") == x)// that column might not be there !!!!!!!!!!!!
+                        if (returnTable.Columns.IndexOf("Obstruction") == x)
                         {
                             if (word == "")
                             {

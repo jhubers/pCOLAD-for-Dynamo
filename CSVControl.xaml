@@ -11,11 +11,11 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <DataGrid Grid.Row="0" Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn" 
+        <DataGrid Grid.Row="0" Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn"                   
                   CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False"
-                  CanUserDeleteRows="False"
+                  CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=TwoWay}"
                   CurrentCell="{Binding CellInfo, Mode=TwoWay}"
-                  SelectedIndex="{Binding RowIndex}" SelectionMode="Extended" VerticalAlignment="Top">
+                  SelectedIndex="{Binding RowIndex, Mode=TwoWay}" SelectionMode="Extended" VerticalAlignment="Top">
             <DataGrid.Columns >
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>

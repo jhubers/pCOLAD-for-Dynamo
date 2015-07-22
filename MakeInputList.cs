@@ -34,22 +34,13 @@ namespace pCOLADnamespace
                         ReturnList.AddRange(l2);
                         break;
                     case "Filename":
-                        //we do nothing with the filename; catch it with the inputAstNodes!!!!!!!!!!have to work on this
+                        //we do nothing with the filename; catch it with the inputAstNodes!!!have to work on this
                         // no have to open the file in code so need the path
-                        //var sif = item.Item2.InPortData;
-                        //var x = item.Item2.Outputs.Values;
-                        //var y = x.GetEnumerator();
-                        //HashSet<System.Tuple<int,NodeModel>> hs ;
-                        //var x = item.Item2.TryGetOutput(0, out hs);
-                        //DSCore.File.Filename f = (DSCore.File.Filename)item.Item2;
-                        //DSCore.IO.FilePath f2 = (DSCore.IO.FilePath) item.Item2;
-                        //string f2 = DSCore.IO.FilePath.FileName(item.Item2.ToString(),true);
-                        //string f = (object)item.Item2.Value;
                         break;
                     case "CodeBlockNodeModel":
                         // If the Inputs are from pCOLLECT then this is OK
                         // If the Inputs are from pSHARE you should make it recognizable in the ReturnList
-                        // so you can make a difference with the inputs from pCOLLECTs!!!!!!!!!!
+                        // so you can make a difference with the inputs from pCOLLECTs!!!
                         // or maybe make a case for the paths?
                         Dynamo.Nodes.CodeBlockNodeModel cbnm = (Dynamo.Nodes.CodeBlockNodeModel)nm;
                         string s = cbnm.Code;
