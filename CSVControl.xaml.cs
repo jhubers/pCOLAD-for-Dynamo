@@ -20,7 +20,7 @@ namespace pCOLADnamespace
     /// </summary>
     public partial class CSVControl: Window
     {
-        bool firsttime = true;
+        //bool firsttime = true;
         /// <summary>
         /// initialize the CSV control
         /// </summary>
@@ -36,7 +36,7 @@ namespace pCOLADnamespace
                 case "Accepted":
                     //e.Column.CanUserSort = false;
                     //e.Column.Width = 20;
-                    e.Column.Visibility = Visibility.Collapsed;
+                    //e.Column.Visibility = Visibility.Collapsed;
                     break;
                 case "Parameter":
                     //e.Column.CanUserSort = false;
@@ -55,8 +55,8 @@ namespace pCOLADnamespace
             //set the checkbox to the value in the hidden column "Accepted"
             //this should only happen the first time you add pSHARE
             //or you should update column "Accepted" 
-            if (firsttime)
-            {
+            //if (firsttime)
+            //{
 
                 CheckBox cb = (CheckBox)sender;
                 //the last row is not a valid DataRowView
@@ -67,7 +67,7 @@ namespace pCOLADnamespace
                     bool? b = (bool?)dr["Accepted"];
                     cb.IsChecked = b;                   
                 }
-            }
+            //}
         }
 
 

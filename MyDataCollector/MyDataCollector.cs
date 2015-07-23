@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.ComponentModel;
 
 namespace MyDataCollector
 {
@@ -23,13 +22,17 @@ namespace MyDataCollector
         public static List<string> csvList = new List<string>();
         public static List<List<string>> pSHAREoutputs = new List<List<string>>();
         public static DataTable myDataTable;
+        public static event EventHandler UpdateCSVControl= delegate {};
         public static void openCSV()
         {
-            //openCSV() should run every time something changed in the input of pSHARE or 
-            //when somebody changed the CSV-file.
+            //openCSV() should run when somebody changed the CSV-file.
             //But you should then always start with an empty myDataTable and csvList
             //and only when the button is on you should get warnings!!!
-                myDataTable = null;
+            //maybe better use a seperate table for the loaded csv file, now when you change parameter name in pCOLLECT
+            //you create a new line in the csv file !!!
+            if (!formPopulate)
+            {
+                myDataTable= null;
                 csvList.Clear();
                 //first make a List<string> out of the csv-file (because pCOLLECTs are also turned into List<string>
                 //then turn List<string> into a DataTable with Functions.ListToTable
@@ -63,7 +66,8 @@ namespace MyDataCollector
                 {
                     MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
                 }
-            //    formPopulate = true;
+                formPopulate = true; 
+            }
 
         }
 
@@ -104,6 +108,7 @@ namespace MyDataCollector
                 pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("New Value"));
             }
             //when you change a parameter you should have immediate update of the display!!!
+            UpdateCSVControl(null, EventArgs.Empty);
             return pSHAREoutputList;
         }
         public static string pPARAMinputs(string _Parameter, List<string> _pSHAREoutput)

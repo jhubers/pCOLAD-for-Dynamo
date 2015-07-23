@@ -137,6 +137,7 @@ namespace pCOLADnamespace
             // on next inputAstNodes with ';' added
             List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
             // the headings should become flexible in future!!!
+            // also use the creation of output similar to pSHARE and pPARAM!!!
             var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
             var semiColon = AstFactory.BuildStringNode(";");
             foreach (AssociativeNode InputItem in inputAstNodes)

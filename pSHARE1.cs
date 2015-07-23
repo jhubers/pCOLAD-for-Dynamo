@@ -49,7 +49,11 @@ namespace pCOLADnamespace
                 RaisePropertyChanged("MyPropDataTable");
             }
         }
-
+        public void CSVUpdateHandler(object o, EventArgs e)
+        {
+            myPropDataTable = MyDataCollectorClass.myDataTable;
+            RaisePropertyChanged("MyPropDataTable");
+        }
 
         private int _rowIndex;
         public int RowIndex
@@ -116,6 +120,8 @@ namespace pCOLADnamespace
                 //this causes endless loop
                 //MyDataCollectorClass.myDataTable.AcceptChanges();
                 //MyDataCollectorClass.myDataTable = MyPropDataTable;
+                myPropDataTable = MyDataCollectorClass.myDataTable;
+                RaisePropertyChanged("MyPropDataTable");
             }
         }
         /// <summary>
@@ -145,6 +151,7 @@ namespace pCOLADnamespace
         /// The constructor for a NodeModel is used to create the input and output ports and specify the argument lacing.
         public pSHARE()
         {
+            MyDataCollectorClass.UpdateCSVControl += CSVUpdateHandler;
             InPortData.Add(new PortData("N", "Input (a List.CreateList) of pCOLLECT output(s)"));
             InPortData.Add(new PortData("I", "Input a FilePath for the shared csv files."));
             InPortData.Add(new PortData("L", "Input a FilePath for the local copy of the csv file."));
