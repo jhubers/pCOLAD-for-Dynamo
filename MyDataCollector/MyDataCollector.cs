@@ -70,8 +70,6 @@ namespace MyDataCollector
             }
 
         }
-
-
         public static void addNewPararemeters()
         {
             //add the outputs of pSHARE to myDataTable so they can be shown in the display
@@ -84,8 +82,11 @@ namespace MyDataCollector
                 DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
                 newParamTables.Add(newParamTable);
             }
+            if (newParamTables.Count>2)
+            {
             DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
-            myDataTable = TblUnion;
+            myDataTable = TblUnion;                
+            }
             //check here with copy of csv table to set difference in red!!!
 
         }
@@ -94,11 +95,26 @@ namespace MyDataCollector
             pSHAREoutputs.Clear();
             foreach (List<string> item in _Ninputs)
             {
+                //If you connect only 1 pCOLLECT directly to pSHARE you get an error while merging datatables
+                //Strange enough _Niputs then is not a List<List<string>>, but a List<string>. And
+                //this doesn't give an error... But item is then the first line of pCOLLECT output (the headers).
+                //So in that case show a warning that you always should put a List.Create node in between.
+                if (item.Count ==1)
+                {
+                    MessageBox.Show("Please put a List.Create node between pCOLLECT and pSHARE...");
+                    return null;
+                }
                 pSHAREoutputs.Add(item);
             }
             //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
+            //Populate myDataTable with the csv file
             openCSV();
-            addNewPararemeters();
+            // Union the pCOLLECTs to myDataTable
+            // Check if not only 1 pCOLLECT is connected otherwise you get an error!!!
+            if (pSHAREoutputs.Count>1)
+            {
+            addNewPararemeters();                
+            }
             List<string> pSHAREoutputList = new List<string>();
             //now myDataTable contains the union of the csv file and the new parameters
             //so, you can use the columns "Parameter" and "New Value"
@@ -111,7 +127,7 @@ namespace MyDataCollector
             UpdateCSVControl(null, EventArgs.Empty);
             return pSHAREoutputList;
         }
-        public static string pPARAMinputs(string _Parameter, List<string> _pSHAREoutput)
+        public static string pPARAMoutputs(string _Parameter, List<string> _pSHAREoutput)
         {
             string pPARAMoutput = "";
             for (int i = 0; i < _pSHAREoutput.Count; i++)
@@ -124,6 +140,26 @@ namespace MyDataCollector
             }
                 return pPARAMoutput;
         }
+        public static List<string> pCOLLECToutputs(params string[] ss)
+        {
+            //pCOLLECT should output a list of ;-separated strings in the format:
+            //Parameter;New Value;Importance;Comments;Owner;Extra Attribute Name;Extra Attribute Name; ...etc
+            //And on a second line the ;-separated string values of these attributes.
+            //But how do we get the names of the inputs?!!! Maybe have to create a node in pCOLLECT script and add
+            //this node to it?!!!
+            List<string> pCOLLECToutputList = new List<string>();
+            //string pCOLLECTattributes = "";
+            
+            string pCOLLECToutput = "";
+            foreach (string s in ss)
+            {
+                pCOLLECToutput += s;
+                pCOLLECToutput += ";";
+            }
+            pCOLLECToutputList.Add(pCOLLECToutput);
+            return pCOLLECToutputList;
+        }
+
     }
 }
 

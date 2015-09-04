@@ -1,0 +1,25 @@
+﻿<Window x:Class="pCOLADnamespace.Dialogue1"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="500" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label x:Name="Question" Grid.Row ="0" Content="Question" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFF3F3F3" BorderThickness="0"/>
+        <TextBox x:Name="Answer" Grid.Row ="1" HorizontalAlignment="Left" 
+                   TextWrapping="Wrap" Text="Type here your answer..." 
+                   VerticalAlignment="Top" Margin="3,0,0,0" 
+                   ForceCursor="True"/>
+        <Button x:Name="OK1" Grid.Row="2" Content="OK" HorizontalAlignment="Right" 
+                VerticalAlignment="Bottom" Width="36" Margin="0,0,75,0" Click="OK1_Click" IsDefault="True"/>
+        <Button x:Name="Cancel1" Grid.Row="2" Content="Cancel" HorizontalAlignment="Right" 
+                VerticalAlignment="Bottom" Width="70" Click="Cancel1_Click" IsCancel="True"/>
+
+    </Grid>
+</Window>

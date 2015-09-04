@@ -83,6 +83,9 @@
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogue1.xaml.cs">
+      <DependentUpon>Dialogue1.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MakeInputList.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">
@@ -102,6 +105,10 @@
     <Page Include="CSVControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogue1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="pCOLLECTcontrol.xaml">
       <SubType>Designer</SubType>

@@ -10,6 +10,8 @@ using Dynamo.Wpf;
 using System;
 using Dynamo.Nodes;
 using pCOLADnamespace;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace pCOLADnamespace
 {
@@ -40,16 +42,21 @@ namespace pCOLADnamespace
     [NodeDescription("Collects parameters and their attributes for pSHARE.")]
 
     [IsDesignScriptCompatible]
-    public class pCOLLECT : NodeModel
+    public class pCOLLECT : VariableInputNode//NodeModel
     {
         private List<string> _outputListProp;
         public List<string> outputListProp
         {
             get { return _outputListProp; }
 
-            set { _outputListProp = value; } 
+            set { _outputListProp = value; }
         }
-        
+        public DelegateCommand AddInputCommand { get; set; }
+        /// <summary>
+        /// Don't know why this is here. Maybe it was needed to hide a DelegateCommand
+        /// </summary>
+        /// <param name="workspace"></param>
+        [IsVisibleInDynamoLibrary(false)]
         #region constructor
 
         /// <summary>
@@ -64,14 +71,20 @@ namespace pCOLADnamespace
             // work of setting up the ports yourself. To do this,
             // you can populate the InPortData and the OutPortData
             // collections with PortData objects describing your ports.
-            InPortData.Add(new PortData("P", "Parameter name as int."));
-            InPortData.Add(new PortData("V", "Value as string."));
-            InPortData.Add(new PortData("I", "Importance as string."));
-            InPortData.Add(new PortData("C", "Comment as string."));
-            InPortData.Add(new PortData("O", "Owner as string."));
+            // we'll use the PortData.NickName as indicator
+            // we'll use the PortData.ToolTip as header in the csv.file
+            // In fact you should derive the NickNames and ToolTips from the csv.file!!!
+            // Put them in line 2 (1) of the csv.file!!!
+            // And from earlier pCOLLECT nodes!!!
+            // Because if new attributes are added it is a pain to add them everytime!!!
+            InPortData.Add(new PortData("P", "Parameter"));
+            InPortData.Add(new PortData("V", "New Value"));
+            InPortData.Add(new PortData("I", "Importance"));
+            InPortData.Add(new PortData("C", "Comments"));
+            InPortData.Add(new PortData("O", "Owner"));
             // Nodes can have an arbitrary number of inputs and outputs.
             // If you want more ports, just create more PortData objects.
-            OutPortData.Add(new PortData("N", "List of strings."));
+            OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
             //OutPortData.Add(new PortData("some awesome", "A result."));
 
             // This call is required to ensure that your ports are
@@ -83,7 +96,7 @@ namespace pCOLADnamespace
             // support argument lacing, you can set this to LacingStrategy.Disabled.
             //ArgumentLacing = LacingStrategy.CrossProduct;
             ArgumentLacing = LacingStrategy.Disabled;
-
+            AddInputCommand = new DelegateCommand(AddInput, CanAddInput);
         }
 
         #endregion
@@ -99,6 +112,7 @@ namespace pCOLADnamespace
         /// <param name="inputAstNodes"></param>
         /// <returns></returns>
         [IsVisibleInDynamoLibrary(false)]
+        #region Old_BuildOutputAst
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             // When you create your own UI node you are responsible
@@ -112,10 +126,10 @@ namespace pCOLADnamespace
             // AstFactory.BuildNullNode to pass out null.
 
             // Make a list from the inputs, using the MakeInputList class.
-            // In fact not used in pCOLLECT but needed in pSHARE
+            // In fact not used in pCOLLECT!!!So you can comment next two lines...
 
-            List<string> InputList = MakeInputList.InputList(InputNodes);
-            _outputListProp = InputList;
+            //List<string> InputList = MakeInputList.InputList(InputNodes);
+            //_outputListProp = InputList;
             //Dynamo.CustomNodeDefinition pCOLLECTdefinition = (Dynamo.CustomNodeDefinition)InputList;
 
 
@@ -138,7 +152,14 @@ namespace pCOLADnamespace
             List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
             // the headings should become flexible in future!!!
             // also use the creation of output similar to pSHARE and pPARAM!!!
-            var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
+            string inputNames = "";
+            foreach (var item in InPortData)
+            {
+                inputNames += item.ToolTipString + ";";
+            }
+            inputNames = inputNames.Remove(inputNames.Length - 1);
+            //var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
+            var headings = AstFactory.BuildStringNode(inputNames);
             var semiColon = AstFactory.BuildStringNode(";");
             foreach (AssociativeNode InputItem in inputAstNodes)
             {
@@ -183,20 +204,21 @@ namespace pCOLADnamespace
                 // In these assignments, GetAstIdentifierForOutputIndex finds 
                 // the unique identifier which represents an output on this node
                 // and 'assigns' that variable the expression that you create.
-                
+
                 //// For the first node, we'll just pass through the 
                 //// input provided to this node.
                 //AstFactory.BuildAssignment(
                 //    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(inputAstNodes)),
                 // we output the headers and on next line the values seperated by ';'
-
+                //Have to find a way to make it a dynamic node, meaning add or delete inputs!!!
+                            //ProtoCore.AST.AssociativeAST.DynamicNode dn= new DynamicNode();
                 AstFactory.BuildAssignment(
                     GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(pCOLLECToutputList)),
-                
-                
+
+
                 //AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
 
-                
+
                 //// For the second node, we'll build a double node that 
                 //// passes along our value for awesome.
                 //AstFactory.BuildAssignment(
@@ -204,6 +226,87 @@ namespace pCOLADnamespace
                 //    AstFactory.BuildDoubleNode(awesome))
             };
         }
+        #endregion
+        protected override string GetInputName(int index)
+        {
+            return "index" + index;
+        }
+
+        protected override string GetInputTooltip(int index)
+        {
+            return string.Format("No tooltip available", index);
+        }
+
+        protected override void RemoveInput()
+        {
+            if (InPortData.Count > 1)
+                base.RemoveInput();
+        }
+
+        #region New BuildOutputAst
+        //public delegate List<string> delS(string[]);
+
+        //public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
+        //{
+        //    if (IsPartiallyApplied)
+        //    {
+        //        MessageBox.Show("Please connect all inpts...");
+        //        //var connectedInput = Enumerable.Range(0, InPortData.Count)
+        //        //                               .Where(HasConnectedInput)
+        //        //                               .Select(x => new IntNode(x) as AssociativeNode)
+        //        //                               .ToList();
+
+        //        //var paramNumNode = new IntNode(InPortData.Count);
+        //        //var positionNode = AstFactory.BuildExprList(connectedInput);
+        //        //var arguments = AstFactory.BuildExprList(inputAstNodes);
+        //        //var functionNode = new IdentifierListNode
+        //        //{
+        //        //    LeftNode = new IdentifierNode("DSCore.List"),
+        //        //    RightNode = new IdentifierNode("__Create")
+        //        //};
+        //        //var inputParams = new List<AssociativeNode>
+        //        //{
+        //        //    functionNode,
+        //        //    paramNumNode,
+        //        //    positionNode,
+        //        //    arguments,
+        //        //    AstFactory.BuildBooleanNode(false)
+        //        //};
+
+        //        //return new[]
+        //        //{
+        //        //    AstFactory.BuildAssignment(
+        //        //        GetAstIdentifierForOutputIndex(0),
+        //        //        AstFactory.BuildFunctionCall("_SingleFunctionObject", inputParams))
+        //        //};
+        //    }
+        //    //delS newDelS = new delS(MyDataCollector.MyDataCollectorClass.pCOLLECToutputs);
+        //    List<string> inputList = new List<string>();
+        //    string inputNames = "";
+        //    foreach (var item in InPortData)
+        //    {
+        //        inputNames += item.ToolTipString + ";";
+        //    }
+        //    inputNames.Remove(inputNames.Length - 2);
+        //    inputList.Add(inputNames);
+        //    //Maybe build a node with these inputNames and add it to the pCOLLECTouputs node?!!!
+        //    var headers = AstFactory.BuildExprList(inputList);
+        //    var arguments = new List<AssociativeNode>();
+        //    arguments.Add(headers);
+
+
+        //    var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass.pCOLLECToutputs(inputNames)", inputAstNodes);
+        //    arguments.Add(funcNode);
+
+
+        //    return new[] 
+        //    { 
+        //        AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
+
+        //     };
+        //}
+
+        #endregion
         /// <summary>
         ///     View customizer for HelloDynamo Node Model.
         /// </summary>
@@ -246,7 +349,80 @@ namespace pCOLADnamespace
         #endregion
 
         #region command methods
+        //Instead of a button that says Hello Dynamo, make it add an input
+        private bool CanAddInput(object obj)
+        {
+            return true;
+        }
 
+        private void AddInput(object obj)
+        {
+            //use an extra window xaml as dialogue and use the input in text boxes
+            Dialogue1 D1 = new Dialogue1();
+            string a1 = "";
+            D1.Topmost = true;
+            D1.Question.Content = "Please give one or two charactors as input indicator for this attribute...";
+            D1.Show();
+            D1.Answer.Focus();
+            D1.Answer.SelectAll();
+            //wait for the answer and store it or cancel
+            D1.Closing += (sender, e) =>
+                {
+                    var d = sender as Dialogue1;
+                    if (d.Canceled == false)
+                    {
+                        a1 = D1.Answer.Text;
+                        //check if the attribute indicator is unique
+                        List<string> inportDataNames = new List<string>();
+                        foreach (PortData item in InPortData)
+                        {
+                            inportDataNames.Add(item.NickName);
+                        }
+                        if (!inportDataNames.Contains(a1))
+                        {
+                            Dialogue1 D2 = new Dialogue1();
+                            string a2 = "";
+                            D2.Topmost = true;
+                            D2.Question.Content = "Please give the format name for this attribute...";
+                            //wait for the answer and store it or cancel
+                            D2.Show();
+                            D2.Answer.Focus();
+                            D2.Answer.SelectAll();
+                            D2.Closing += (sender2, e2) =>
+                            {
+                                var d2 = sender2 as Dialogue1;
+                                if (d2.Canceled == false)
+                                {
+                                    a2 = D2.Answer.Text;
+                                    //check if attribute name is unique
+                                    List<string> inportDataToolTips = new List<string>();
+                                    foreach (PortData item2 in InPortData)
+                                    {
+                                        inportDataToolTips.Add(item2.ToolTipString);
+                                    }
+                                    if (!inportDataToolTips.Contains(a2))
+                                    {
+                                        InPortData.Add(new PortData(a1, a2));
+                                        RegisterAllPorts();
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("This attribute already exist. Please try again...");
+                                    }
+
+                                }
+                            };
+                        }
+                        else
+                        {
+                            MessageBox.Show("This attribute indicator already exist. Please try again...");
+
+                        }
+                    }
+                };
+
+
+        }
         //private bool CanShowMessage(object obj)
         //{
         //    // I can't think of any reason you wouldn't want to say Hello Dynamo!

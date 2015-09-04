@@ -100,7 +100,7 @@ namespace pCOLADnamespace
 
             // Find the parameter 
 
-            var t = new Func<string, List<string>, string>(MyDataCollectorClass.pPARAMinputs);
+            var t = new Func<string, List<string>, string>(MyDataCollectorClass.pPARAMoutputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
 
