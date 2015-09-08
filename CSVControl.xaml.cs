@@ -36,7 +36,7 @@ namespace pCOLADnamespace
                 case "Accepted":
                     //e.Column.CanUserSort = false;
                     //e.Column.Width = 20;
-                    //e.Column.Visibility = Visibility.Collapsed;
+                    e.Column.Visibility = Visibility.Collapsed;
                     break;
                 case "Parameter":
                     //e.Column.CanUserSort = false;

@@ -140,26 +140,42 @@ namespace MyDataCollector
             }
                 return pPARAMoutput;
         }
-        public static List<string> pCOLLECToutputs(params string[] ss)
+        #region OldFunc
+        //public static List<string> pCOLLECToutputs(params string[] ss)
+        //{
+        //    //pCOLLECT should output a list of ;-separated strings in the format:
+        //    //Parameter;New Value;Importance;Comments;Owner;Extra Attribute Name;Extra Attribute Name; ...etc
+        //    //And on a second line the ;-separated string values of these attributes.
+        //    //But how do we get the names of the inputs?!!! Maybe have to create a node in pCOLLECT script and add
+        //    //this node to it?!!!
+        //    List<string> pCOLLECToutputList = new List<string>();
+        //    //string pCOLLECTattributes = "";
+
+        //    string pCOLLECToutput = "";
+        //    foreach (string s in ss)
+        //    {
+        //        pCOLLECToutput += s;
+        //        pCOLLECToutput += ";";
+        //    }
+        //    pCOLLECToutputList.Add(pCOLLECToutput);
+        //    return pCOLLECToutputList;
+        //}
+        #endregion
+        #region NewFunc
+        public static string pCOLLECToutputs(params string[] ss)
         {
             //pCOLLECT should output a list of ;-separated strings in the format:
             //Parameter;New Value;Importance;Comments;Owner;Extra Attribute Name;Extra Attribute Name; ...etc
-            //And on a second line the ;-separated string values of these attributes.
-            //But how do we get the names of the inputs?!!! Maybe have to create a node in pCOLLECT script and add
-            //this node to it?!!!
-            List<string> pCOLLECToutputList = new List<string>();
-            //string pCOLLECTattributes = "";
-            
             string pCOLLECToutput = "";
             foreach (string s in ss)
             {
                 pCOLLECToutput += s;
                 pCOLLECToutput += ";";
             }
-            pCOLLECToutputList.Add(pCOLLECToutput);
-            return pCOLLECToutputList;
+            return pCOLLECToutput;
         }
-
+        
+        #endregion        
     }
 }
 
