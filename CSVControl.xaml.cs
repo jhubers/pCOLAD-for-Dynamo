@@ -33,11 +33,11 @@ namespace pCOLADnamespace
             //Set properties on the columns during auto-generation
             switch (e.Column.Header.ToString())
             {
-                case "Accepted":
+                //case "Accepted":
                     //e.Column.CanUserSort = false;
                     //e.Column.Width = 20;
-                    e.Column.Visibility = Visibility.Collapsed;
-                    break;
+                   //e.Column.Visibility = Visibility.Collapsed;
+                    //break;
                 case "Parameter":
                     //e.Column.CanUserSort = false;
                     //e.Column.Width = 20;
@@ -50,7 +50,7 @@ namespace pCOLADnamespace
                     break;
             }
         }
-        private void y_Loaded(object sender, RoutedEventArgs e)
+        private void myCheckBox_Loaded(object sender, RoutedEventArgs e)
         {
             //set the checkbox to the value in the hidden column "Accepted"
             //this should only happen the first time you add pSHARE
@@ -63,8 +63,19 @@ namespace pCOLADnamespace
                 if (cb.DataContext.GetType() == typeof(DataRowView))
                 {
                     DataRowView drv = (DataRowView)cb.DataContext;
-                    DataRow dr = drv.Row;
-                    bool? b = (bool?)dr["Accepted"];
+                    DataRow dr = drv.Row;                    
+                    string obstruction = dr["Obstruction"].ToString();
+                    bool b;
+                    //bool? b = (bool?)dr["Accepted"];
+                    //check if field in column "Obstruction" is empty
+                    if (obstruction == "")
+                    {
+                        b = true;
+                    }
+                    else
+                    {
+                        b = false;
+                    }
                     cb.IsChecked = b;                   
                 }
             //}

@@ -16,8 +16,10 @@ namespace MyDataCollector
     public static class MyDataCollectorClass
     {
         // later replace with an input
-        public static string inputFile = "D:\\Temp\\test2.csv";
-        public static string userName = "Hans";
+        public static string inputFile; // = "D:\\Temp\\test2.csv";
+        public static string ShareInputFile;
+        public static string inputFileCopy;
+        public static string userName;// = "Hans";
         public static bool formPopulate = false;
         public static List<string> csvList = new List<string>();
         public static List<List<string>> pSHAREoutputs = new List<List<string>>();
@@ -92,6 +94,10 @@ namespace MyDataCollector
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
+            inputFile = _IfilePath;
+            ShareInputFile = _IfilePath;
+            inputFileCopy = _LfilePath;
+            userName = _owner;
             pSHAREoutputs.Clear();
             foreach (List<string> item in _Ninputs)
             {

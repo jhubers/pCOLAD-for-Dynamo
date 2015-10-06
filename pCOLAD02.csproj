@@ -59,6 +59,7 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="ProtoCore">
       <HintPath>C:\Program Files\Dynamo 0.8\ProtoCore.dll</HintPath>
       <Private>False</Private>
@@ -80,6 +81,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoolToOppositeBoolConverter.cs" />
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
     </Compile>

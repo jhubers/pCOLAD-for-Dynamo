@@ -52,6 +52,7 @@ namespace pCOLADnamespace
             set { _outputListProp = value; }
         }
         public DelegateCommand AddInputCommand { get; set; }
+        public DelegateCommand RemoveInputCommand { get; set; }
         /// <summary>
         /// Don't know why this is here. Maybe it was needed to hide a DelegateCommand
         /// </summary>
@@ -97,6 +98,7 @@ namespace pCOLADnamespace
             //ArgumentLacing = LacingStrategy.CrossProduct;
             ArgumentLacing = LacingStrategy.Disabled;
             AddInputCommand = new DelegateCommand(AddInput, CanAddInput);
+            RemoveInputCommand = new DelegateCommand(RemoveInput, CanRemoveInput);
         }
 
         #endregion
@@ -113,119 +115,119 @@ namespace pCOLADnamespace
         /// <returns></returns>
         [IsVisibleInDynamoLibrary(false)]
         #region Old_BuildOutputAst
-        //public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
-        //{
-        //    // When you create your own UI node you are responsible
-        //    // for generating the abstract syntax tree (AST) nodes which
-        //    // specify what methods are called, or how your data is passed
-        //    // when execution occurs.
+        public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
+        {
+            // When you create your own UI node you are responsible
+            // for generating the abstract syntax tree (AST) nodes which
+            // specify what methods are called, or how your data is passed
+            // when execution occurs.
 
-        //    // WARNING!!!
-        //    // Do not throw an exception during AST creation. If you
-        //    // need to convey a failure of this node, then use
-        //    // AstFactory.BuildNullNode to pass out null.
+            // WARNING!!!
+            // Do not throw an exception during AST creation. If you
+            // need to convey a failure of this node, then use
+            // AstFactory.BuildNullNode to pass out null.
 
-        //    // Make a list from the inputs, using the MakeInputList class.
-        //    // In fact not used in pCOLLECT!!!So you can comment next two lines...
+            // Make a list from the inputs, using the MakeInputList class.
+            // In fact not used in pCOLLECT!!!So you can comment next two lines...
 
-        //    //List<string> InputList = MakeInputList.InputList(InputNodes);
-        //    //_outputListProp = InputList;
-        //    //Dynamo.CustomNodeDefinition pCOLLECTdefinition = (Dynamo.CustomNodeDefinition)InputList;
-
-
-        //    //List<string> InputList = new List<string>();
-        //    //for (int i = 0; i < Inputs.Count ; i++)
-        //    //{
-        //    //    var item = Inputs[i];
-        //    //    Dynamo.Nodes.CodeBlockNodeModel itemValue = (Dynamo.Nodes.CodeBlockNodeModel)item.Item2;
-        //    //    string s = itemValue.Code;
-        //    //    //for some reason Dynamo puts "\" and \";" around the string
-        //    //    string sCleaned = s.Remove(s.Length - 2).Remove(0, 1);
-        //    //    InputList.Add(sCleaned);
-        //    //}
-
-        //    // Using the AstFactory class, we can build AstNode objects
-        //    // that assign doubles, assign function calls, build expression lists, etc.
-
-        //    //build a new output List<AssociativeNode>consisting of fieldnames seperated by ';' and
-        //    // on next inputAstNodes with ';' added
-        //    List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
-        //    // the headings should become flexible in future!!!
-        //    // also use the creation of output similar to pSHARE and pPARAM!!!
-        //    string inputNames = "";
-        //    foreach (var item in InPortData)
-        //    {
-        //        inputNames += item.ToolTipString + ";";
-        //    }
-        //    inputNames = inputNames.Remove(inputNames.Length - 1);
-        //    //var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
-        //    var headings = AstFactory.BuildStringNode(inputNames);
-        //    var semiColon = AstFactory.BuildStringNode(";");
-        //    foreach (AssociativeNode InputItem in inputAstNodes)
-        //    {
-        //        List<AssociativeNode> arguments = new List<AssociativeNode>();
-        //        arguments.Add(InputItem);
-        //        arguments.Add(semiColon);
-        //        var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
-        //        //don't add ';' to the last one
-        //        if (inputAstNodes.IndexOf(InputItem) == inputAstNodes.Count - 1)
-        //        {
-        //            pCOLLECTtempList.Add(InputItem);
-        //        }
-        //        else
-        //        {
-        //            pCOLLECTtempList.Add(funcNode);
-        //        }
-        //    }
-        //    // now pCOLLECTtempList has the inputs followed by ';'
-        //    // but it should become one string so add the items together
-        //    List<AssociativeNode> pCOLLECToutputList = new List<AssociativeNode>();
-        //    AssociativeNode A = pCOLLECTtempList[0];
-        //    for (int i = 0; i < pCOLLECTtempList.Count - 1; i++)
-        //    {
-        //        List<AssociativeNode> arguments = new List<AssociativeNode>();
-        //        arguments.Add(A);
-        //        arguments.Add(pCOLLECTtempList[i + 1]);
-        //        var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
-        //        A = funcNode;
-        //    }
-        //    pCOLLECToutputList.Add(A);
-        //    pCOLLECToutputList.Insert(0, headings);
+            //List<string> InputList = MakeInputList.InputList(InputNodes);
+            //_outputListProp = InputList;
+            //Dynamo.CustomNodeDefinition pCOLLECTdefinition = (Dynamo.CustomNodeDefinition)InputList;
 
 
-        //    //var test4 = TryGetInput(0, out System.Tuple < 0, NodeModel);
-        //    //var test3 = GetValue(0);
-        //    //string test = pCOLLECTtempList[0];
-        //    //also gives a temp and large number.........
-        //    // var test2 = AstFactory.BuildStringNode(pCOLLECTtempList[0].ToString()).value;
-        //    //var funcNode = AstFactory.BuildFunctionCall("%add", pCOLLECTtempList);
-        //    return new[]
-        //    {
-        //        // In these assignments, GetAstIdentifierForOutputIndex finds 
-        //        // the unique identifier which represents an output on this node
-        //        // and 'assigns' that variable the expression that you create.
+            //List<string> InputList = new List<string>();
+            //for (int i = 0; i < Inputs.Count ; i++)
+            //{
+            //    var item = Inputs[i];
+            //    Dynamo.Nodes.CodeBlockNodeModel itemValue = (Dynamo.Nodes.CodeBlockNodeModel)item.Item2;
+            //    string s = itemValue.Code;
+            //    //for some reason Dynamo puts "\" and \";" around the string
+            //    string sCleaned = s.Remove(s.Length - 2).Remove(0, 1);
+            //    InputList.Add(sCleaned);
+            //}
 
-        //        //// For the first node, we'll just pass through the 
-        //        //// input provided to this node.
-        //        //AstFactory.BuildAssignment(
-        //        //    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(inputAstNodes)),
-        //        // we output the headers and on next line the values seperated by ';'
-        //        //Have to find a way to make it a dynamic node, meaning add or delete inputs!!!
-        //                    //ProtoCore.AST.AssociativeAST.DynamicNode dn= new DynamicNode();
-        //        AstFactory.BuildAssignment(
-        //            GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(pCOLLECToutputList)),
+            // Using the AstFactory class, we can build AstNode objects
+            // that assign doubles, assign function calls, build expression lists, etc.
+
+            //build a new output List<AssociativeNode>consisting of fieldnames seperated by ';' and
+            // on next inputAstNodes with ';' added
+            List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
+            // the headings should become flexible in future!!!
+            // also use the creation of output similar to pSHARE and pPARAM!!!
+            string inputNames = "";
+            foreach (var item in InPortData)
+            {
+                inputNames += item.ToolTipString + ";";
+            }
+            inputNames = inputNames.Remove(inputNames.Length - 1);
+            //var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
+            var headings = AstFactory.BuildStringNode(inputNames);
+            var semiColon = AstFactory.BuildStringNode(";");
+            foreach (AssociativeNode InputItem in inputAstNodes)
+            {
+                List<AssociativeNode> arguments = new List<AssociativeNode>();
+                arguments.Add(InputItem);
+                arguments.Add(semiColon);
+                var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
+                //don't add ';' to the last one
+                if (inputAstNodes.IndexOf(InputItem) == inputAstNodes.Count - 1)
+                {
+                    pCOLLECTtempList.Add(InputItem);
+                }
+                else
+                {
+                    pCOLLECTtempList.Add(funcNode);
+                }
+            }
+            // now pCOLLECTtempList has the inputs followed by ';'
+            // but it should become one string so add the items together
+            List<AssociativeNode> pCOLLECToutputList = new List<AssociativeNode>();
+            AssociativeNode A = pCOLLECTtempList[0];
+            for (int i = 0; i < pCOLLECTtempList.Count - 1; i++)
+            {
+                List<AssociativeNode> arguments = new List<AssociativeNode>();
+                arguments.Add(A);
+                arguments.Add(pCOLLECTtempList[i + 1]);
+                var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
+                A = funcNode;
+            }
+            pCOLLECToutputList.Add(A);
+            pCOLLECToutputList.Insert(0, headings);
 
 
-        //        //AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
+            //var test4 = TryGetInput(0, out System.Tuple < 0, NodeModel);
+            //var test3 = GetValue(0);
+            //string test = pCOLLECTtempList[0];
+            //also gives a temp and large number.........
+            // var test2 = AstFactory.BuildStringNode(pCOLLECTtempList[0].ToString()).value;
+            //var funcNode = AstFactory.BuildFunctionCall("%add", pCOLLECTtempList);
+            return new[]
+            {
+                // In these assignments, GetAstIdentifierForOutputIndex finds 
+                // the unique identifier which represents an output on this node
+                // and 'assigns' that variable the expression that you create.
+
+                //// For the first node, we'll just pass through the 
+                //// input provided to this node.
+                //AstFactory.BuildAssignment(
+                //    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(inputAstNodes)),
+                // we output the headers and on next line the values seperated by ';'
+                //Have to find a way to make it a dynamic node, meaning add or delete inputs!!!
+                            //ProtoCore.AST.AssociativeAST.DynamicNode dn= new DynamicNode();
+                AstFactory.BuildAssignment(
+                    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(pCOLLECToutputList)),
 
 
-        //        //// For the second node, we'll build a double node that 
-        //        //// passes along our value for awesome.
-        //        //AstFactory.BuildAssignment(
-        //        //    GetAstIdentifierForOutputIndex(1),
-        //        //    AstFactory.BuildDoubleNode(awesome))
-        //    };
-        //}
+                //AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
+
+
+                //// For the second node, we'll build a double node that 
+                //// passes along our value for awesome.
+                //AstFactory.BuildAssignment(
+                //    GetAstIdentifierForOutputIndex(1),
+                //    AstFactory.BuildDoubleNode(awesome))
+            };
+        }
         #endregion
         protected override string GetInputName(int index)
         {
@@ -244,23 +246,26 @@ namespace pCOLADnamespace
         }
 
         #region New BuildOutputAst (not working yet!!!)
-        public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
-        {
-            //List<string> pCOLLECTinputsList = new List<string>();
-            //foreach (PortData item in InPortData)
-            //{
-            //    pCOLLECTinputsList.Add(item.NickName);
-            //}
+        //public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
+        //{
+        //    //List<string> pCOLLECTinputsList = new List<string>();
+        //    //foreach (PortData item in InPortData)
+        //    //{
+        //    //    pCOLLECTinputsList.Add(item.NickName);
+        //    //}
 
-            //string[] pCOLLECTinputs = pCOLLECTinputsList.ToArray();
-            var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass.pCOLLECToutputs", inputAstNodes);
-            return new[] 
-            { 
-                AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
-             };
-        }
+        //    //string[] pCOLLECTinputs = pCOLLECTinputsList.ToArray();
+        //    var exprList = AstFactory.BuildExprList(inputAstNodes);
+        //    //var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass.pCOLLECToutputs", inputAstNodes);
+        //    var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass","pCOLLECToutputs", new List<AssociativeNode> { exprList });
+        //    return new[] 
+        //    { 
+        //        AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
+        //     };
+        //}
         //public delegate List<string> delS(string[]);
 
+        #region test BuildOutput
         //public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         //{
         //    if (IsPartiallyApplied)
@@ -319,7 +324,8 @@ namespace pCOLADnamespace
         //        AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
 
         //     };
-        //}
+        //} 
+        #endregion
 
         #endregion
         /// <summary>
@@ -365,17 +371,59 @@ namespace pCOLADnamespace
 
         #region command methods
         //Instead of a button that says Hello Dynamo, make it add an input
+        private bool CanRemoveInput(object obj)
+        {
+            return true;
+        }
         private bool CanAddInput(object obj)
         {
             return true;
         }
+        private void RemoveInput(object obj)
+        {
+            Dialogue1 D1 = new Dialogue1();
+            string a1 = "";
+            D1.Topmost = true;
+            D1.Question.Content = "Please give the one or two charactors of the input you want to remove...";
+            D1.Show();
+            D1.Answer.Focus();
+            D1.Answer.SelectAll();
+            //wait for the answer and store it or cancel
+            D1.Closing += (sender, e) =>
+                {
+                    var d = sender as Dialogue1;
+                    if (d.Canceled == false)
+                    {
+                        a1 = D1.Answer.Text;
+                        //check if the attribute indicator is unique
+                        List<string> inportDataNames = new List<string>();
+                        foreach (PortData item in InPortData)
+                        {
+                            inportDataNames.Add(item.NickName);
+                        }
+                        if (inportDataNames.Contains(a1))
+                        {
+                            int index = inportDataNames.IndexOf(a1);
+                            InPortData.RemoveAt(index);
+                            RegisterAllPorts();
+                        }
+                        else
+                        {
+                            MessageBox.Show("That input does noet exist. Please try again...");
+                        }
+                    }
 
+                };
+        }
         private void AddInput(object obj)
         {
             //use an extra window xaml as dialogue and use the input in text boxes
             Dialogue1 D1 = new Dialogue1();
             string a1 = "";
             D1.Topmost = true;
+            //the input indicator is what appears on the pCOLLECT input as node
+            //inorder to make it appear next time you run Dynamo, it must be stored in the 2nd row of the csv file
+            //so put it in the second row of myDataTable
             D1.Question.Content = "Please give one or two charactors as input indicator for this attribute...";
             D1.Show();
             D1.Answer.Focus();

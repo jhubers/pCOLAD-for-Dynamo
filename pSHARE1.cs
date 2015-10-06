@@ -20,6 +20,7 @@ using System.Windows.Data;
 
 namespace pCOLADnamespace
 {
+
     #region some node settings
     /// pSHARE takes care of the communication of parameter changes through a shared *.csv file.
     [NodeName("pSHARE")]
@@ -30,15 +31,19 @@ namespace pCOLADnamespace
     public class pSHARE : NodeModel
     {
         #region properties
-        bool On = false;
-        private string _OnOffButton;
+        private string historyFile = "";
+        private string oldCSV = "";
+        private bool On = false;
+        private bool HistoryOn = false;
+        private bool CheckAllButton = false;
+        private bool UncheckAllButton = false;
+        private string _OnOffButton = "";
         CSVControl _CSVControl;
-
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
         /// </summary>
         private DataTable myPropDataTable;
-        public DataTable MyPropDataTable 
+        public DataTable MyPropDataTable
         {
             get { return myPropDataTable; }
             set
@@ -54,7 +59,6 @@ namespace pCOLADnamespace
             myPropDataTable = MyDataCollectorClass.myDataTable;
             RaisePropertyChanged("MyPropDataTable");
         }
-
         private int _rowIndex;
         public int RowIndex
         {
@@ -92,36 +96,78 @@ namespace pCOLADnamespace
             get { return _isChecked; }
             set
             {
-                _isChecked = value;
-                //OnPropertyChanged("isChecked"); //this sets all checkboxes to checked...
-                DataRow dr = MyDataCollectorClass.myDataTable.Rows[_rowIndex];
-                //also change the value in the hidden column "Accepted"
-                dr["Accepted"] = value;
-                string cellContent = dr["Obstruction"].ToString();
-                if (_cellInfo != null && !_isChecked) //add the userName
+                if (CheckAllButton)
                 {
-                    if (cellContent == "")
-                    {
-                        dr["Obstruction"] = MyDataCollectorClass.userName;
-                    }
-                    else
-                    {
-                        dr["Obstruction"] += "," + MyDataCollectorClass.userName;
-                    }
+                   RaisePropertyChanged("isChecked");
+                        foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
+                        {
+                            string cellContent = dr["Obstruction"].ToString();
+                            if (cellContent.Contains(MyDataCollectorClass.userName))
+                            {
+                                // remove username from the cell
+                                cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
+                                //remove double and end commas
+                                cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
+                                dr["Obstruction"] = cellContent.Trim();
+                            }
+                        }
                 }
                 else
                 {
-                    // remove username from the cell
-                    cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
-                    //remove double and end commas
-                    cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
-                    dr["Obstruction"] = cellContent.Trim();
+                    if (UncheckAllButton)
+                    {
+                        RaisePropertyChanged("isChecked");
+                        foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
+                        {
+                            string cellContent = dr["Obstruction"].ToString();
+                            if (cellContent == "")
+                            {
+                                dr["Obstruction"] = MyDataCollectorClass.userName;
+                            }
+                            else
+                            {
+                                if (!cellContent.Contains(MyDataCollectorClass.userName))
+                                {
+                                    dr["Obstruction"] += "," + MyDataCollectorClass.userName;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _isChecked = value;
+                        //OnPropertyChanged("isChecked"); //this sets all checkboxes to checked...
+                        DataRow dr = MyDataCollectorClass.myDataTable.Rows[_rowIndex];
+                        //also change the value in the hidden column "Accepted"
+                        //dr["Accepted"] = value;
+                        string cellContent = dr["Obstruction"].ToString();
+                        if (_cellInfo != null && !_isChecked) //add the userName
+                        {
+                            if (cellContent == "")
+                            {
+                                dr["Obstruction"] = MyDataCollectorClass.userName;
+                            }
+                            else
+                            {
+                                dr["Obstruction"] += "," + MyDataCollectorClass.userName;
+                            }
+                        }
+                        else
+                        {
+                            // remove username from the cell
+                            cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
+                            //remove double and end commas
+                            cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
+                            dr["Obstruction"] = cellContent.Trim();
+                        }
+                        //this causes endless loop
+                        //MyDataCollectorClass.myDataTable.AcceptChanges();
+                        //MyDataCollectorClass.myDataTable = MyPropDataTable;
+                        myPropDataTable = MyDataCollectorClass.myDataTable;
+                        RaisePropertyChanged("MyPropDataTable");
+
+                    }
                 }
-                //this causes endless loop
-                //MyDataCollectorClass.myDataTable.AcceptChanges();
-                //MyDataCollectorClass.myDataTable = MyPropDataTable;
-                myPropDataTable = MyDataCollectorClass.myDataTable;
-                RaisePropertyChanged("MyPropDataTable");
             }
         }
         /// <summary>
@@ -135,18 +181,23 @@ namespace pCOLADnamespace
                 _OnOffButton = value;
                 //Raise a property changed notification to alert the UI that an element needs an update
                 //RaisePropertyChanged("NodeMessage");
+                RaisePropertyChanged("OnOffButton");
             }
         }
         /// DelegateCommand objects allow you to bind UI interaction to methods on your data context.
         [IsVisibleInDynamoLibrary(false)]
         public DelegateCommand OnOff { get; set; }
+        public DelegateCommand ShareCommand { get; set; }
+        public DelegateCommand HistoryCommand { get; set; }
+        public DelegateCommand CancelCommand { get; set; }
+        public DelegateCommand CheckAllCommand { get; set; }
+        public DelegateCommand UnCheckAllCommand { get; set; }
         /// <summary>
         /// Don't know why this is here. Maybe it was needed to hide a DelegateCommand
         /// </summary>
         /// <param name="workspace"></param>
         [IsVisibleInDynamoLibrary(false)]
         #endregion
-
         #region constructor
         /// The constructor for a NodeModel is used to create the input and output ports and specify the argument lacing.
         public pSHARE()
@@ -160,13 +211,17 @@ namespace pCOLADnamespace
             RegisterAllPorts();
             ArgumentLacing = LacingStrategy.CrossProduct;
             OnOff = new DelegateCommand(ShowParams, CanShowParams);
+            ShareCommand = new DelegateCommand(Share, CanShare);
+            HistoryCommand = new DelegateCommand(History, CanHistory);
+            CancelCommand = new DelegateCommand(Cancel, CanCancel);
+            CheckAllCommand = new DelegateCommand(CheckAll, CanCheckAll);
+            UnCheckAllCommand = new DelegateCommand(UnCheckAll, CanUnCheckAll);
+
             // update UI 
             OnOffButton = "Share";
-            
+
         }
-
         #endregion
-
         #region public methods
         /// <summary>
         /// If this method is not overriden, Dynamo will, by default
@@ -175,8 +230,6 @@ namespace pCOLADnamespace
         /// <param name="inputAstNodes"></param>
         /// <returns></return
         [IsVisibleInDynamoLibrary(false)]
-
-
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             //when you rerun the solution you should update the existing CSVcontrol!!!
@@ -190,13 +243,9 @@ namespace pCOLADnamespace
                 AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
              };
         }
-
-        
-
         /// <summary>
         /// shows the CSV display
         /// </summary>
-
         public void ShowCSV()
         {
             //make sure that control doesn't exist.
@@ -215,7 +264,7 @@ namespace pCOLADnamespace
                 }
                 if (!isCSVControlOpen)
                 {
-                    //the CSVControl should be created only once, however to reflect changes in pSHARE...
+                    //the CSVControl should be created only once
                     _CSVControl = new CSVControl();
                     this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     //bind the datatable to the xaml datagrid
@@ -245,8 +294,6 @@ namespace pCOLADnamespace
                 MessageBox.Show("Exception source: {0}", e.Source);
             }
         }
-
-
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>
         {
             /// <summary>
@@ -262,6 +309,7 @@ namespace pCOLADnamespace
 
             public void CustomizeView(pSHARE model, NodeView nodeView)
             {
+
                 var pSHAREControl = new pSHAREcontrol();
                 nodeView.inputGrid.Children.Add(pSHAREControl);
                 pSHAREControl.DataContext = model;
@@ -298,7 +346,6 @@ namespace pCOLADnamespace
             }
         }
         #endregion
-
         #region command methods
         private bool CanShowParams(object obj)
         {
@@ -320,31 +367,144 @@ namespace pCOLADnamespace
                 closeCSVControl();
             }
         }
-
-        private ICommand _ShareClicked;
-        public ICommand ShareClicked
-        {
-            get
-            {
-                if (_ShareClicked == null)
-                {
-                    _ShareClicked = new RelayCommand(
-                        param => this.Share(),
-                        param => this.CanShare()
-                               );
-                }
-                return _ShareClicked;
-            }
-        }
-        private bool CanShare()
+        private bool CanShare(object obj)
         {
             return true;
         }
-        private void Share()
+        private void Share(object obj)
         {
-            MessageBox.Show("Share button is Clicked");
-            //write myDataTable to the csv file!!!
+            //MessageBox.Show("Share button is Clicked");
+            //write myDataTable to the csv files if something changed
+            string csv = Functions.ToCSV(myPropDataTable);
+            if (oldCSV == csv)
+            {
+                MessageBox.Show("Nothing changed with last share ...");
+            }
+            else
+            {
+                try
+                {
+                    File.WriteAllText(MyDataCollectorClass.inputFile, csv);
+                    File.WriteAllText(MyDataCollectorClass.inputFileCopy, csv);
+                    //apend myDataTable to the history file, if there are changes!!!
+                    historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
+                    //check if file exist
+                    if (!File.Exists(historyFile))
+                    {
+                        File.Create(historyFile).Close();
+                        File.AppendAllText(historyFile, csv);
+                    }
+                    else
+                    {
+                        File.AppendAllText(historyFile, Environment.NewLine + csv);
 
+                    }
+                    //close the CSVControl and set the On butto to Off (red)!!! still does not work correctly
+                    //think it is not the onoff commeand that should be triggerd but also the Status of the button
+                    ShowParams(OnOff);
+                    RaisePropertyChanged("OnOff");
+                    //RaisePropertyChanged("OnOffButton"); //makes no difference
+                    //closeCSVControl();
+                    //On = false; //makes no difference
+                    oldCSV = csv;
+                }
+                catch (System.Exception e)
+                {
+
+                    MessageBox.Show("Exception source: {0}", e.Source);
+                }
+                //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+
+
+            }
+        }
+        //private ICommand _HistoryClicked;
+        //public ICommand HistoryClicked
+        //{
+        //    get
+        //    {
+        //        if (_HistoryClicked == null)
+        //        {
+        //            _HistoryClicked = new RelayCommand(
+        //                param => this.History(),
+        //                param => this.CanHistory()
+        //                       );
+        //        }
+        //        return _HistoryClicked;
+        //    }
+        //}
+        private bool CanHistory(object obj)
+        {
+            return true;
+        }
+        private bool CanCancel(object obj)
+        {
+            return true;
+        }
+        private bool CanCheckAll(object obj)
+        {
+            return true;
+        }
+        private bool CanUnCheckAll(object obj)
+        {
+            return true;
+        }
+        private void History(object obj)
+        {
+            //show History.csv!!!
+            //first set myDataTable to the History file
+            //maybe change the inputfile!!!
+            //get the directory of the inputfile
+            if (MyDataCollectorClass.inputFile == null)
+            {
+                MessageBox.Show("Please connect file path to pSHARE and run the solution first...");
+            }
+            else
+            {
+                if (!HistoryOn)
+                {
+                    string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
+                    if (!File.Exists(HistoryFile))
+                    {
+                        File.Create(HistoryFile).Close();
+                    }
+                    MyDataCollectorClass.formPopulate = false;
+                    MyDataCollectorClass.inputFile = HistoryFile;
+                    MyDataCollectorClass.openCSV();
+                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    HistoryOn = true;
+                }
+                else
+                {
+                    MyDataCollectorClass.formPopulate = false;
+                    MyDataCollectorClass.inputFile = MyDataCollectorClass.ShareInputFile;
+                    MyDataCollectorClass.openCSV();
+                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    HistoryOn = false;
+                }
+            }
+        }
+
+        private void Cancel(object onj)
+        {
+            //closeCSVControl();
+            ShowParams(OnOff);
+            RaisePropertyChanged("OnOff");
+        }
+        private void CheckAll(object obj)
+        {
+            CheckAllButton = true;
+            this._isChecked = true;
+            this.isChecked = true;
+            CheckAllButton = false;
+        }
+        private void UnCheckAll(object obj)
+        {
+            //gaat iets fout...!!!
+            UncheckAllButton = true;
+            this._isChecked = false;
+            this.isChecked = false;
+            UncheckAllButton = false;
         }
         #endregion
 

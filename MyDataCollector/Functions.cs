@@ -43,7 +43,7 @@ namespace MyDataCollector
                 if (i == 0) //this contains the headers. Also might be used to create properties for Parameter class.
                 {
                     // add a checbox column for easy setting obstruction field
-                    returnTable.Columns.Add("Accepted", typeof(bool));
+                    //returnTable.Columns.Add("Accepted", typeof(bool));
                     foreach (string word in words)
                     {
                         //add a column for every header with (name, text)
@@ -57,28 +57,35 @@ namespace MyDataCollector
                 {
                     //add a row to the datatable
                     DataRow row = returnTable.NewRow();
-                    int x = 1;
+                    int x = 0;
                     foreach (var word in words)
                     {
-                        row[x] = word;
-                        if (returnTable.Columns.IndexOf("Obstruction") == x)
+                        //for some reason if you connect same input twice, you get extra empty words...
+                        if (x <= returnTable.Columns.Count)
                         {
-                            if (word == "")
-                            {
-                                row["Accepted"] = true;
-                            }
-                            else
-                            {
-                                row["Accepted"] = false;
-                            }
+                            row[x] = word; 
                         }
+                        #region old
+                        //if (returnTable.Columns.IndexOf("Obstruction") == x)
+                        //{
+                            //if (word == "")
+                            //{
+                            //    row["Accepted"] = true;
+                            //}
+                            //else
+                            //{
+                            //    row["Accepted"] = false;
+                            //}
+                        //}
+                        
+                        #endregion                        
                         x += 1;
                     }
-                    object value = row["Accepted"];
-                    if (value == DBNull.Value)
-                    {
-                        row["Accepted"] = true;//make sure that in any case this field is not empty
-                    }
+                    //object value = row["Accepted"];
+                    //if (value == DBNull.Value)
+                    //{
+                    //    row["Accepted"] = true;//make sure that in any case this field is not empty
+                    //}
                     returnTable.Rows.Add(row);
                 }
                 i += 1;
@@ -87,7 +94,11 @@ namespace MyDataCollector
             //set the primary key of the table so you can easily merge tables. The key is an array of columns
             //but we use only the column with the Parameter name, which is the second displayed
             //but remember that you hide the "Accepted" column.
+            if (!MyDataCollectorClass.inputFile.Contains("History"))
+            {
             returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
+                
+            }
             return returnTable;
         }
 
@@ -144,6 +155,19 @@ namespace MyDataCollector
             }
 
             return table;
+        }
+        public static string ToCSV(DataTable tbl)
+        {
+            StringBuilder strb = new StringBuilder();
+
+            //column headers
+            strb.AppendLine(tbl.Columns.Cast<DataColumn>().Aggregate(
+                (object x, object y) => x + ";" + y).ToString());
+
+            //rows
+            tbl.AsEnumerable().Select(s => strb.AppendLine(
+                s.ItemArray.Aggregate((x, y) => x + ";" + y).ToString())).ToList();
+            return strb.ToString().TrimEnd();
         }
     }
 }
