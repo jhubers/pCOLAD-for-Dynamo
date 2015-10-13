@@ -87,6 +87,66 @@ namespace pCOLADnamespace
                 RaisePropertyChanged("CellInfo");
             }
         }
+        public string _Comments;
+        public string Comments
+        {
+            get { return _Comments; }
+            set
+            {
+                _Comments = value;
+                RaisePropertyChanged("Comments");
+            }
+        }
+        public bool _newComments;
+        public bool newComments
+        {
+            get { return _newComments; }
+            set
+            {
+                _newComments = value;
+                RaisePropertyChanged("newComments");
+            }
+        }
+        public string _NewValue;
+        public string NewValue
+        {
+            get { return _NewValue; }
+            set
+            {
+                _NewValue = value;
+                RaisePropertyChanged("NewValue");
+            }
+        }
+        public bool _newNewValue;
+        public bool newNewValue
+        {
+            get { return _newNewValue; }
+            set
+            {
+                _newNewValue = value;
+                RaisePropertyChanged("newNewValue");
+            }
+        }
+        public string _Importance;
+        public string Importance
+        {
+            get { return _Importance; }
+            set
+            {
+                _Importance = value;
+                RaisePropertyChanged("Importance");
+            }
+        }
+        public bool _newImportance;
+        public bool newImportance
+        {
+            get { return _newImportance; }
+            set
+            {
+                _newImportance = value;
+                RaisePropertyChanged("newImportance");
+            }
+        }
         private bool _isChecked;
         /// <summary>
         /// property of pSHARE telling if a row is checked and so a value obstructed
@@ -98,19 +158,19 @@ namespace pCOLADnamespace
             {
                 if (CheckAllButton)
                 {
-                   RaisePropertyChanged("isChecked");
-                        foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
+                    RaisePropertyChanged("isChecked");
+                    foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
+                    {
+                        string cellContent = dr["Obstruction"].ToString();
+                        if (cellContent.Contains(MyDataCollectorClass.userName))
                         {
-                            string cellContent = dr["Obstruction"].ToString();
-                            if (cellContent.Contains(MyDataCollectorClass.userName))
-                            {
-                                // remove username from the cell
-                                cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
-                                //remove double and end commas
-                                cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
-                                dr["Obstruction"] = cellContent.Trim();
-                            }
+                            // remove username from the cell
+                            cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
+                            //remove double and end commas
+                            cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
+                            dr["Obstruction"] = cellContent.Trim();
                         }
+                    }
                 }
                 else
                 {
@@ -192,6 +252,14 @@ namespace pCOLADnamespace
         public DelegateCommand CancelCommand { get; set; }
         public DelegateCommand CheckAllCommand { get; set; }
         public DelegateCommand UnCheckAllCommand { get; set; }
+
+        //public DelegateCommand CommentsCommand { get; set; }
+        //public DelegateCommand newCommentsCommand { get; set; }
+        //public DelegateCommand NewValueCommand { get; set; }
+        //public DelegateCommand newNewValueCommand { get; set; }
+        //public DelegateCommand ImportanceCommand { get; set; }
+        //public DelegateCommand newImportanceCommand { get; set; }
+
         /// <summary>
         /// Don't know why this is here. Maybe it was needed to hide a DelegateCommand
         /// </summary>
@@ -216,7 +284,12 @@ namespace pCOLADnamespace
             CancelCommand = new DelegateCommand(Cancel, CanCancel);
             CheckAllCommand = new DelegateCommand(CheckAll, CanCheckAll);
             UnCheckAllCommand = new DelegateCommand(UnCheckAll, CanUnCheckAll);
-
+            //CommentsCommand = new DelegateCommand(Comments, CanComments);
+            //newCommentsCommand = new DelegateCommand(newComments, CanNewComments);
+            //NewValueCommand = new DelegateCommand(NewValue, CanNewValue);
+            //newNewValueCommand = new DelegateCommand(NewNewValue, CanNewNewValue);
+            //ImportanceCommand = new DelegateCommand(Importance, CanImportance);
+            //newImportanceCommand = new DelegateCommand(NewImportance, CanNewImportance);
             // update UI 
             OnOffButton = "Share";
 
@@ -359,6 +432,7 @@ namespace pCOLADnamespace
                 On = true;
                 //and show the *.csv file
                 ShowCSV();
+                Compare();
             }
             else
             {
@@ -410,11 +484,9 @@ namespace pCOLADnamespace
                 }
                 catch (System.Exception e)
                 {
-
                     MessageBox.Show("Exception source: {0}", e.Source);
                 }
-                //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
-
+                //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
 
             }
         }
@@ -457,7 +529,7 @@ namespace pCOLADnamespace
             //get the directory of the inputfile
             if (MyDataCollectorClass.inputFile == null)
             {
-                MessageBox.Show("Please connect file path to pSHARE and run the solution first...");
+                MessageBox.Show("Please connect file path to pSHARE and run the solution ...");
             }
             else
             {
@@ -507,6 +579,51 @@ namespace pCOLADnamespace
             UncheckAllButton = false;
         }
         #endregion
+        private void Compare()
+        {
+            //compare csv and copy of csv here!!!
+            //compare the comment, new value and importance values of the two tables
+            //but not for the History file
+            if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
+            {
+                for (int i = 0; i < MyDataCollectorClass.myDataTable.Rows.Count; i++)
+                {
+                    DataRow drc = MyDataCollectorClass.copyTable.Rows[0];
+                    if (i <= MyDataCollectorClass.copyTable.Rows.Count)
+                    {
+                        drc = MyDataCollectorClass.copyTable.Rows[i];
+                    }
+                    DataRow dr = MyDataCollectorClass.myDataTable.Rows[i];
+                    Comments = dr["Comments"].ToString();
+                    if (!Comments.Equals(drc["Comments"].ToString()))
+                    {
+                        newComments = true;
+                    }
+                    else
+                    {
+                        newComments = false;
+                    }
+                    NewValue = dr["New Value"].ToString();
+                    if (!NewValue.Equals(drc["New Value"].ToString()))
+                    {
+                        newNewValue = true;
+                    }
+                    else
+                    {
+                        newNewValue = false;
+                    }
+                    Importance = dr["Importance"].ToString();
+                    if (!Importance.Equals(drc["Importance"].ToString()))
+                    {
+                        newImportance = true;
+                    }
+                    else
+                    {
+                        newImportance = false;
+                    }
+                }
+            }
 
+        }
     }
 }

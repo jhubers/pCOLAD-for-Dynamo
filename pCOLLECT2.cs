@@ -256,14 +256,15 @@ namespace pCOLADnamespace
 
         //    //string[] pCOLLECTinputs = pCOLLECTinputsList.ToArray();
         //    var exprList = AstFactory.BuildExprList(inputAstNodes);
-        //    //var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass.pCOLLECToutputs", inputAstNodes);
-        //    var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass","pCOLLECToutputs", new List<AssociativeNode> { exprList });
+        //    /var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass.pCOLLECToutputs", inputAstNodes);
+        //    //var funcNode = AstFactory.BuildFunctionCall("MyDataCollector.MyDataCollectorClass","pCOLLECToutputs", new List<AssociativeNode> { exprList });
         //    return new[] 
         //    { 
         //        AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
         //     };
         //}
         //public delegate List<string> delS(string[]);
+        #endregion
 
         #region test BuildOutput
         //public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
@@ -327,7 +328,6 @@ namespace pCOLADnamespace
         //} 
         #endregion
 
-        #endregion
         /// <summary>
         ///     View customizer for HelloDynamo Node Model.
         /// </summary>

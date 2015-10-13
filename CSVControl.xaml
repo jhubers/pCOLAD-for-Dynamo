@@ -6,12 +6,14 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="pCOLADnamespace.CSVControl" 
              xmlns:myBoolConverter="clr-namespace:pCOLADnamespace" 
+             xmlns:myForeGroundConverter ="clr-namespace:MyDataCollector;assembly=MyDataCollector"
              mc:Ignorable="d" 
              d:DesignHeight="114" d:DesignWidth="530">
     <Window.Resources>
         <myBoolConverter:BoolToVisibilityConverter x:Key="BoolToVisibleConverter"
                                FalseValue= "Visible"
                                TrueValue="Hidden" />
+        <myForeGroundConverter:ObjectToForegroundConverter x:Key="ObjectToForegroundConverter"/>
         <Style x:Key="ButtonFocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -75,6 +77,25 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <DataTemplate x:Key="changedComments">
+            <TextBlock 
+            Text="{Binding Comments}" 
+            Foreground="{Binding newComments, Converter={StaticResource ObjectToForegroundConverter}}"
+            />
+        </DataTemplate>
+        <DataTemplate x:Key="changedNewValue">
+            <TextBlock
+            Text="{Binding NewValue}" 
+            Foreground="{Binding newNewValue, Converter={StaticResource ObjectToForegroundConverter}}"
+            />
+        </DataTemplate>
+        <DataTemplate x:Key="changedImportance">
+            <TextBlock
+            Text="{Binding Importance}" 
+            Foreground="{Binding newImportance, Converter={StaticResource ObjectToForegroundConverter}}"
+            />
+        </DataTemplate>
+
     </Window.Resources>
 
     <Grid>

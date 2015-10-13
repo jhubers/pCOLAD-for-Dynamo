@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 
 namespace MyDataCollector
 {
-        [IsVisibleInDynamoLibrary(false)]
+    [IsVisibleInDynamoLibrary(false)]
     public static class Functions
     {
         public static List<string> buildCommonMultiple(List<List<string>> listOfListOfStrings)
@@ -50,6 +51,8 @@ namespace MyDataCollector
                         string newWord = word;
                         //change the pCOLLECT "Value" column into "New Value"
                         if (word == "Value") { newWord = "New Value"; }
+                        //here we have to compare with the words of the copy CSV-file!!!
+                        //but myDataTable is not build, and that one is bound!!!
                         returnTable.Columns.Add(newWord, typeof(string));
                     }
                 }
@@ -63,22 +66,22 @@ namespace MyDataCollector
                         //for some reason if you connect same input twice, you get extra empty words...
                         if (x <= returnTable.Columns.Count)
                         {
-                            row[x] = word; 
+                            row[x] = word;
                         }
                         #region old
                         //if (returnTable.Columns.IndexOf("Obstruction") == x)
                         //{
-                            //if (word == "")
-                            //{
-                            //    row["Accepted"] = true;
-                            //}
-                            //else
-                            //{
-                            //    row["Accepted"] = false;
-                            //}
+                        //if (word == "")
+                        //{
+                        //    row["Accepted"] = true;
                         //}
-                        
-                        #endregion                        
+                        //else
+                        //{
+                        //    row["Accepted"] = false;
+                        //}
+                        //}
+
+                        #endregion
                         x += 1;
                     }
                     //object value = row["Accepted"];
@@ -96,8 +99,8 @@ namespace MyDataCollector
             //but remember that you hide the "Accepted" column.
             if (!MyDataCollectorClass.inputFile.Contains("History"))
             {
-            returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
-                
+                returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
+
             }
             return returnTable;
         }
@@ -168,6 +171,59 @@ namespace MyDataCollector
             tbl.AsEnumerable().Select(s => strb.AppendLine(
                 s.ItemArray.Aggregate((x, y) => x + ";" + y).ToString())).ToList();
             return strb.ToString().TrimEnd();
+        }
+        public static List<string> CSVtoList(string filename)
+        {
+            List<string> csvList = new List<string>();
+            try
+            {
+                StreamReader myStream = new StreamReader(filename);
+                string line = "";
+                int i = 0;
+                while (line != null)
+                {
+                    line = myStream.ReadLine();
+                    if (line == null)
+                    {
+                        break;
+                    }
+                    csvList.Add(line);
+                    i += 1;
+                }
+                myStream.Dispose();
+                return csvList;
+            }
+            catch (FileNotFoundException)
+            {
+                //MessageBox.Show("We couldn't find the file: " + inputFile + ". Are you sure it exists?");
+                MessageBoxResult result = MessageBox.Show("We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        File.Create(filename);
+                        csvList.Add("Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                        return csvList;
+
+                    case MessageBoxResult.No:
+                        MessageBox.Show("Please connect the right file path and run the application again...", "pCOLAD");
+                        return csvList;
+
+                    //case MessageBoxResult.Cancel:
+                    //    MessageBox.Show("Nevermind then...", "My App");
+                    //    break;
+                }
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("We couldn't find the file. Are you sure the directory exists?");
+                return csvList;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
+                return csvList;
+            }
+            return csvList;
         }
     }
 }

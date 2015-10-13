@@ -7,7 +7,7 @@
     <ProjectGuid>{497FC54C-6433-47F2-B92E-E500BC0DF80E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pCOLADnamespace</RootNamespace>
+    <RootNamespace>MyDataCollector</RootNamespace>
     <AssemblyName>MyDataCollector</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -60,6 +60,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MyDataCollector.cs" />
+    <Compile Include="ObjectToForegroundConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
