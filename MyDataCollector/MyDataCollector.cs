@@ -39,7 +39,6 @@ namespace MyDataCollector
         public static void openCSV()
         {
             //openCSV() should run when somebody changed the CSV-file.
-            //compare with the copy of the CSV-file!!!
             if (!formPopulate)
             {
                 myDataTable = null;
@@ -112,8 +111,10 @@ namespace MyDataCollector
             //so, you can use the columns "Parameter" and "New Value"
             for (int i = 0; i < myDataTable.Rows.Count; i++)
             {
-                pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("Parameter"));
-                pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("New Value"));
+                //pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("Parameter"));
+                //pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("New Value"));
+                pSHAREoutputList.Add(myDataTable.Rows[i]["Parameter"].ToString());
+                pSHAREoutputList.Add(myDataTable.Rows[i]["New Value"].ToString());
             }
             //when you change a parameter you should have immediate update of the display!!!
             UpdateCSVControl(null, EventArgs.Empty);

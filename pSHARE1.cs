@@ -56,6 +56,7 @@ namespace pCOLADnamespace
         }
         public void CSVUpdateHandler(object o, EventArgs e)
         {
+            Compare();
             myPropDataTable = MyDataCollectorClass.myDataTable;
             RaisePropertyChanged("MyPropDataTable");
         }
@@ -87,70 +88,74 @@ namespace pCOLADnamespace
                 RaisePropertyChanged("CellInfo");
             }
         }
-        public string _Comments;
-        public string Comments
-        {
-            get { return _Comments; }
-            set
-            {
-                _Comments = value;
-                RaisePropertyChanged("Comments");
-            }
-        }
-        public bool _newComments;
-        public bool newComments
-        {
-            get { return _newComments; }
-            set
-            {
-                _newComments = value;
-                RaisePropertyChanged("newComments");
-            }
-        }
-        public string _NewValue;
-        public string NewValue
-        {
-            get { return _NewValue; }
-            set
-            {
-                _NewValue = value;
-                RaisePropertyChanged("NewValue");
-            }
-        }
-        public bool _newNewValue;
-        public bool newNewValue
-        {
-            get { return _newNewValue; }
-            set
-            {
-                _newNewValue = value;
-                RaisePropertyChanged("newNewValue");
-            }
-        }
-        public string _Importance;
-        public string Importance
-        {
-            get { return _Importance; }
-            set
-            {
-                _Importance = value;
-                RaisePropertyChanged("Importance");
-            }
-        }
-        public bool _newImportance;
-        public bool newImportance
-        {
-            get { return _newImportance; }
-            set
-            {
-                _newImportance = value;
-                RaisePropertyChanged("newImportance");
-            }
-        }
+        #region old
+        //private string _Comments;
+        //public string MyComments
+        //{
+        //    get { return _Comments; }
+        //    set
+        //    {
+        //        _Comments = value;
+        //        RaisePropertyChanged("MyComments");
+        //    }
+        //}
+        //private bool _newComments;
+        //public bool newComments
+        //{
+        //    get { return _newComments; }
+        //    set
+        //    {
+        //        _newComments = value;
+        //        RaisePropertyChanged("newComments");
+        //    }
+        //}
+        //private string _myNewValue;
+        //public string MyNewValue
+        //{
+        //    get { return _myNewValue; }
+        //    set
+        //    {
+        //        _myNewValue = value;
+        //        RaisePropertyChanged("MyNewValue");
+        //    }
+        //}
+        //private bool _newNewValue;
+        //public bool newNewValue
+        //{
+        //    get { return _newNewValue; }
+        //    set
+        //    {
+        //        _newNewValue = value;
+        //        RaisePropertyChanged("newNewValue");
+        //    }
+        //}
+        //private string _Importance;
+        //public string MyImportance
+        //{
+        //    get { return _Importance; }
+        //    set
+        //    {
+        //        _Importance = value;
+        //        RaisePropertyChanged("MyImportance");
+        //    }
+        //}
+        //private bool _newImportance;
+        //public bool newImportance
+        //{
+        //    get { return _newImportance; }
+        //    set
+        //    {
+        //        _newImportance = value;
+        //        RaisePropertyChanged("newImportance");
+        //    }
+        //} 
+        #endregion
+
         private bool _isChecked;
         /// <summary>
         /// property of pSHARE telling if a row is checked and so a value obstructed
         /// </summary>
+
         public bool isChecked
         {
             get { return _isChecked; }
@@ -158,7 +163,6 @@ namespace pCOLADnamespace
             {
                 if (CheckAllButton)
                 {
-                    RaisePropertyChanged("isChecked");
                     foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
                     {
                         string cellContent = dr["Obstruction"].ToString();
@@ -168,30 +172,31 @@ namespace pCOLADnamespace
                             cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                             //remove double and end commas
                             cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
-                            dr["Obstruction"] = cellContent.Trim();
+                            dr["Obstruction"] = new Item(cellContent.Trim());
                         }
                     }
+                    RaisePropertyChanged("isChecked");
                 }
                 else
                 {
                     if (UncheckAllButton)
                     {
-                        RaisePropertyChanged("isChecked");
                         foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
                         {
                             string cellContent = dr["Obstruction"].ToString();
                             if (cellContent == "")
                             {
-                                dr["Obstruction"] = MyDataCollectorClass.userName;
+                                dr["Obstruction"] = new Item(MyDataCollectorClass.userName);
                             }
                             else
                             {
                                 if (!cellContent.Contains(MyDataCollectorClass.userName))
                                 {
-                                    dr["Obstruction"] += "," + MyDataCollectorClass.userName;
+                                    dr["Obstruction"]=new Item(cellContent + "," + MyDataCollectorClass.userName);
                                 }
                             }
                         }
+                        RaisePropertyChanged("isChecked");
                     }
                     else
                     {
@@ -205,11 +210,11 @@ namespace pCOLADnamespace
                         {
                             if (cellContent == "")
                             {
-                                dr["Obstruction"] = MyDataCollectorClass.userName;
+                                dr["Obstruction"] = new Item(MyDataCollectorClass.userName);
                             }
                             else
                             {
-                                dr["Obstruction"] += "," + MyDataCollectorClass.userName;
+                                dr["Obstruction"] = new Item(cellContent + "," + MyDataCollectorClass.userName);
                             }
                         }
                         else
@@ -218,18 +223,18 @@ namespace pCOLADnamespace
                             cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                             //remove double and end commas
                             cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
-                            dr["Obstruction"] = cellContent.Trim();
+                            dr["Obstruction"] = new Item(cellContent.Trim());
                         }
                         //this causes endless loop
                         //MyDataCollectorClass.myDataTable.AcceptChanges();
                         //MyDataCollectorClass.myDataTable = MyPropDataTable;
                         myPropDataTable = MyDataCollectorClass.myDataTable;
                         RaisePropertyChanged("MyPropDataTable");
-
                     }
                 }
             }
         }
+
         /// <summary>
         /// the property pSHARE.OnOffButton is used to open or close the CSV display
         /// </summary>
@@ -339,6 +344,8 @@ namespace pCOLADnamespace
                 {
                     //the CSVControl should be created only once
                     _CSVControl = new CSVControl();
+                    //compare the csv file with the copy
+                    Compare();
                     this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     //bind the datatable to the xaml datagrid
                     //_CSVControl.myXamlTable.ItemsSource = this.MyPropDataTable.DefaultView;
@@ -364,7 +371,7 @@ namespace pCOLADnamespace
 
             catch (System.Exception e)
             {
-                MessageBox.Show("Exception source: {0}", e.Source);
+                MessageBox.Show("Exception deze source: {0}", e.Source);
             }
         }
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>
@@ -413,8 +420,8 @@ namespace pCOLADnamespace
             {
                 if (w is CSVControl)
                 {
-                    w.Hide();
-                    //w.Close();
+                    //w.Hide();
+                    w.Close();
                 }
             }
         }
@@ -432,7 +439,6 @@ namespace pCOLADnamespace
                 On = true;
                 //and show the *.csv file
                 ShowCSV();
-                Compare();
             }
             else
             {
@@ -440,6 +446,7 @@ namespace pCOLADnamespace
                 //close *.csv display
                 closeCSVControl();
             }
+
         }
         private bool CanShare(object obj)
         {
@@ -490,21 +497,6 @@ namespace pCOLADnamespace
 
             }
         }
-        //private ICommand _HistoryClicked;
-        //public ICommand HistoryClicked
-        //{
-        //    get
-        //    {
-        //        if (_HistoryClicked == null)
-        //        {
-        //            _HistoryClicked = new RelayCommand(
-        //                param => this.History(),
-        //                param => this.CanHistory()
-        //                       );
-        //        }
-        //        return _HistoryClicked;
-        //    }
-        //}
         private bool CanHistory(object obj)
         {
             return true;
@@ -557,7 +549,7 @@ namespace pCOLADnamespace
             }
         }
 
-        private void Cancel(object onj)
+        private void Cancel(object obj)
         {
             //closeCSVControl();
             ShowParams(OnOff);
@@ -582,7 +574,7 @@ namespace pCOLADnamespace
         private void Compare()
         {
             //compare csv and copy of csv here!!!
-            //compare the comment, new value and importance values of the two tables
+            //compare the comment, New Value and importance values of the two tables
             //but not for the History file
             if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
             {
@@ -594,33 +586,28 @@ namespace pCOLADnamespace
                         drc = MyDataCollectorClass.copyTable.Rows[i];
                     }
                     DataRow dr = MyDataCollectorClass.myDataTable.Rows[i];
-                    Comments = dr["Comments"].ToString();
-                    if (!Comments.Equals(drc["Comments"].ToString()))
+                    if (!Object.Equals(drc["Comments"],dr["Comments"]))
                     {
-                        newComments = true;
+                        (dr["Comments"] as MyDataCollector.Item).SetChanged();
                     }
-                    else
+                    if (!Object.Equals(drc["New Value"], dr["New Value"]))
                     {
-                        newComments = false;
+                        (dr["New Value"] as MyDataCollector.Item).SetChanged();
                     }
-                    NewValue = dr["New Value"].ToString();
-                    if (!NewValue.Equals(drc["New Value"].ToString()))
+                    if (!Object.Equals(drc["Importance"], dr["Importance"]))
                     {
-                        newNewValue = true;
+                        (dr["Importance"] as MyDataCollector.Item).SetChanged();
                     }
-                    else
-                    {
-                        newNewValue = false;
-                    }
-                    Importance = dr["Importance"].ToString();
-                    if (!Importance.Equals(drc["Importance"].ToString()))
-                    {
-                        newImportance = true;
-                    }
-                    else
-                    {
-                        newImportance = false;
-                    }
+
+                    //Importance = dr["Importance"].ToString();
+                    //if (!Importance.Equals(drc["Importance"].ToString()))
+                    //{
+                    //    newImportance = true;
+                    //}
+                    //else
+                    //{
+                    //    newImportance = false;
+                    //}
                 }
             }
 

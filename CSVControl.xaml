@@ -5,15 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"         
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="pCOLADnamespace.CSVControl" 
-             xmlns:myBoolConverter="clr-namespace:pCOLADnamespace" 
-             xmlns:myForeGroundConverter ="clr-namespace:MyDataCollector;assembly=MyDataCollector"
+             xmlns:myConverters="clr-namespace:pCOLADnamespace"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="114" d:DesignWidth="530">
     <Window.Resources>
-        <myBoolConverter:BoolToVisibilityConverter x:Key="BoolToVisibleConverter"
+        <myConverters:pSHARE x:Key="myDataContext"/>
+        <myConverters:BoolToVisibilityConverter x:Key="BoolToVisibleConverter"
                                FalseValue= "Visible"
                                TrueValue="Hidden" />
-        <myForeGroundConverter:ObjectToForegroundConverter x:Key="ObjectToForegroundConverter"/>
+        <myConverters:ObjectToForegroundConverter x:Key="MyObjectToForegroundConverter"/>
+        <myConverters:testConverter x:Key="myTestConverter"/>
+        <myConverters:BindingProxy x:Key="proxy" Data="{Binding}" />
         <Style x:Key="ButtonFocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -77,22 +80,22 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <DataTemplate x:Key="changedComments">
+        <DataTemplate x:Key="changedComments" >
             <TextBlock 
-            Text="{Binding Comments}" 
-            Foreground="{Binding newComments, Converter={StaticResource ObjectToForegroundConverter}}"
+            Text="{Binding [Comments],Mode=OneWay}" 
+            Background="{Binding [Comments],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
             />
         </DataTemplate>
-        <DataTemplate x:Key="changedNewValue">
-            <TextBlock
-            Text="{Binding NewValue}" 
-            Foreground="{Binding newNewValue, Converter={StaticResource ObjectToForegroundConverter}}"
+        <DataTemplate x:Key="changedNewValue" >
+            <TextBlock 
+            Text="{Binding [New Value],Mode=OneWay}" 
+            Background="{Binding [New Value],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
             />
         </DataTemplate>
         <DataTemplate x:Key="changedImportance">
             <TextBlock
-            Text="{Binding Importance}" 
-            Foreground="{Binding newImportance, Converter={StaticResource ObjectToForegroundConverter}}"
+            Text="{Binding [Importance],Mode=OneWay}" 
+            Background="{Binding [Importance],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
             />
         </DataTemplate>
 
@@ -106,7 +109,7 @@
         <DataGrid Grid.Row="0" x:Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn"                   
 			CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False"
 			CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=TwoWay}"
-			CurrentCell="{Binding CellInfo, Mode=TwoWay}" x:FieldModifier="public"
+			CurrentCell="{Binding CellInfo, Mode=TwoWay}" x:FieldModifier="public" 
 			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" SelectionMode="Extended" VerticalAlignment="Top">
             <DataGrid.Columns >
                 <DataGridTemplateColumn >

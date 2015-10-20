@@ -24,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\pCOLAD.XML</DocumentationFile>
     <NoWarn>1591,1572,1571,1573,1587,1570</NoWarn>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,6 +82,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingProxy.cs" />
     <Compile Include="BoolToOppositeBoolConverter.cs" />
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
@@ -89,6 +91,7 @@
       <DependentUpon>Dialogue1.xaml</DependentUpon>
     </Compile>
     <Compile Include="MakeInputList.cs" />
+    <Compile Include="ObjectToForegroundConverter.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">
       <DependentUpon>pCOLLECTcontrol.xaml</DependentUpon>
@@ -102,6 +105,7 @@
     </Compile>
     <Compile Include="pSHARE1.cs" />
     <Compile Include="RelayCommand.cs" />
+    <Compile Include="testConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="CSVControl.xaml">
@@ -142,9 +146,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="MyDataCollector\MyDataCollector02.csproj">
+    <ProjectReference Include="MyDataCollector\MyDataCollector.csproj">
       <Project>{497fc54c-6433-47f2-b92e-e500bc0df80e}</Project>
-      <Name>MyDataCollector02</Name>
+      <Name>MyDataCollector</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

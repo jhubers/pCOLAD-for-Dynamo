@@ -51,9 +51,7 @@ namespace MyDataCollector
                         string newWord = word;
                         //change the pCOLLECT "Value" column into "New Value"
                         if (word == "Value") { newWord = "New Value"; }
-                        //here we have to compare with the words of the copy CSV-file!!!
-                        //but myDataTable is not build, and that one is bound!!!
-                        returnTable.Columns.Add(newWord, typeof(string));
+                        returnTable.Columns.Add(newWord, typeof(Item));
                     }
                 }
                 else
@@ -66,7 +64,8 @@ namespace MyDataCollector
                         //for some reason if you connect same input twice, you get extra empty words...
                         if (x <= returnTable.Columns.Count)
                         {
-                            row[x] = word;
+                            
+                            row[x] = new Item(word);
                         }
                         #region old
                         //if (returnTable.Columns.IndexOf("Obstruction") == x)

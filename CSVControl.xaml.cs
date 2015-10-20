@@ -38,16 +38,16 @@ namespace pCOLADnamespace
                 //e.Column.Width = 20;
                 //e.Column.Visibility = Visibility.Collapsed;
                 //break;
-                case "Parameter":
-                    //e.Column.CanUserSort = false;
-                    //e.Column.Width = 20;
-                    //e.Column.Visibility = Visibility.Visible;
-                    break;
+                //case "Parameter":
+                //    //e.Column.CanUserSort = false;
+                //    //e.Column.Width = 20;
+                //    //e.Column.Visibility = Visibility.Visible;
+                //    break;
                 case "Comments":
                     // Create a new template column.
                     DataGridTemplateColumn commentsTemplateColumn = new DataGridTemplateColumn();
                     commentsTemplateColumn.Header = "Comments";
-                    commentsTemplateColumn.CellTemplate = (DataTemplate)Resources["changedComments"];             
+                    commentsTemplateColumn.CellTemplate = (DataTemplate)Resources["changedComments"];
                     // Replace the auto-generated column with the templateColumn.
                     e.Column = commentsTemplateColumn;
                     //e.Column.Width = 100;
@@ -70,6 +70,15 @@ namespace pCOLADnamespace
                     e.Column = importanceTemplateColumn;
                     //e.Column.Width = 100;
                     break;
+                //case "Importance":
+                //    // Create a new template column.
+                //    DataGridTemplateColumn importanceTemplateColumn = new DataGridTemplateColumn();
+                //    importanceTemplateColumn.Header = "Importance";
+                //    importanceTemplateColumn.CellTemplate = (DataTemplate)Resources["changedImportance"];
+                //    // Replace the auto-generated column with the templateColumn.
+                //    e.Column = importanceTemplateColumn;
+                //    //e.Column.Width = 100;
+                //    break;
                 default:
                     //e.Column.CanUserSort = false;
                     e.Column.Width = 100;
