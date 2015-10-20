@@ -22,6 +22,14 @@
                 <ToggleButton.Style>
                     <Style TargetType="ToggleButton">
                         <Style.Triggers>
+                            <!--<Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Content" Value="{StaticResource OnImage}">
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Content" Value="{StaticResource OffImage}">
+                                </Setter>
+                            </Trigger>-->
                             <Trigger Property="IsChecked" Value="True">
                                 <Setter Property="Content" Value="{StaticResource OnImage}">
                                 </Setter>
@@ -30,6 +38,7 @@
                                 <Setter Property="Content" Value="{StaticResource OffImage}">
                                 </Setter>
                             </Trigger>
+
                         </Style.Triggers>
                     </Style>
                 </ToggleButton.Style>

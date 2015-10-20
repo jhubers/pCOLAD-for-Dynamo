@@ -310,9 +310,6 @@ namespace pCOLADnamespace
         [IsVisibleInDynamoLibrary(false)]
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
-            //when you rerun the solution you should update the existing CSVcontrol!!!
-            //but if it is shown it should not dissappear!!!
-
             var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
@@ -421,6 +418,8 @@ namespace pCOLADnamespace
                 if (w is CSVControl)
                 {
                     //w.Hide();
+                    //MyDataCollectorClass.myDataTable = MyDataCollectorClass.loadedDataTable.Copy();
+                    //MyPropDataTable = MyDataCollectorClass.myDataTable;
                     w.Close();
                 }
             }
@@ -436,9 +435,18 @@ namespace pCOLADnamespace
             //switch the On boolean to show or not the *.csv file
             if (On == false)
             {
+                //and show the *.csv file if the solution was run
+                if (MyPropDataTable!=null)
+                {
                 On = true;
-                //and show the *.csv file
                 ShowCSV();
+                }
+                else
+                {
+                    MessageBox.Show("Please hit the Run button first...");
+                    //set the button to red again!!!
+                    RaisePropertyChanged("OnOff");
+                }
             }
             else
             {
@@ -516,16 +524,14 @@ namespace pCOLADnamespace
         private void History(object obj)
         {
             //show History.csv!!!
-            //first set myDataTable to the History file
-            //maybe change the inputfile!!!
-            //get the directory of the inputfile
+            //first set myDataTable to the History file by changing the inputFile property.
             if (MyDataCollectorClass.inputFile == null)
             {
                 MessageBox.Show("Please connect file path to pSHARE and run the solution ...");
             }
             else
             {
-                if (!HistoryOn)
+                if (!HistoryOn)//is on when you show the History file
                 {
                     string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     if (!File.Exists(HistoryFile))
@@ -540,9 +546,12 @@ namespace pCOLADnamespace
                 }
                 else
                 {
-                    MyDataCollectorClass.formPopulate = false;
+                    //MyDataCollectorClass.formPopulate = false;
                     MyDataCollectorClass.inputFile = MyDataCollectorClass.ShareInputFile;
-                    MyDataCollectorClass.openCSV();
+                    //Re-open csv might be avoided if you store myDatTable in loadedDataTable
+                    //MyDataCollectorClass.openCSV();
+                    //just set myDataTable to a copy of loaded DataTable!!!
+                    MyDataCollectorClass.myDataTable = MyDataCollectorClass.loadedDataTable.Copy();
                     this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     HistoryOn = false;
                 }
@@ -580,10 +589,10 @@ namespace pCOLADnamespace
             {
                 for (int i = 0; i < MyDataCollectorClass.myDataTable.Rows.Count; i++)
                 {
-                    DataRow drc = MyDataCollectorClass.copyTable.Rows[0];
-                    if (i <= MyDataCollectorClass.copyTable.Rows.Count)
+                    DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];
+                    if (i < MyDataCollectorClass.copyDataTable.Rows.Count)
                     {
-                        drc = MyDataCollectorClass.copyTable.Rows[i];
+                        drc = MyDataCollectorClass.copyDataTable.Rows[i];
                     }
                     DataRow dr = MyDataCollectorClass.myDataTable.Rows[i];
                     if (!Object.Equals(drc["Comments"],dr["Comments"]))

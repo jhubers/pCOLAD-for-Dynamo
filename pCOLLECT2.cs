@@ -12,6 +12,7 @@ using Dynamo.Nodes;
 using pCOLADnamespace;
 using System.Linq;
 using System.Windows.Controls;
+using MyDataCollector;
 
 namespace pCOLADnamespace
 {
@@ -114,7 +115,7 @@ namespace pCOLADnamespace
         /// <param name="inputAstNodes"></param>
         /// <returns></returns>
         [IsVisibleInDynamoLibrary(false)]
-        #region Old_BuildOutputAst
+        #region Old_BuildOutputAst(works)
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             // When you create your own UI node you are responsible
@@ -145,6 +146,12 @@ namespace pCOLADnamespace
             //    string sCleaned = s.Remove(s.Length - 2).Remove(0, 1);
             //    InputList.Add(sCleaned);
             //}
+
+            //when you rerun the solution you should update the existing CSVcontrol!
+            if (MyDataCollectorClass.myDataTable != null)
+            {
+                MyDataCollectorClass.myDataTable = MyDataCollectorClass.loadedDataTable.Copy();
+            }
 
             // Using the AstFactory class, we can build AstNode objects
             // that assign doubles, assign function calls, build expression lists, etc.
@@ -193,7 +200,6 @@ namespace pCOLADnamespace
             }
             pCOLLECToutputList.Add(A);
             pCOLLECToutputList.Insert(0, headings);
-
 
             //var test4 = TryGetInput(0, out System.Tuple < 0, NodeModel);
             //var test3 = GetValue(0);
@@ -409,7 +415,7 @@ namespace pCOLADnamespace
                         }
                         else
                         {
-                            MessageBox.Show("That input does noet exist. Please try again...");
+                            MessageBox.Show("That input does not exist. Please try again...");
                         }
                     }
 
@@ -446,7 +452,7 @@ namespace pCOLADnamespace
                             Dialogue1 D2 = new Dialogue1();
                             string a2 = "";
                             D2.Topmost = true;
-                            D2.Question.Content = "Please give the format name for this attribute...";
+                            D2.Question.Content = "Please give the name for this attribute...";
                             //wait for the answer and store it or cancel
                             D2.Show();
                             D2.Answer.Focus();

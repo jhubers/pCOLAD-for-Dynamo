@@ -31,10 +31,9 @@ namespace MyDataCollector
         public static List<string> copyCsvList = new List<string>();
         public static List<List<string>> pSHAREoutputs = new List<List<string>>();
         public static DataTable myDataTable;
-        public static DataTable copyTable;
-        public static event EventHandler UpdateCSVControl = delegate { };
-       
-
+        public static DataTable loadedDataTable;
+        public static DataTable copyDataTable;
+        public static event EventHandler UpdateCSVControl = delegate { };              
 
         public static void openCSV()
         {
@@ -42,7 +41,7 @@ namespace MyDataCollector
             if (!formPopulate)
             {
                 myDataTable = null;
-                copyTable = null;
+                copyDataTable = null;
                 csvList.Clear();
                 copyCsvList.Clear();
                 //first make a List<string> out of the csv-file (because pCOLLECTs are also turned into List<string>
@@ -51,9 +50,12 @@ namespace MyDataCollector
                 copyCsvList = Functions.CSVtoList(inputFileCopy);
                 csvList = Functions.CSVtoList(inputFile);
                 myDataTable = Functions.ListToTable(csvList);
-                copyTable = Functions.ListToTable(copyCsvList);
+                copyDataTable = Functions.ListToTable(copyCsvList);
                     //UpdateCSVControl(null, EventArgs.Empty);                
-                formPopulate = true;
+            }
+            else
+            {
+                myDataTable = loadedDataTable.Copy();
             }
 
         }
@@ -67,14 +69,38 @@ namespace MyDataCollector
             foreach (List<string> ls in pSHAREoutputs)
             {
                 DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
+                //check if parameterName is already used. But if it is your own, just opdate the value
+
+                for (int i = 0; i < newParamTable.Rows.Count; i++)
+                {
+                    for (int j = i + 1; j < myDataTable.Rows.Count; j++)
+                    {
+                        string t1 = myDataTable.Rows[j]["Parameter"].ToString();
+                        string t2 = newParamTable.Rows[i]["Parameter"].ToString();
+                        string p1 = myDataTable.Rows[j]["Owner"].ToString();
+                        string p2 = newParamTable.Rows[i]["Owner"].ToString();
+                        if (t1 == t2 && p1 != p2)
+                        {
+                            MessageBox.Show("Parameter " + t2 + " allready exists. Please use another parameter name...");
+                            //replace the Parameter by ERROR
+                            newParamTable.Rows[i]["Parameter"] = new Item("ERROR!!!");
+                        }
+                    }
+                    
+                }
                 newParamTables.Add(newParamTable);
             }
             if (newParamTables.Count > 2)
             {
                 DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
                 myDataTable = TblUnion;
+                //make a copy of myDataTable so you can return to it if changes are undone
+                if (!formPopulate &&!inputFile.Contains("History"))
+                {
+                    loadedDataTable = myDataTable.Copy();
+                    formPopulate = true;
+                }
             }
-            //check here with copy of csv table to set difference in red!!!
 
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
@@ -111,8 +137,6 @@ namespace MyDataCollector
             //so, you can use the columns "Parameter" and "New Value"
             for (int i = 0; i < myDataTable.Rows.Count; i++)
             {
-                //pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("Parameter"));
-                //pSHAREoutputList.Add(myDataTable.Rows[i].Field<string>("New Value"));
                 pSHAREoutputList.Add(myDataTable.Rows[i]["Parameter"].ToString());
                 pSHAREoutputList.Add(myDataTable.Rows[i]["New Value"].ToString());
             }
