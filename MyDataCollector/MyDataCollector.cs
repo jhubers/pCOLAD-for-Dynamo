@@ -31,9 +31,10 @@ namespace MyDataCollector
         public static List<string> copyCsvList = new List<string>();
         public static List<List<string>> pSHAREoutputs = new List<List<string>>();
         public static DataTable myDataTable;
-        public static DataTable loadedDataTable;
+        public static DataTable csvDataTable;
         public static DataTable copyDataTable;
-        public static event EventHandler UpdateCSVControl = delegate { };              
+        public static event EventHandler UpdateCSVControl = delegate { };
+        private static DataTable mergedDataTable;              
 
         public static void openCSV()
         {
@@ -51,11 +52,12 @@ namespace MyDataCollector
                 csvList = Functions.CSVtoList(inputFile);
                 myDataTable = Functions.ListToTable(csvList);
                 copyDataTable = Functions.ListToTable(copyCsvList);
+                csvDataTable = myDataTable.Copy();
                     //UpdateCSVControl(null, EventArgs.Empty);                
             }
             else
             {
-                myDataTable = loadedDataTable.Copy();
+                myDataTable = csvDataTable.Copy();
             }
 
         }
@@ -83,7 +85,7 @@ namespace MyDataCollector
                         {
                             MessageBox.Show("Parameter " + t2 + " allready exists. Please use another parameter name...");
                             //replace the Parameter by ERROR
-                            newParamTable.Rows[i]["Parameter"] = new Item("ERROR!!!");
+                            newParamTable.Rows[i]["Parameter"] = new Item("---ERROR---");
                         }
                     }
                     
@@ -97,7 +99,7 @@ namespace MyDataCollector
                 //make a copy of myDataTable so you can return to it if changes are undone
                 if (!formPopulate &&!inputFile.Contains("History"))
                 {
-                    loadedDataTable = myDataTable.Copy();
+                    mergedDataTable = myDataTable.Copy();
                     formPopulate = true;
                 }
             }

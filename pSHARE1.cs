@@ -38,6 +38,7 @@ namespace pCOLADnamespace
         private bool CheckAllButton = false;
         private bool UncheckAllButton = false;
         private string _OnOffButton = "";
+        public DataTable latestMyDataTable;
         CSVControl _CSVControl;
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
@@ -192,7 +193,7 @@ namespace pCOLADnamespace
                             {
                                 if (!cellContent.Contains(MyDataCollectorClass.userName))
                                 {
-                                    dr["Obstruction"]=new Item(cellContent + "," + MyDataCollectorClass.userName);
+                                    dr["Obstruction"] = new Item(cellContent + "," + MyDataCollectorClass.userName);
                                 }
                             }
                         }
@@ -225,10 +226,6 @@ namespace pCOLADnamespace
                             cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
                             dr["Obstruction"] = new Item(cellContent.Trim());
                         }
-                        //this causes endless loop
-                        //MyDataCollectorClass.myDataTable.AcceptChanges();
-                        //MyDataCollectorClass.myDataTable = MyPropDataTable;
-                        myPropDataTable = MyDataCollectorClass.myDataTable;
                         RaisePropertyChanged("MyPropDataTable");
                     }
                 }
@@ -343,7 +340,8 @@ namespace pCOLADnamespace
                     _CSVControl = new CSVControl();
                     //compare the csv file with the copy
                     Compare();
-                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    //niet nodig?
+                    //this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     //bind the datatable to the xaml datagrid
                     //_CSVControl.myXamlTable.ItemsSource = this.MyPropDataTable.DefaultView;
                     ////Binding CSVControlBinding = new Binding("MyDataTableProp");
@@ -355,13 +353,6 @@ namespace pCOLADnamespace
                 }
                 else
                 {
-                    //_CSVControl.DataContext = MyDataCollectorClass.myDataTable;
-                    // works a bit better, but why should you set the ItemsSource again!!!
-
-
-                    //_CSVControl.myXamlTable.ItemsSource = MyDataCollectorClass.myDataTable.DefaultView;
-                    //_CSVControl.DataContext = this;
-                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     _CSVControl.Show();
                 }
             }
@@ -418,7 +409,7 @@ namespace pCOLADnamespace
                 if (w is CSVControl)
                 {
                     //w.Hide();
-                    //MyDataCollectorClass.myDataTable = MyDataCollectorClass.loadedDataTable.Copy();
+                    //MyDataCollectorClass.myDataTable = MyDataCollectorClass.csvDataTable.Copy();
                     //MyPropDataTable = MyDataCollectorClass.myDataTable;
                     w.Close();
                 }
@@ -435,11 +426,11 @@ namespace pCOLADnamespace
             //switch the On boolean to show or not the *.csv file
             if (On == false)
             {
-                //and show the *.csv file if the solution was run
-                if (MyPropDataTable!=null)
+                //and show the *.csv file if the solution ran before
+                if (MyPropDataTable != null)
                 {
-                On = true;
-                ShowCSV();
+                    On = true;
+                    ShowCSV();
                 }
                 else
                 {
@@ -480,21 +471,23 @@ namespace pCOLADnamespace
                     //check if file exist
                     if (!File.Exists(historyFile))
                     {
-                        File.Create(historyFile).Close();
-                        File.AppendAllText(historyFile, csv);
+                        File.Copy(MyDataCollectorClass.inputFile, historyFile, true);
+                        //File.AppendAllText(historyFile,Environment.NewLine);
                     }
                     else
                     {
                         File.AppendAllText(historyFile, Environment.NewLine + csv);
 
                     }
-                    //close the CSVControl and set the On butto to Off (red)!!! still does not work correctly
-                    //think it is not the onoff commeand that should be triggerd but also the Status of the button
-                    ShowParams(OnOff);
-                    RaisePropertyChanged("OnOff");
-                    //RaisePropertyChanged("OnOffButton"); //makes no difference
-                    //closeCSVControl();
-                    //On = false; //makes no difference
+                    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                    RaisePropertyChanged("OnOff"); //sets the OnOff button to red
+                    //you should reset everything so next hit of OnOff button shows only new changes
+                    
+                    MyDataCollectorClass.formPopulate = false;//so the original csvDataTable will be used
+                    MyDataCollectorClass.openCSV();
+                    MyDataCollectorClass.addNewPararemeters();
+                    //probably have to change the items.IsChanged property!!!
+                    Compare();
                     oldCSV = csv;
                 }
                 catch (System.Exception e)
@@ -523,8 +516,7 @@ namespace pCOLADnamespace
         }
         private void History(object obj)
         {
-            //show History.csv!!!
-            //first set myDataTable to the History file by changing the inputFile property.
+            //show History.csv
             if (MyDataCollectorClass.inputFile == null)
             {
                 MessageBox.Show("Please connect file path to pSHARE and run the solution ...");
@@ -536,22 +528,25 @@ namespace pCOLADnamespace
                     string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     if (!File.Exists(HistoryFile))
                     {
-                        File.Create(HistoryFile).Close();
+                        MessageBox.Show("There is no history file (yet). Please hit the Share button first ...");
+                        return;
                     }
                     MyDataCollectorClass.formPopulate = false;
+                    //first set myDataTable to the History file by changing the inputFile property.
                     MyDataCollectorClass.inputFile = HistoryFile;
                     MyDataCollectorClass.openCSV();
+                    //apperently MyPropDataTable is not the same as myDataTable...
                     this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     HistoryOn = true;
                 }
                 else
                 {
-                    //MyDataCollectorClass.formPopulate = false;
+                    //Show the csv file and add new parameters
                     MyDataCollectorClass.inputFile = MyDataCollectorClass.ShareInputFile;
-                    //Re-open csv might be avoided if you store myDatTable in loadedDataTable
-                    //MyDataCollectorClass.openCSV();
-                    //just set myDataTable to a copy of loaded DataTable!!!
-                    MyDataCollectorClass.myDataTable = MyDataCollectorClass.loadedDataTable.Copy();
+                    //Re-open csv is avoided because formPopulate is true
+                    MyDataCollectorClass.openCSV();
+                    MyDataCollectorClass.addNewPararemeters();
+                    Compare();
                     this.MyPropDataTable = MyDataCollectorClass.myDataTable;
                     HistoryOn = false;
                 }
@@ -585,41 +580,90 @@ namespace pCOLADnamespace
             //compare csv and copy of csv here!!!
             //compare the comment, New Value and importance values of the two tables
             //but not for the History file
+            ////for this to work you will have to fill myDataTable with new Items, 
+            ////because INotifyPropertyChanged is not implemented there.
+            //for (int i = 0; i < MyDataCollectorClass.myDataTable.Columns.Count; i++)
+            //{
+            //    for (int j = 0; j < MyDataCollectorClass.myDataTable.Rows.Count; j++)
+            //    {
+            //        MyDataCollectorClass.myDataTable.Rows[j][i] = new Item(MyDataCollectorClass.myDataTable.Rows[j][i].ToString());
+            //    }
+            //}
+
             if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
             {
+                    DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];                
                 for (int i = 0; i < MyDataCollectorClass.myDataTable.Rows.Count; i++)
                 {
-                    DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];
+                    //normally copyDataTable has less rows then myDataTable
+                    //all extra rows in myDataTable should be red, so add strange strings
                     if (i < MyDataCollectorClass.copyDataTable.Rows.Count)
                     {
                         drc = MyDataCollectorClass.copyDataTable.Rows[i];
                     }
+                    else
+                    {
+                        drc = MyDataCollectorClass.copyDataTable.NewRow();
+                        for (int k = 0; k < MyDataCollectorClass.copyDataTable.Columns.Count; k++)
+                        {
+                            drc[k] = new Item("@#$%!!!");
+                            //don't add the row to the table because then you get trouble with primarykey
+                        }
+                    }
                     DataRow dr = MyDataCollectorClass.myDataTable.Rows[i];
-                    if (!Object.Equals(drc["Comments"],dr["Comments"]))
+                    for (int j = 0; j < MyDataCollectorClass.myDataTable.Columns.Count; j++)
                     {
-                        (dr["Comments"] as MyDataCollector.Item).SetChanged();
-                    }
-                    if (!Object.Equals(drc["New Value"], dr["New Value"]))
-                    {
-                        (dr["New Value"] as MyDataCollector.Item).SetChanged();
-                    }
-                    if (!Object.Equals(drc["Importance"], dr["Importance"]))
-                    {
-                        (dr["Importance"] as MyDataCollector.Item).SetChanged();
+                        string cn = MyDataCollectorClass.myDataTable.Columns[j].ColumnName;
+                        if (!Object.Equals(drc[cn], dr[cn]))
+                        {
+                            //Item x = new Item(dr[cn].ToString());
+                            //x.IsChanged = true;
+                            //no idea why this can happen...!!!
+                            if (dr[cn] as MyDataCollector.Item==null)
+                            {
+                                dr[cn] = new Item("");
+                            }
+                            (dr[cn] as MyDataCollector.Item).SetChanged();
+                        }
+                        else
+                        {
+                            (dr[cn] as MyDataCollector.Item).SetSame();
+                        }
                     }
 
-                    //Importance = dr["Importance"].ToString();
-                    //if (!Importance.Equals(drc["Importance"].ToString()))
+                    //if comments are different and editted by somebody else
+                    //then you should do something!!!
+
+                    //if (!Object.Equals(drc["Comments"], dr["Comments"]))
                     //{
-                    //    newImportance = true;
+                    //    (dr["Comments"] as MyDataCollector.Item).SetChanged();
                     //}
-                    //else
+                    ////else
+                    ////{
+                    ////    (dr["Comments"] as MyDataCollector.Item).SetSame();
+                    ////}
+                    //if (!Object.Equals(drc["New Value"], dr["New Value"]))
                     //{
-                    //    newImportance = false;
+                    //    (dr["New Value"] as MyDataCollector.Item).SetChanged();
                     //}
+                    ////else
+                    ////{
+                    ////    (dr["New Value"] as MyDataCollector.Item).SetSame();
+                    ////}
+                    //if (!Object.Equals(drc["Importance"], dr["Importance"]))
+                    //{
+                    //    (dr["Importance"] as MyDataCollector.Item).SetChanged();
+                    //}
+                    ////else
+                    ////{
+                    ////    (dr["Importance"] as MyDataCollector.Item).SetSame();
+                    ////}
                 }
+                myPropDataTable = MyDataCollectorClass.myDataTable;
             }
-
+            //but if you shared the csv file, then copyDataTable and myDataTable are same...!!!
+            //still red keeps turning up... so after sharing you should set all items.SetChanged to false!!! Or
+            //simply kill the csv!!!
         }
     }
 }

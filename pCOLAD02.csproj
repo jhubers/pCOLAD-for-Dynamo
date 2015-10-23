@@ -91,6 +91,7 @@
       <DependentUpon>Dialogue1.xaml</DependentUpon>
     </Compile>
     <Compile Include="MakeInputList.cs" />
+    <Compile Include="MyDataGridTemplateColumn.cs" />
     <Compile Include="ObjectToForegroundConverter.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">

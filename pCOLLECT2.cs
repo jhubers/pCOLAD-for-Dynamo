@@ -147,12 +147,6 @@ namespace pCOLADnamespace
             //    InputList.Add(sCleaned);
             //}
 
-            //when you rerun the solution you should update the existing CSVcontrol!
-            if (MyDataCollectorClass.myDataTable != null)
-            {
-                MyDataCollectorClass.myDataTable = MyDataCollectorClass.loadedDataTable.Copy();
-            }
-
             // Using the AstFactory class, we can build AstNode objects
             // that assign doubles, assign function calls, build expression lists, etc.
 

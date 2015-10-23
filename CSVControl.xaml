@@ -15,8 +15,8 @@
                                FalseValue= "Visible"
                                TrueValue="Hidden" />
         <myConverters:ObjectToForegroundConverter x:Key="MyObjectToForegroundConverter"/>
-        <myConverters:testConverter x:Key="myTestConverter"/>
-        <myConverters:BindingProxy x:Key="proxy" Data="{Binding}" />
+        <!--<myConverters:testConverter x:Key="myTestConverter"/>-->
+        <!--<myConverters:BindingProxy x:Key="proxy" Data="{Binding}" />-->
         <Style x:Key="ButtonFocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -80,7 +80,13 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <DataTemplate x:Key="changedComments" >
+        <DataTemplate x:Key="changedColumns" >
+            <TextBlock 
+            Text="{Binding}" 
+            Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}}"
+            />
+            </DataTemplate>
+            <!--<DataTemplate x:Key="changedComments" >
             <TextBlock 
             Text="{Binding [Comments],Mode=OneWay}" 
             Background="{Binding [Comments],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
@@ -97,8 +103,7 @@
             Text="{Binding [Importance],Mode=OneWay}" 
             Background="{Binding [Importance],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
             />
-        </DataTemplate>
-
+        </DataTemplate>-->
     </Window.Resources>
 
     <Grid>

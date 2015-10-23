@@ -31,60 +31,50 @@ namespace pCOLADnamespace
         private void myXamlTable_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             //Set properties on the columns during auto-generation
-            switch (e.Column.Header.ToString())
-            {
-                //case "Accepted":
-                //e.Column.CanUserSort = false;
-                //e.Column.Width = 20;
-                //e.Column.Visibility = Visibility.Collapsed;
-                //break;
-                //case "Parameter":
-                //    //e.Column.CanUserSort = false;
-                //    //e.Column.Width = 20;
-                //    //e.Column.Visibility = Visibility.Visible;
-                //    break;
-                case "Comments":
-                    // Create a new template column.
-                    DataGridTemplateColumn commentsTemplateColumn = new DataGridTemplateColumn();
-                    commentsTemplateColumn.Header = "Comments";
-                    commentsTemplateColumn.CellTemplate = (DataTemplate)Resources["changedComments"];
-                    // Replace the auto-generated column with the templateColumn.
-                    e.Column = commentsTemplateColumn;
-                    //e.Column.Width = 100;
-                    break;
-                case "New Value":
-                    // Create a new template column.
-                    DataGridTemplateColumn newValueTemplateColumn = new DataGridTemplateColumn();
-                    newValueTemplateColumn.Header = "New Value";
-                    newValueTemplateColumn.CellTemplate = (DataTemplate)Resources["changedNewValue"];
-                    // Replace the auto-generated column with the templateColumn.
-                    e.Column = newValueTemplateColumn;
-                    //e.Column.Width = 100;
-                    break;
-                case "Importance":
-                    // Create a new template column.
-                    DataGridTemplateColumn importanceTemplateColumn = new DataGridTemplateColumn();
-                    importanceTemplateColumn.Header = "Importance";
-                    importanceTemplateColumn.CellTemplate = (DataTemplate)Resources["changedImportance"];
-                    // Replace the auto-generated column with the templateColumn.
-                    e.Column = importanceTemplateColumn;
-                    //e.Column.Width = 100;
-                    break;
-                //case "Importance":
-                //    // Create a new template column.
-                //    DataGridTemplateColumn importanceTemplateColumn = new DataGridTemplateColumn();
-                //    importanceTemplateColumn.Header = "Importance";
-                //    importanceTemplateColumn.CellTemplate = (DataTemplate)Resources["changedImportance"];
-                //    // Replace the auto-generated column with the templateColumn.
-                //    e.Column = importanceTemplateColumn;
-                //    //e.Column.Width = 100;
-                //    break;
-                default:
-                    //e.Column.CanUserSort = false;
-                    e.Column.Width = 100;
-                    //e.Column.Visibility = Visibility.Visible;
-                    break;
-            }
+            MyDataGridTemplateColumn col = new MyDataGridTemplateColumn();
+            col.ColumnName = e.PropertyName;  // so it knows from which column to get the Item
+            col.CellTemplate = (DataTemplate)FindResource("changedColumns");
+            e.Column = col;
+            e.Column.Header = e.PropertyName;
+
+            //switch (e.Column.Header.ToString())
+            //{
+            //    case "Comments":
+            //        // Create a new template column.
+            //        DataGridTemplateColumn commentsTemplateColumn = new DataGridTemplateColumn();
+            //        commentsTemplateColumn.Header = "Comments";
+            //        commentsTemplateColumn.CellTemplate = (DataTemplate)Resources["changedComments"];
+            //        // Replace the auto-generated column with the templateColumn.
+            //        e.Column = commentsTemplateColumn;
+            //        e.Column.Width = 100;
+            //        break;
+            //    case "New Value":
+            //        // Create a new template column.
+            //        DataGridTemplateColumn newValueTemplateColumn = new DataGridTemplateColumn();
+            //        newValueTemplateColumn.Header = "New Value";
+            //        newValueTemplateColumn.CellTemplate = (DataTemplate)Resources["changedNewValue"];
+            //        // Replace the auto-generated column with the templateColumn.
+            //        e.Column = newValueTemplateColumn;
+            //        //e.Column.Width = 100;
+            //        break;
+            //    case "Importance":
+            //        // Create a new template column.
+            //        DataGridTemplateColumn importanceTemplateColumn = new DataGridTemplateColumn();
+            //        importanceTemplateColumn.Header = "Importance";
+            //        importanceTemplateColumn.CellTemplate = (DataTemplate)Resources["changedImportance"];
+            //        // Replace the auto-generated column with the templateColumn.
+            //        e.Column = importanceTemplateColumn;
+            //        //e.Column.Width = 100;
+            //        break;
+            //    default:
+            //        //e.Column.CanUserSort = false;
+            //        //DataGridTemplateColumn defaultTemplateColumn = new DataGridTemplateColumn();
+            //        //defaultTemplateColumn.CellTemplate = (DataTemplate)Resources["changedDefault"];
+            //        //e.Column = defaultTemplateColumn;
+            //        e.Column.Width = 100;
+            //        //e.Column.Visibility = Visibility.Visible;
+            //        break;
+            //}
         }
         private void myCheckBox_Loaded(object sender, RoutedEventArgs e)
         {
