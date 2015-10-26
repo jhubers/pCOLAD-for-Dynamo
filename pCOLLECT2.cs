@@ -13,6 +13,8 @@ using pCOLADnamespace;
 using System.Linq;
 using System.Windows.Controls;
 using MyDataCollector;
+using System.Xml;
+using Dynamo.Utilities;
 
 namespace pCOLADnamespace
 {
@@ -43,7 +45,7 @@ namespace pCOLADnamespace
     [NodeDescription("Collects parameters and their attributes for pSHARE.")]
 
     [IsDesignScriptCompatible]
-    public class pCOLLECT : VariableInputNode//NodeModel
+    public class pCOLLECT : NodeModel
     {
         private List<string> _outputListProp;
         public List<string> outputListProp
@@ -75,15 +77,13 @@ namespace pCOLADnamespace
             // collections with PortData objects describing your ports.
             // we'll use the PortData.NickName as indicator
             // we'll use the PortData.ToolTip as header in the csv.file
-            // In fact you should derive the NickNames and ToolTips from the csv.file!!!
-            // Put them in line 2 (1) of the csv.file!!!
-            // And from earlier pCOLLECT nodes!!!
+            // In fact you should derive the NickNames and ToolTips from the dyn.file!!!
             // Because if new attributes are added it is a pain to add them everytime!!!
             InPortData.Add(new PortData("P", "Parameter"));
             InPortData.Add(new PortData("V", "New Value"));
             InPortData.Add(new PortData("I", "Importance"));
             InPortData.Add(new PortData("C", "Comments"));
-            InPortData.Add(new PortData("O", "Owner"));
+            //InPortData.Add(new PortData("O", "Owner"));
             // Nodes can have an arbitrary number of inputs and outputs.
             // If you want more ports, just create more PortData objects.
             OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
@@ -229,20 +229,90 @@ namespace pCOLADnamespace
             };
         }
         #endregion
-        protected override string GetInputName(int index)
+        //protected override string GetInputName(int index)
+        //{
+
+        //    //you have to replace with the deserialized attribute
+        //    return "index" + index;
+        //}
+
+        //protected override string GetInputTooltip(int index)
+        //{
+        //    //you have to replace with the deserialized attribute
+        //    return string.Format("No tooltip available", index);
+        //}
+
+        //protected override void RemoveInput()
+        //{
+        //    if (InPortData.Count > 1)
+        //        base.RemoveInput();
+        //}
+        //protected override string DeserializeValue(string val)
+        //{
+        //   return val;
+        //}
+
+        //protected override string SerializeValue()
+        //{
+        //    return Value;
+        //}
+        
+        //protected override void .SerializeInputCount(XmlElement nodeElement, int amount)
+        //{
+        //    //if you don't override this you get also extra inputs like index 5, index 6 etc.
+        //}
+        protected override void SerializeCore(XmlElement element, SaveContext context)
         {
-            return "index" + index;
+            base.SerializeCore(element, context);
+            var xmlDocument = element.OwnerDocument;
+            var subNode = xmlDocument.CreateElement("ExtraInputs"); 
+            foreach (var item in InPortData)
+            {
+                if (item.NickName=="P"|item.NickName=="V"|item.NickName=="I"|item.NickName=="C")
+                {                   
+                    continue;
+                }
+                subNode.SetAttribute(item.NickName,item.ToolTipString);
+            }
+            element.AppendChild(subNode);
         }
 
-        protected override string GetInputTooltip(int index)
+        protected override void DeserializeCore(XmlElement element, SaveContext context)
         {
-            return string.Format("No tooltip available", index);
-        }
+            base.DeserializeCore(element, context); //Base implementation must be called.
 
-        protected override void RemoveInput()
-        {
-            if (InPortData.Count > 1)
-                base.RemoveInput();
+            foreach (XmlNode subNode in element.ChildNodes)
+            {
+                if (!subNode.Name.Equals("ExtraInputs"))
+                    continue;
+                if (subNode.Attributes == null || (subNode.Attributes.Count <= 0))
+                    continue;
+
+                foreach (XmlAttribute attr in subNode.Attributes)
+                {
+#region switch_cases
+		                    //switch (attr.Name)
+                    //{
+                    //    case "min":
+                    //        Min = ConvertStringToDouble(attr.Value);
+                    //        break;
+                    //    case "max":
+                    //        Max = ConvertStringToDouble(attr.Value);
+                    //        break;
+                    //    case "step":
+                    //        Step = ConvertStringToDouble(attr.Value);
+                    //        break;
+                    //    default:
+                    //        Log(string.Format("{0} attribute could not be deserialized for {1}", attr.Name, GetType()));
+                    //        break;
+                    //} 
+	#endregion                
+                    //InPortData.Add(new PortData("C", "Comments"));
+                    InPortData.Add(new PortData(attr.Name, attr.Value));
+                }
+                RegisterAllPorts();
+                break;
+            }
         }
 
         #region New BuildOutputAst (not working yet!!!)
@@ -395,7 +465,12 @@ namespace pCOLADnamespace
                     if (d.Canceled == false)
                     {
                         a1 = D1.Answer.Text;
-                        //check if the attribute indicator is unique
+                        //check if it is not a default input
+                        if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
+                        {
+                            MessageBox.Show("Can't delete default inputs...");
+                            return;
+                        }
                         List<string> inportDataNames = new List<string>();
                         foreach (PortData item in InPortData)
                         {
@@ -422,8 +497,7 @@ namespace pCOLADnamespace
             string a1 = "";
             D1.Topmost = true;
             //the input indicator is what appears on the pCOLLECT input as node
-            //inorder to make it appear next time you run Dynamo, it must be stored in the 2nd row of the csv file
-            //so put it in the second row of myDataTable
+            //inorder to make it appear next time you run Dynamo, it must be stored somewhere!!!
             D1.Question.Content = "Please give one or two charactors as input indicator for this attribute...";
             D1.Show();
             D1.Answer.Focus();

@@ -62,6 +62,13 @@ namespace MyDataCollector
                     foreach (var word in words)
                     {
                         //for some reason if you connect same input twice, you get extra empty words...
+                        //also if you add a parameter attribute in pCOLLECT and thus a column in a later
+                        //share, then returnTable doesn't have enough columns. Since you start at 0
+                        //when x is the number of columns you have to add a column
+                        if (x==returnTable.Columns.Count)
+                        {
+                            returnTable.Columns.Add(word,typeof(Item));
+                        }
                         if (x <= returnTable.Columns.Count)
                         {
                             

@@ -16,6 +16,8 @@ using System.Reflection;
 using ProtoCore.SyntaxAnalysis;
 using MyDataCollector;
 using System.Windows.Data;
+using System.Xml;
+using Dynamo.Utilities;
 
 
 namespace pCOLADnamespace
@@ -453,7 +455,12 @@ namespace pCOLADnamespace
         }
         private void Share(object obj)
         {
-            //MessageBox.Show("Share button is Clicked");
+
+            //add a timestamp and owner name to the author column\
+            int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
+            DateTime time = DateTime.UtcNow;
+            MyDataCollectorClass.myDataTable.Rows[lastrow]["Date"] = new Item(time.ToString());
+            MyDataCollectorClass.myDataTable.Rows[lastrow]["Author"] = new Item(MyDataCollectorClass.userName);
             //write myDataTable to the csv files if something changed
             string csv = Functions.ToCSV(myPropDataTable);
             if (oldCSV == csv)
@@ -464,6 +471,7 @@ namespace pCOLADnamespace
             {
                 try
                 {
+                    myPropDataTable = MyDataCollectorClass.myDataTable;
                     File.WriteAllText(MyDataCollectorClass.inputFile, csv);
                     File.WriteAllText(MyDataCollectorClass.inputFileCopy, csv);
                     //apend myDataTable to the history file, if there are changes!!!
@@ -482,12 +490,12 @@ namespace pCOLADnamespace
                     ShowParams(OnOff);//closes the CSVControl and sets the On property to false
                     RaisePropertyChanged("OnOff"); //sets the OnOff button to red
                     //you should reset everything so next hit of OnOff button shows only new changes
-                    
+
                     MyDataCollectorClass.formPopulate = false;//so the original csvDataTable will be used
                     MyDataCollectorClass.openCSV();
-                    MyDataCollectorClass.addNewPararemeters();
+                    //MyDataCollectorClass.addNewPararemeters(); //then you add the new parameters twice
                     //probably have to change the items.IsChanged property!!!
-                    Compare();
+                    //Compare();
                     oldCSV = csv;
                 }
                 catch (System.Exception e)
@@ -592,7 +600,7 @@ namespace pCOLADnamespace
 
             if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
             {
-                    DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];                
+                DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];
                 for (int i = 0; i < MyDataCollectorClass.myDataTable.Rows.Count; i++)
                 {
                     //normally copyDataTable has less rows then myDataTable
@@ -614,12 +622,17 @@ namespace pCOLADnamespace
                     for (int j = 0; j < MyDataCollectorClass.myDataTable.Columns.Count; j++)
                     {
                         string cn = MyDataCollectorClass.myDataTable.Columns[j].ColumnName;
+                        //if pCOLLECT adds an attribute the column does not exist yet in copyDataTable
+                        if (!MyDataCollectorClass.copyDataTable.Columns.Contains(cn))
+                        {
+                            MyDataCollectorClass.copyDataTable.Columns.Add(cn,typeof(Item));
+                        }
                         if (!Object.Equals(drc[cn], dr[cn]))
                         {
                             //Item x = new Item(dr[cn].ToString());
                             //x.IsChanged = true;
                             //no idea why this can happen...!!!
-                            if (dr[cn] as MyDataCollector.Item==null)
+                            if (dr[cn] as MyDataCollector.Item == null)
                             {
                                 dr[cn] = new Item("");
                             }
@@ -627,6 +640,10 @@ namespace pCOLADnamespace
                         }
                         else
                         {
+                            if (dr[cn] as MyDataCollector.Item == null)
+                            {
+                                dr[cn] = new Item("");
+                            }
                             (dr[cn] as MyDataCollector.Item).SetSame();
                         }
                     }

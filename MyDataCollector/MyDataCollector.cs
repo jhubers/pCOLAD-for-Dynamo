@@ -71,22 +71,25 @@ namespace MyDataCollector
             foreach (List<string> ls in pSHAREoutputs)
             {
                 DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
-                //check if parameterName is already used. But if it is your own, just opdate the value
-
+                //since you removed owner from pCOLLECT add it here 
+                newParamTable.Columns.Add("Owner",typeof(Item));
+                //check if parameterName is already used. But if it is your own, just update the value
                 for (int i = 0; i < newParamTable.Rows.Count; i++)
                 {
-                    for (int j = i + 1; j < myDataTable.Rows.Count; j++)
+                    for (int j = i ; j < myDataTable.Rows.Count; j++)
                     {
                         string t1 = myDataTable.Rows[j]["Parameter"].ToString();
                         string t2 = newParamTable.Rows[i]["Parameter"].ToString();
                         string p1 = myDataTable.Rows[j]["Owner"].ToString();
-                        string p2 = newParamTable.Rows[i]["Owner"].ToString();
+                        string p2 = userName;
                         if (t1 == t2 && p1 != p2)
                         {
-                            MessageBox.Show("Parameter " + t2 + " allready exists. Please use another parameter name...");
+                            MessageBox.Show("Parameter " + t2 + " already exists. Please use another parameter name...");
                             //replace the Parameter by ERROR
                             newParamTable.Rows[i]["Parameter"] = new Item("---ERROR---");
                         }
+                        //since you removed owner from pCOLLECT add it here 
+                        newParamTable.Rows[i]["Owner"] = new Item(userName);
                     }
                     
                 }

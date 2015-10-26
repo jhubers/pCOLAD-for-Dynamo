@@ -8,7 +8,9 @@
              xmlns:myConverters="clr-namespace:pCOLADnamespace"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
-             d:DesignHeight="114" d:DesignWidth="530">
+             SizeToContent="WidthAndHeight"
+             Title="pCOLAD"
+             >
     <Window.Resources>
         <myConverters:pSHARE x:Key="myDataContext"/>
         <myConverters:BoolToVisibilityConverter x:Key="BoolToVisibleConverter"
@@ -80,13 +82,17 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <DataTemplate x:Key="changedColumns" >
+        <!--this sets all datagridcells to not selectable-->
+        <Style x:Key="AvoidCellSelection" TargetType="{x:Type DataGridCell}">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
+        <DataTemplate x:Key="changedColumns">
             <TextBlock 
-            Text="{Binding}" 
-            Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}}"
+            Text="{Binding Mode=OneWay}" 
+            Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}, Mode=OneWay}"
             />
-            </DataTemplate>
-            <!--<DataTemplate x:Key="changedComments" >
+        </DataTemplate>
+        <!--<DataTemplate x:Key="changedComments" >
             <TextBlock 
             Text="{Binding [Comments],Mode=OneWay}" 
             Background="{Binding [Comments],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
@@ -106,140 +112,31 @@
         </DataTemplate>-->
     </Window.Resources>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <DataGrid Grid.Row="0" x:Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn"                   
-			CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False"
+        <Grid AllowDrop="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <DataGrid Grid.Row="0" x:Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn"                   
+			CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" Focusable="False"
 			CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=TwoWay}"
 			CurrentCell="{Binding CellInfo, Mode=TwoWay}" x:FieldModifier="public" 
-			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" SelectionMode="Extended" VerticalAlignment="Top">
-            <DataGrid.Columns >
-                <DataGridTemplateColumn >
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate >
-                            <CheckBox x:Name="myCheckBox" Loaded="myCheckBox_Loaded"
+			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" VerticalAlignment="Top">
+                <DataGrid.Columns >
+                    <DataGridTemplateColumn >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate >
+                                <CheckBox x:Name="myCheckBox" Loaded="myCheckBox_Loaded"
 								IsChecked="{Binding DataContext.isChecked, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
 
-        <Grid VerticalAlignment="Bottom" Height="25">
-            <Grid.Resources>
-                <Style TargetType="Button" x:Key="newTemplate">
-                    <Setter Property="Background" Value="#FF1F3B53"/>
-                    <Setter Property="Foreground" Value="#FF000000"/>
-                    <Setter Property="Padding" Value="3"/>
-                    <Setter Property="BorderThickness" Value="1"/>
-                    <Setter Property="BorderBrush">
-                        <Setter.Value>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="#FFA3AEB9" Offset="0"/>
-                                <GradientStop Color="#FF8399A9" Offset="0.375"/>
-                                <GradientStop Color="#FF718597" Offset="0.375"/>
-                                <GradientStop Color="#FF617584" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Setter.Value>
-                    </Setter>
-
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="Button">
-                                <Grid>
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup x:Name="CommonStates">
-                                            <VisualState x:Name="Normal"/>
-                                            <VisualState x:Name="MouseOver">
-                                                <Storyboard>
-                                                    <DoubleAnimation Duration="0" Storyboard.TargetName="BackgroundAnimation" Storyboard.TargetProperty="Opacity" To="1"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#F2FFFFFF"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#CCFFFFFF"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#7FFFFFFF"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="Pressed">
-                                                <Storyboard>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="Background" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#FF6DBDD1"/>
-                                                    <DoubleAnimation Duration="0" Storyboard.TargetName="BackgroundAnimation" Storyboard.TargetProperty="Opacity" To="1"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" To="#D8FFFFFF"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#C6FFFFFF"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#8CFFFFFF"/>
-                                                    <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#3FFFFFFF"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="Disabled">
-                                                <Storyboard>
-                                                    <DoubleAnimation Duration="0" Storyboard.TargetName="DisabledVisualElement" Storyboard.TargetProperty="Opacity" To=".55"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                        <VisualStateGroup x:Name="FocusStates">
-                                            <VisualState x:Name="Focused">
-                                                <Storyboard>
-                                                    <DoubleAnimation Duration="0" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="Opacity" To="1"/>
-                                                </Storyboard>
-                                            </VisualState>
-                                            <VisualState x:Name="Unfocused" />
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                    <Border x:Name="Background" CornerRadius="3" Background="White" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
-                                        <Grid Background="{TemplateBinding Background}"  Margin="1">
-                                            <Border Opacity="0"  x:Name="BackgroundAnimation" Background="#FF448DCA" />
-                                            <Rectangle x:Name="BackgroundGradient" >
-                                                <Rectangle.Fill>
-                                                    <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
-                                                        <GradientStop Color="#FFFFFFFF" Offset="0" />
-                                                        <GradientStop Color="#F9FFFFFF" Offset="0.375" />
-                                                        <GradientStop Color="#E5FFFFFF" Offset="0.625" />
-                                                        <GradientStop Color="#C6FFFFFF" Offset="1" />
-                                                    </LinearGradientBrush>
-                                                </Rectangle.Fill>
-                                            </Rectangle>
-                                        </Grid>
-                                    </Border>
-                                    <ContentPresenter
-                              x:Name="contentPresenter"
-                              Content="{TemplateBinding Content}"
-                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                              Margin="{TemplateBinding Padding}"/>
-                                    <Rectangle x:Name="DisabledVisualElement" RadiusX="3" RadiusY="3" Fill="#FFFFFFFF" Opacity="0" IsHitTestVisible="false" />
-                                    <Rectangle x:Name="FocusVisualElement" RadiusX="2" RadiusY="2" Margin="1" Stroke="#FF6DBDD1" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
-                                </Grid>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Grid.Resources>
-
-            <Grid.ColumnDefinitions >
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Button Style="{StaticResource newTemplate}" x:Name="Cancel" Grid.Column ="2"  Content="Cancel" VerticalAlignment="Bottom" 
-				HorizontalAlignment="Right" Command="{Binding CancelCommand}"
-                Visibility ="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
-            <Button Style="{StaticResource newTemplate}" x:Name="Share" Grid.Column ="2"  Content="Share" VerticalAlignment="Bottom" 
-				Margin="299,0,44,0"  Command="{Binding ShareCommand}"
-                Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
-            <Button Style="{StaticResource newTemplate}" x:Name="UnCheckAll" Grid.Column ="0" Content="UnCheckAll" VerticalAlignment="Bottom" 
-				Margin="55,0,5,0" Command="{Binding UnCheckAllCommand}"
-                Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
-            <Button Style="{StaticResource newTemplate}" x:Name="CheckAll" Grid.Column ="0" Content="CheckAll" VerticalAlignment="Bottom" 
-				HorizontalAlignment="Left" Command="{Binding CheckAllCommand}"
-                Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
-
-            <!--When you show the History.CSV file hide all other buttons and hilite the History button !!!-->
-            <ToggleButton x:Name="History" Grid.Column="2" Content="History" Command="{Binding HistoryCommand}"
-				VerticalAlignment="Bottom" Margin="252,0,91,0" Style="{DynamicResource MyToggleButtonStyle}">
-                <ToggleButton.Resources>
-                    <Style x:Key="MyToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+            <Grid Grid.Row ="1" VerticalAlignment="Bottom" Height="25">
+                <Grid.Resources>
+                    <Style TargetType="Button" x:Key="newTemplate">
                         <Setter Property="Background" Value="#FF1F3B53"/>
                         <Setter Property="Foreground" Value="#FF000000"/>
                         <Setter Property="Padding" Value="3"/>
@@ -257,7 +154,7 @@
 
                         <Setter Property="Template">
                             <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                <ControlTemplate TargetType="Button">
                                     <Grid>
                                         <VisualStateManager.VisualStateGroups>
                                             <VisualStateGroup x:Name="CommonStates">
@@ -265,12 +162,19 @@
                                                 <VisualState x:Name="MouseOver">
                                                     <Storyboard>
                                                         <DoubleAnimation Duration="0" Storyboard.TargetName="BackgroundAnimation" Storyboard.TargetProperty="Opacity" To="1"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#F2FFFFFF"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#CCFFFFFF"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#7FFFFFFF"/>
                                                     </Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Pressed">
                                                     <Storyboard>
                                                         <ColorAnimation Duration="0" Storyboard.TargetName="Background" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#FF6DBDD1"/>
                                                         <DoubleAnimation Duration="0" Storyboard.TargetName="BackgroundAnimation" Storyboard.TargetProperty="Opacity" To="1"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[0].(GradientStop.Color)" To="#D8FFFFFF"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[1].(GradientStop.Color)" To="#C6FFFFFF"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[2].(GradientStop.Color)" To="#8CFFFFFF"/>
+                                                        <ColorAnimation Duration="0" Storyboard.TargetName="BackgroundGradient" Storyboard.TargetProperty="(Rectangle.Fill).(GradientBrush.GradientStops)[3].(GradientStop.Color)" To="#3FFFFFFF"/>
                                                     </Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Disabled">
@@ -286,27 +190,6 @@
                                                     </Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Unfocused" />
-                                            </VisualStateGroup>
-                                            <VisualStateGroup x:Name="CheckStates">
-                                                <VisualState x:Name="Checked">
-                                                    <Storyboard>
-                                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Background">
-                                                            <EasingColorKeyFrame KeyTime="0" Value="#FF14F082"/>
-                                                        </ColorAnimationUsingKeyFrames>
-                                                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="BackgroundAnimation">
-                                                            <EasingColorKeyFrame KeyTime="0" Value="#FF14F082"/>
-                                                        </ColorAnimationUsingKeyFrames>
-                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill)" Storyboard.TargetName="BackgroundGradient">
-                                                            <DiscreteObjectKeyFrame KeyTime="0">
-                                                                <DiscreteObjectKeyFrame.Value>
-                                                                    <SolidColorBrush Color="#FF14F082"/>
-                                                                </DiscreteObjectKeyFrame.Value>
-                                                            </DiscreteObjectKeyFrame>
-                                                        </ObjectAnimationUsingKeyFrames>
-                                                    </Storyboard>
-                                                </VisualState>
-                                                <VisualState x:Name="Unchecked"/>
-                                                <VisualState x:Name="Indeterminate"/>
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
                                         <Border x:Name="Background" CornerRadius="3" Background="White" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
@@ -325,12 +208,12 @@
                                             </Grid>
                                         </Border>
                                         <ContentPresenter
-            								x:Name="contentPresenter"
-            								Content="{TemplateBinding Content}"
-            								ContentTemplate="{TemplateBinding ContentTemplate}"
-            								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-            								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-            								Margin="{TemplateBinding Padding}"/>
+                              x:Name="contentPresenter"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              Margin="{TemplateBinding Padding}"/>
                                         <Rectangle x:Name="DisabledVisualElement" RadiusX="3" RadiusY="3" Fill="#FFFFFFFF" Opacity="0" IsHitTestVisible="false" />
                                         <Rectangle x:Name="FocusVisualElement" RadiusX="2" RadiusY="2" Margin="1" Stroke="#FF6DBDD1" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
                                     </Grid>
@@ -338,8 +221,132 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                </ToggleButton.Resources>
-            </ToggleButton>
+                </Grid.Resources>
+
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" MinWidth="3"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Style="{StaticResource newTemplate}" x:Name="Cancel" Grid.Column ="2"  Content="Cancel" VerticalAlignment="Bottom" 
+				HorizontalAlignment="Right" Command="{Binding CancelCommand}"
+                Visibility ="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
+                <Button Style="{StaticResource newTemplate}" x:Name="Share" Grid.Column ="2"  Content="Share" VerticalAlignment="Bottom" 
+				Margin="0,0,44,0"  Command="{Binding ShareCommand}"
+                Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}" HorizontalAlignment="Right"/>
+                <Button Style="{StaticResource newTemplate}" x:Name="UnCheckAll" Grid.Column ="0" Content="UnCheckAll" VerticalAlignment="Bottom" 
+				Margin="55,0,5,0" Command="{Binding UnCheckAllCommand}"
+                Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
+                <Button Style="{StaticResource newTemplate}" x:Name="CheckAll" Grid.Column ="0" Content="CheckAll" VerticalAlignment="Bottom" 
+				HorizontalAlignment="Left" Command="{Binding CheckAllCommand}"
+                Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
+
+                <!--When you show the History.CSV file hide all other buttons and hilite the History button !!!-->
+                <ToggleButton x:Name="History" Grid.Column="2" Content="History" Command="{Binding HistoryCommand}"
+				VerticalAlignment="Bottom" Margin="0,0,83,0" Style="{DynamicResource MyToggleButtonStyle}" HorizontalAlignment="Right">
+                    <ToggleButton.Resources>
+                        <Style x:Key="MyToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+                            <Setter Property="Background" Value="#FF1F3B53"/>
+                            <Setter Property="Foreground" Value="#FF000000"/>
+                            <Setter Property="Padding" Value="3"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="BorderBrush">
+                                <Setter.Value>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FFA3AEB9" Offset="0"/>
+                                        <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                                        <GradientStop Color="#FF718597" Offset="0.375"/>
+                                        <GradientStop Color="#FF617584" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                        <Grid>
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="MouseOver">
+                                                        <Storyboard>
+                                                            <DoubleAnimation Duration="0" Storyboard.TargetName="BackgroundAnimation" Storyboard.TargetProperty="Opacity" To="1"/>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Pressed">
+                                                        <Storyboard>
+                                                            <ColorAnimation Duration="0" Storyboard.TargetName="Background" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#FF6DBDD1"/>
+                                                            <DoubleAnimation Duration="0" Storyboard.TargetName="BackgroundAnimation" Storyboard.TargetProperty="Opacity" To="1"/>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Disabled">
+                                                        <Storyboard>
+                                                            <DoubleAnimation Duration="0" Storyboard.TargetName="DisabledVisualElement" Storyboard.TargetProperty="Opacity" To=".55"/>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                                <VisualStateGroup x:Name="FocusStates">
+                                                    <VisualState x:Name="Focused">
+                                                        <Storyboard>
+                                                            <DoubleAnimation Duration="0" Storyboard.TargetName="FocusVisualElement" Storyboard.TargetProperty="Opacity" To="1"/>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Unfocused" />
+                                                </VisualStateGroup>
+                                                <VisualStateGroup x:Name="CheckStates">
+                                                    <VisualState x:Name="Checked">
+                                                        <Storyboard>
+                                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Background">
+                                                                <EasingColorKeyFrame KeyTime="0" Value="#FF14F082"/>
+                                                            </ColorAnimationUsingKeyFrames>
+                                                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="BackgroundAnimation">
+                                                                <EasingColorKeyFrame KeyTime="0" Value="#FF14F082"/>
+                                                            </ColorAnimationUsingKeyFrames>
+                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill)" Storyboard.TargetName="BackgroundGradient">
+                                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                                    <DiscreteObjectKeyFrame.Value>
+                                                                        <SolidColorBrush Color="#FF14F082"/>
+                                                                    </DiscreteObjectKeyFrame.Value>
+                                                                </DiscreteObjectKeyFrame>
+                                                            </ObjectAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState>
+                                                    <VisualState x:Name="Unchecked"/>
+                                                    <VisualState x:Name="Indeterminate"/>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Border x:Name="Background" CornerRadius="3" Background="White" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                                                <Grid Background="{TemplateBinding Background}"  Margin="1">
+                                                    <Border Opacity="0"  x:Name="BackgroundAnimation" Background="#FF448DCA" />
+                                                    <Rectangle x:Name="BackgroundGradient" >
+                                                        <Rectangle.Fill>
+                                                            <LinearGradientBrush StartPoint=".7,0" EndPoint=".7,1">
+                                                                <GradientStop Color="#FFFFFFFF" Offset="0" />
+                                                                <GradientStop Color="#F9FFFFFF" Offset="0.375" />
+                                                                <GradientStop Color="#E5FFFFFF" Offset="0.625" />
+                                                                <GradientStop Color="#C6FFFFFF" Offset="1" />
+                                                            </LinearGradientBrush>
+                                                        </Rectangle.Fill>
+                                                    </Rectangle>
+                                                </Grid>
+                                            </Border>
+                                            <ContentPresenter
+            								x:Name="contentPresenter"
+            								Content="{TemplateBinding Content}"
+            								ContentTemplate="{TemplateBinding ContentTemplate}"
+            								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+            								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+            								Margin="{TemplateBinding Padding}"/>
+                                            <Rectangle x:Name="DisabledVisualElement" RadiusX="3" RadiusY="3" Fill="#FFFFFFFF" Opacity="0" IsHitTestVisible="false" />
+                                            <Rectangle x:Name="FocusVisualElement" RadiusX="2" RadiusY="2" Margin="1" Stroke="#FF6DBDD1" StrokeThickness="1" Opacity="0" IsHitTestVisible="false" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ToggleButton.Resources>
+                </ToggleButton>
+            </Grid>
         </Grid>
-    </Grid>
+
 </Window>

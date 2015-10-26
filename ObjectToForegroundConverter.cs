@@ -15,9 +15,15 @@ namespace pCOLADnamespace
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            SolidColorBrush b = new SolidColorBrush(Colors.White);
-            if (value.Equals(DBNull.Value))
+            SolidColorBrush b = new SolidColorBrush(Colors.Transparent);
+            if (value==null)
             {
+                //b = Brushes.Transparent;
+                return b;
+            }
+            if (value.GetType()!=typeof(MyDataCollector.Item))
+            {
+                //b = Brushes.Transparent;
                 return b;
             }
             var item = (MyDataCollector.Item)value;
