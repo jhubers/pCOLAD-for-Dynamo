@@ -65,13 +65,13 @@ namespace MyDataCollector
                         //also if you add a parameter attribute in pCOLLECT and thus a column in a later
                         //share, then returnTable doesn't have enough columns. Since you start at 0
                         //when x is the number of columns you have to add a column
-                        if (x==returnTable.Columns.Count)
+                        if (x == returnTable.Columns.Count)
                         {
-                            returnTable.Columns.Add(word,typeof(Item));
+                            returnTable.Columns.Add(word, typeof(Item));
                         }
                         if (x <= returnTable.Columns.Count)
                         {
-                            
+
                             row[x] = new Item(word);
                         }
                         #region old
@@ -183,21 +183,17 @@ namespace MyDataCollector
             List<string> csvList = new List<string>();
             try
             {
-                StreamReader myStream = new StreamReader(filename);
-                string line = "";
-                int i = 0;
-                while (line != null)
+                using (StreamReader sr = new StreamReader(filename))
                 {
-                    line = myStream.ReadLine();
-                    if (line == null)
+                    string line = "";
+                    while (sr.Peek() >= 0)
                     {
-                        break;
+                        line = ReadNextMultiline(sr);
+                        csvList.Add(line);
                     }
-                    csvList.Add(line);
-                    i += 1;
+                    sr.Dispose();
+                    return csvList;
                 }
-                myStream.Dispose();
-                return csvList;
             }
             catch (FileNotFoundException)
             {
@@ -230,6 +226,45 @@ namespace MyDataCollector
                 return csvList;
             }
             return csvList;
+        }
+        public static List<string> imagePaths(string paramName)
+        {
+            List<string> returnList = new List<string>();
+            string directory = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1);
+            directory += paramName;
+            if (!Directory.Exists(directory))
+            {
+                //returnList.Add("");
+                return returnList;
+            }
+            foreach (string myFile in Directory.GetFiles(directory))
+            {
+                returnList.Add(myFile);
+            }
+            return returnList;
+        }
+        public static string ReadNextMultiline(StreamReader mlReader)
+        {
+            bool MultilineDetected;
+            string res = "", mLine = "";
+            do
+            {
+                MultilineDetected = false;
+                mLine = mlReader.ReadLine();
+                res = String.Concat(
+                                        res,
+                                        (res.Length > 0 ? "\n" : ""),    // add a return where there was a linebreak.
+                                        mLine);
+                string[] broken = res.Split(';');
+                // if the RES features unfinished multiliner, then the LAST element will contain exactly 1 " symbol:
+                if ((broken[broken.Length - 1].IndexOf('\"') >= 0) &&               // there's some " symbol
+                    (broken[broken.Length - 1].IndexOf('\"') == broken[broken.Length - 1].LastIndexOf('\"'))    // there's exactly 1 " on that row.
+                   )
+                {
+                    MultilineDetected = true;
+                }
+            } while (MultilineDetected);
+            return res;
         }
     }
 }

@@ -255,12 +255,8 @@ namespace pCOLADnamespace
         //protected override string SerializeValue()
         //{
         //    return Value;
-        //}
-        
-        //protected override void .SerializeInputCount(XmlElement nodeElement, int amount)
-        //{
-        //    //if you don't override this you get also extra inputs like index 5, index 6 etc.
-        //}
+        //}        
+
         protected override void SerializeCore(XmlElement element, SaveContext context)
         {
             base.SerializeCore(element, context);
@@ -276,38 +272,17 @@ namespace pCOLADnamespace
             }
             element.AppendChild(subNode);
         }
-
         protected override void DeserializeCore(XmlElement element, SaveContext context)
         {
             base.DeserializeCore(element, context); //Base implementation must be called.
-
             foreach (XmlNode subNode in element.ChildNodes)
             {
                 if (!subNode.Name.Equals("ExtraInputs"))
                     continue;
                 if (subNode.Attributes == null || (subNode.Attributes.Count <= 0))
                     continue;
-
                 foreach (XmlAttribute attr in subNode.Attributes)
                 {
-#region switch_cases
-		                    //switch (attr.Name)
-                    //{
-                    //    case "min":
-                    //        Min = ConvertStringToDouble(attr.Value);
-                    //        break;
-                    //    case "max":
-                    //        Max = ConvertStringToDouble(attr.Value);
-                    //        break;
-                    //    case "step":
-                    //        Step = ConvertStringToDouble(attr.Value);
-                    //        break;
-                    //    default:
-                    //        Log(string.Format("{0} attribute could not be deserialized for {1}", attr.Name, GetType()));
-                    //        break;
-                    //} 
-	#endregion                
-                    //InPortData.Add(new PortData("C", "Comments"));
                     InPortData.Add(new PortData(attr.Name, attr.Value));
                 }
                 RegisterAllPorts();

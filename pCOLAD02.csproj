@@ -82,16 +82,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindingProxy.cs" />
     <Compile Include="BoolToOppositeBoolConverter.cs" />
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataRowToListConverter.cs" />
     <Compile Include="Dialogue1.xaml.cs">
       <DependentUpon>Dialogue1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Image.cs" />
     <Compile Include="MakeInputList.cs" />
     <Compile Include="MyDataGridTemplateColumn.cs" />
+    <Compile Include="MyImage.cs" />
+    <Compile Include="MyImageFolder.cs" />
     <Compile Include="ObjectToForegroundConverter.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">

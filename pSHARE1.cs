@@ -10,19 +10,12 @@ using System.IO;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Dynamo.Wpf;
-using System.Reflection;
-using ProtoCore.SyntaxAnalysis;
 using MyDataCollector;
-using System.Windows.Data;
-using System.Xml;
-using Dynamo.Utilities;
 
 
 namespace pCOLADnamespace
 {
-
     #region some node settings
     /// pSHARE takes care of the communication of parameter changes through a shared *.csv file.
     [NodeName("pSHARE")]
@@ -57,6 +50,29 @@ namespace pCOLADnamespace
                 RaisePropertyChanged("MyPropDataTable");
             }
         }
+        private List<string> testList;
+        public List<string> TestList
+        {
+            get { return testList; }
+            set
+            {
+                testList = value;
+                RaisePropertyChanged("TestList");
+            }
+        }
+        //the idea is that in myImageFolderList we store a list of folder path objects (MyImageFolder)
+        //then we can bind to that list and display the MyImagePath property of the nested object (MyImage)        
+        private List<MyImageFolder> myImageFolderList;
+        public List<MyImageFolder> MyImageFolderList 
+        {
+            get { return myImageFolderList; }
+            set
+            {
+                myImageFolderList = value;
+                RaisePropertyChanged("MyImageFolderList");
+            }
+        }
+
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             Compare();
@@ -296,7 +312,6 @@ namespace pCOLADnamespace
             //newImportanceCommand = new DelegateCommand(NewImportance, CanNewImportance);
             // update UI 
             OnOffButton = "Share";
-
         }
         #endregion
         #region public methods
@@ -340,6 +355,33 @@ namespace pCOLADnamespace
                 {
                     //the CSVControl should be created only once
                     _CSVControl = new CSVControl();
+
+                    List<MyImageFolder> mifs = new List<MyImageFolder>();//contains MyImageFolder with prop MyImageFolderPath and List<MyImage>
+                    List<MyImage> mis = new List<MyImage>();//contains MyImage with prop MyImagePath
+                    List<string> mip = new List<string>();//contains MyImagePath
+                    for (int i = 0; i < myPropDataTable.Rows.Count; i++)
+                    {
+                        Item it = (Item)myPropDataTable.Rows[i]["Parameter"];
+                        string pn = (string)it.Value;//the name of the parameter
+                        mip= Functions.imagePaths(pn);//list of image paths in folder with parameter name
+                        MyImageFolder mif = new MyImageFolder(pn);
+                        foreach (var ip in mip)
+                        {
+                            MyImage mi = new MyImage(ip);
+                            mis.Add(mi);
+                            //mif.MyImageList.Add(mi);
+                        }
+                        mif.MyImageList = mis;
+                        mifs.Add(mif);                        
+                    }
+                    MyImageFolderList = mifs;
+                    
+                    List<string> myTestList = new List<string>();
+                    for (int i = 0; i < MyImageFolderList.Count + 1; i++)
+                    {
+                        myTestList.Add(i.ToString());
+                    }
+                    TestList = myTestList;
                     //compare the csv file with the copy
                     Compare();
                     //niet nodig?
@@ -625,7 +667,7 @@ namespace pCOLADnamespace
                         //if pCOLLECT adds an attribute the column does not exist yet in copyDataTable
                         if (!MyDataCollectorClass.copyDataTable.Columns.Contains(cn))
                         {
-                            MyDataCollectorClass.copyDataTable.Columns.Add(cn,typeof(Item));
+                            MyDataCollectorClass.copyDataTable.Columns.Add(cn, typeof(Item));
                         }
                         if (!Object.Equals(drc[cn], dr[cn]))
                         {
