@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace pCOLADnamespace
+namespace MyDataCollector
 {
     public class MyImage : INotifyPropertyChanged
     {
@@ -16,6 +17,7 @@ namespace pCOLADnamespace
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
+        public string myImageFileName {get;set;}
         private string myImagePath = "";
         public string MyImagePath
         {
@@ -23,6 +25,7 @@ namespace pCOLADnamespace
             set
             {
                 myImagePath = value;
+                myImageFileName = Path.GetFileName(myImagePath);
                 NotifyPropertyChanged("MyImagePath");
             }
         }

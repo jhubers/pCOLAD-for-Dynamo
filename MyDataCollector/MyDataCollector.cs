@@ -13,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace MyDataCollector
 {
@@ -22,7 +23,9 @@ namespace MyDataCollector
     {
 
         // later replace with an input
-        public static string inputFile; // = "D:\\Temp\\test2.csv";
+        public static string inputFile; // = "D:\\Temp\\test2.csv";        
+        public static FileSystemWatcher CSVwatcher;
+        public static FileSystemWatcher ImagesWatcher;
         public static string ShareInputFile;//to store the inputFile path so you can change it for the History file path
         public static string inputFileCopy;
         public static string userName;// = "Hans";
@@ -34,11 +37,10 @@ namespace MyDataCollector
         public static DataTable csvDataTable;
         public static DataTable copyDataTable;
         public static event EventHandler UpdateCSVControl = delegate { };
-        private static DataTable mergedDataTable;              
+        private static DataTable mergedDataTable;
 
         public static void openCSV()
-        {
-            //openCSV() should run when somebody changed the CSV-file.
+        {            
             if (!formPopulate)
             {
                 myDataTable = null;
@@ -50,10 +52,19 @@ namespace MyDataCollector
                 //first make a list and datatable from the copy csv-file
                 copyCsvList = Functions.CSVtoList(inputFileCopy);
                 csvList = Functions.CSVtoList(inputFile);
+                //if you start with an empty csv file...
+                if (csvList.Count == 0)
+                {
+                    csvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                }
+                if (copyCsvList.Count == 0)
+                {
+                    copyCsvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                }
                 myDataTable = Functions.ListToTable(csvList);
                 copyDataTable = Functions.ListToTable(copyCsvList);
                 csvDataTable = myDataTable.Copy();
-                    //UpdateCSVControl(null, EventArgs.Empty);                
+                //UpdateCSVControl(null, EventArgs.Empty);                
             }
             else
             {
@@ -72,11 +83,16 @@ namespace MyDataCollector
             {
                 DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
                 //since you removed owner from pCOLLECT add it here 
-                newParamTable.Columns.Add("Owner",typeof(Item));
+                //maybe was wrong, because owner can change? Then simply disconnect pCOLLECT concerned!
+                newParamTable.Columns.Add("Owner", typeof(Item));
+                //add a column for the images at the left of the table               
+                newParamTable.Columns.Add("Images", typeof(Item)).SetOrdinal(0);
                 //check if parameterName is already used. But if it is your own, just update the value
                 for (int i = 0; i < newParamTable.Rows.Count; i++)
                 {
-                    for (int j = i ; j < myDataTable.Rows.Count; j++)
+                    //since you removed owner from pCOLLECT add it here 
+                    newParamTable.Rows[i]["Owner"] = new Item(userName);
+                    for (int j = i; j < myDataTable.Rows.Count; j++)
                     {
                         string t1 = myDataTable.Rows[j]["Parameter"].ToString();
                         string t2 = newParamTable.Rows[i]["Parameter"].ToString();
@@ -88,10 +104,7 @@ namespace MyDataCollector
                             //replace the Parameter by ERROR
                             newParamTable.Rows[i]["Parameter"] = new Item("---ERROR---");
                         }
-                        //since you removed owner from pCOLLECT add it here 
-                        newParamTable.Rows[i]["Owner"] = new Item(userName);
                     }
-                    
                 }
                 newParamTables.Add(newParamTable);
             }
@@ -100,17 +113,42 @@ namespace MyDataCollector
                 DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
                 myDataTable = TblUnion;
                 //make a copy of myDataTable so you can return to it if changes are undone
-                if (!formPopulate &&!inputFile.Contains("History"))
+                if (!formPopulate && !inputFile.Contains("History"))
                 {
                     mergedDataTable = myDataTable.Copy();
                     formPopulate = true;
                 }
             }
+            //add a property ImageList to Item with image paths from the folder with the
+            //name of the parameter in the Images folder in the DropBox
+            //also for the parameters in myDataTable...So do it after the merge.
+            for (int i = 0; i < myDataTable.Rows.Count; i++)
+            {
 
+                List<MyImage> lmi = new List<MyImage>();
+                string inputFolder = inputFile.Remove(inputFile.LastIndexOf("\\") + 1);
+                string imageFolderPath = inputFolder + "Images\\" + myDataTable.Rows[i]["Parameter"].ToString();
+                var filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp" };
+                //next function returns a list of strings with only the path names of files
+                //with extension in filters
+                List<string> files = Functions.GetFilesFrom(imageFolderPath, filters, false);
+                foreach (string st in files)
+                {
+                    //create an new MyImage with ImagePath
+                    MyImage it = new MyImage(st);
+                    lmi.Add(it);
+                }
+                //set the ImageList property of the new Item                    
+                Item ni = new Item("");
+                ni.ImageList = lmi;
+                myDataTable.Rows[i]["Images"] = ni;
+
+            }
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
             inputFile = _IfilePath;
+            watch();
             ShareInputFile = _IfilePath;
             inputFileCopy = _LfilePath;
             userName = _owner;
@@ -162,6 +200,51 @@ namespace MyDataCollector
             }
             return pPARAMoutput;
         }
+        private static void watch()
+        {
+            CSVwatcher = new FileSystemWatcher();
+            CSVwatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.inputFile);
+            CSVwatcher.NotifyFilter = NotifyFilters.LastWrite;
+            CSVwatcher.Filter = Path.GetFileName(MyDataCollectorClass.inputFile);
+            CSVwatcher.Changed += new FileSystemEventHandler(OnChanged);
+            CSVwatcher.EnableRaisingEvents = true;
+            ImagesWatcher = new FileSystemWatcher();
+            ImagesWatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.inputFile) + "\\" + "Images" + "\\";
+            ImagesWatcher.NotifyFilter = NotifyFilters.LastWrite;
+            ImagesWatcher.Filter = "*.*";//can not filter several types 
+            ImagesWatcher.IncludeSubdirectories = true;
+            ImagesWatcher.Changed += OnChanged;
+            ImagesWatcher.Created += OnChanged;
+            ImagesWatcher.Renamed += OnChanged;
+            ImagesWatcher.Deleted += OnChanged;
+            ImagesWatcher.EnableRaisingEvents = true;
+        }
+        private static void OnChanged(object source, FileSystemEventArgs e)
+        {
+            //show the message on top of Dynamo. Because it comes from a different thread
+            //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
+
+            string msg = "Some changes occured in the shared information. I will start over... " +
+            "Hit the Run button if you are not in Automatic mode.";
+            if (Application.Current.Dispatcher.CheckAccess())
+            {
+                MessageBox.Show(Application.Current.MainWindow, msg);
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                {
+                    MessageBox.Show(Application.Current.MainWindow, msg);
+                }));
+            }
+
+            //Update the CSVControll with new csv file.
+            formPopulate = false;
+            openCSV();
+            addNewPararemeters();
+            UpdateCSVControl(null, EventArgs.Empty);
+        }
+
         #region OldFunc
         //public static List<string> pCOLLECToutputs(params string[] ss)
         //{

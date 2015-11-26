@@ -47,11 +47,20 @@ namespace MyDataCollector
                     //returnTable.Columns.Add("Accepted", typeof(bool));
                     foreach (string word in words)
                     {
-                        //add a column for every header with (name, text)
+                        //add a column for every header with (name, content)
                         string newWord = word;
-                        //change the pCOLLECT "Value" column into "New Value"
-                        if (word == "Value") { newWord = "New Value"; }
-                        returnTable.Columns.Add(newWord, typeof(Item));
+                        ////if you add the images column you have to make it of type List<myImage>
+                        ////because we want a list of imagepaths there
+                        //if (word == "Images")
+                        //{
+                        //    returnTable.Columns.Add(newWord, typeof(List<MyImage>));
+                        //}
+                        //else
+                        //{
+                            //change the pCOLLECT "Value" column into "New Value"
+                            if (word == "Value") { newWord = "New Value"; }
+                            returnTable.Columns.Add(newWord, typeof(Item));
+                        //}
                     }
                 }
                 else
@@ -72,7 +81,26 @@ namespace MyDataCollector
                         if (x <= returnTable.Columns.Count)
                         {
 
-                            row[x] = new Item(word);
+                            //in case of Images column set the ImageList prop of Item to a new List<MyImage> 
+                            //else new Item
+                            if (returnTable.Columns[x].ColumnName == "Images")
+                            {
+                                //fill a list with image paths which might be seperated by \n
+                                List<string> lis = new List<string>(word.Split(new string[] { "\n" }, StringSplitOptions.None));
+                                List<MyImage> li = new List<MyImage>();
+                                foreach (string imp in lis)
+                                {
+                                    MyImage it = new MyImage(imp);
+                                    li.Add(it);
+                                }
+                                Item ni = new Item(word);
+                                ni.ImageList = li;
+                                row[x] = ni;
+                            }
+                            else
+                            {
+                                row[x] = new Item(word);
+                            }
                         }
                         #region old
                         //if (returnTable.Columns.IndexOf("Obstruction") == x)
@@ -173,9 +201,38 @@ namespace MyDataCollector
             strb.AppendLine(tbl.Columns.Cast<DataColumn>().Aggregate(
                 (object x, object y) => x + ";" + y).ToString());
 
-            //rows
-            tbl.AsEnumerable().Select(s => strb.AppendLine(
-                s.ItemArray.Aggregate((x, y) => x + ";" + y).ToString())).ToList();
+            //rows But have to create multiline string if several lines in one cell!!!
+            foreach (DataRow dr in tbl.Rows)
+            {
+                string S = "";
+                foreach (var i in dr.ItemArray)
+                {
+                    if (i.GetType()==typeof(Item))
+                    {
+                        Item y = (Item)i;
+                        if (y.textValue.Contains("\n"))
+                        {
+
+                            S = y.textValue.Replace("\n", Environment.NewLine);
+                            S = "\"" + S + "\"";
+                        }
+                        else
+                        {
+                            S += y.textValue;
+                        }
+                    }
+                    else
+                    {
+                        S += i;
+                    }
+                    S += ";";
+                }
+                //remove last ;
+                S=S.Remove(S.Length - 1);
+                strb.AppendLine(S);
+            }
+            //tbl.AsEnumerable().Select(s => strb.AppendLine(
+            //    s.ItemArray.Aggregate((x, y) => x + ";" + y).ToString())).ToList();
             return strb.ToString().TrimEnd();
         }
         public static List<string> CSVtoList(string filename)
@@ -203,7 +260,7 @@ namespace MyDataCollector
                 {
                     case MessageBoxResult.Yes:
                         File.Create(filename);
-                        csvList.Add("Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                        csvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
                         return csvList;
 
                     case MessageBoxResult.No:
@@ -264,7 +321,21 @@ namespace MyDataCollector
                     MultilineDetected = true;
                 }
             } while (MultilineDetected);
-            return res;
+            //get rid of quotes
+            return res.Replace("\"", "");
+        }
+        public static List<string> GetFilesFrom(String searchFolder, String[] filters, bool isRecursive)
+        {
+            List<String> filesFound = new List<String>();
+            if (Directory.Exists(searchFolder))
+            {
+                var searchOption = isRecursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                foreach (var filter in filters)
+                {
+                    filesFound.AddRange(Directory.GetFiles(searchFolder, String.Format("*.{0}", filter), searchOption));
+                }                
+            } 
+            return filesFound;
         }
     }
 }

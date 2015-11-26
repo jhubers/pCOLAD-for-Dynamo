@@ -18,6 +18,8 @@
                                TrueValue="Hidden" />
         <local:ObjectToForegroundConverter x:Key="MyObjectToForegroundConverter"/>
         <local:testConverter x:Key="myTestConverter"/>
+        <local:DataRowToFullPathListConverter x:Key="myDataRowToListConverter"/>
+
         <!--<local:BindingProxy x:Key="proxy" Data="{Binding}" />-->
         <Style x:Key="ButtonFocusVisual">
             <Setter Property="Control.Template">
@@ -85,13 +87,45 @@
         <!--this sets all datagridcells to not selectable-->
         <Style x:Key="AvoidCellSelection" TargetType="{x:Type DataGridCell}">
             <Setter Property="IsHitTestVisible" Value="False"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
-        <DataTemplate x:Key="changedColumns">
+        <Style TargetType="{x:Type DataGridCell}">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate x:Key="changedCells">
             <TextBlock 
             Text="{Binding Mode=OneWay}" 
             Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}, Mode=OneWay}"
             />
         </DataTemplate>
+        <DataTemplate x:Key="commentCells">
+            <TextBox
+            Text="{Binding TextValue, Mode=TwoWay}" 
+            Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}, Mode=OneWay}"
+            />
+        </DataTemplate>
+        <DataTemplate x:Key="convertedImagePath">
+            <ItemsControl ItemsSource="{Binding  Converter={StaticResource myDataRowToListConverter}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding myImageFileName}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </DataTemplate>
+
         <!--<DataTemplate x:Key="changedComments" >
             <TextBlock 
             Text="{Binding [Comments],Mode=OneWay}" 
@@ -132,7 +166,8 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <!--pSHARE.MyImageFolderList contains MyImageFolder.MyImageList contains MyImage.MyImagePath-->
-                <DataGridTemplateColumn Header="Images">
+
+                <!--<DataGridTemplateColumn Header="Images">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ListBox x:Name="folder" ItemsSource="{Binding DataContext.MyImageFolderList, 
@@ -153,7 +188,31 @@
                             </ListBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>-->
+
+                <DataGridTemplateColumn x:Name="dgtc">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding  
+                                Converter={StaticResource myDataRowToListConverter}}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border x:Name="imageBorder" BorderThickness="1" BorderBrush="Black"                                                
+                                                MouseLeave="imageBorder_MouseLeave"
+                                                MouseEnter="imageBorder_MouseEnter" Height="16">
+                                            <!-- try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow -->
+                                            <Image x:Name="myImage" Source="{Binding MyImagePath}"
+                                               MouseUp="Image_MouseUp"  HorizontalAlignment="Center">
+                                            </Image>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
+
             </DataGrid.Columns>
         </DataGrid>
 

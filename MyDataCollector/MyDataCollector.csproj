@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Item.cs" />
     <Compile Include="MyDataCollector.cs" />
+    <Compile Include="MyImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

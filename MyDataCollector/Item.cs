@@ -16,12 +16,29 @@ namespace MyDataCollector
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
-
-        public string Value { get; set; }
+        public string textValue;
+        public string TextValue 
+        {
+            get { return textValue; } 
+            set
+            {
+                textValue = value;
+                NotifyPropertyChanged("TextValue");
+            }
+        }
         public Item(string value)
         {
-            Value = value;
-            NotifyPropertyChanged("Value");
+            TextValue = value;
+        }
+        public List<MyImage> imageList;
+        public List<MyImage> ImageList
+        {
+            get { return imageList; }
+            set
+            {
+                imageList = value;
+                //NotifyPropertyChanged("ImageList");
+            }
         }
         public bool IsChanged { get;  set; }
         public void SetChanged()
@@ -37,7 +54,7 @@ namespace MyDataCollector
         public override string ToString()
         {
              NotifyPropertyChanged("Value");           
-            return Value;
+            return textValue;
 
         }
         public override bool Equals(object other)
@@ -45,16 +62,16 @@ namespace MyDataCollector
             var item = other as Item;
             if (item == null)
             {
-                NotifyPropertyChanged("Value");
+                NotifyPropertyChanged("TextValue");
                 return false;
             }
-            NotifyPropertyChanged("Value");
-            return item.Value == Value;
+            NotifyPropertyChanged("TextValue");
+            return item.textValue == textValue;
         }
         public override int GetHashCode()
         {
-            if (Value == null) return base.GetHashCode();
-            return Value.GetHashCode();
+            if (textValue == null) return base.GetHashCode();
+            return textValue.GetHashCode();
         }
     }
 }

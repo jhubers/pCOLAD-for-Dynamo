@@ -29,7 +29,7 @@ namespace pCOLADnamespace
         private string historyFile = "";
         private string oldCSV = "";
         private bool On = false;
-        private bool HistoryOn = false;
+        public static bool HistoryOn = false;
         private bool CheckAllButton = false;
         private bool UncheckAllButton = false;
         private string _OnOffButton = "";
@@ -47,6 +47,7 @@ namespace pCOLADnamespace
                 myPropDataTable = value;
                 //The RaisePropertyChanged fires an event with the name "MyPropDataTable"
                 //The CSVControl.myXamlTable is listening to it for its itemSource
+                //but since it displays the item properties probably RaisePropertyChanged not necessary? No History doesn't work without.
                 RaisePropertyChanged("MyPropDataTable");
             }
         }
@@ -57,27 +58,29 @@ namespace pCOLADnamespace
             set
             {
                 testList = value;
-                RaisePropertyChanged("TestList");
+                //RaisePropertyChanged("TestList");
             }
         }
-        //the idea is that in myImageFolderList we store a list of folder path objects (MyImageFolder)
-        //then we can bind to that list and display the MyImagePath property of the nested object (MyImage)        
-        private List<MyImageFolder> myImageFolderList;
-        public List<MyImageFolder> MyImageFolderList 
-        {
-            get { return myImageFolderList; }
-            set
-            {
-                myImageFolderList = value;
-                RaisePropertyChanged("MyImageFolderList");
-            }
-        }
+        ////the idea is that in myImageFolderList we store a list of folder path objects (MyImageFolder)
+        ////then we can bind to that list and display the MyImagePath property of the nested object (MyImage)        
+        //private List<MyImageFolder> myImageFolderList;
+        //public List<MyImageFolder> MyImageFolderList 
+        //{
+        //    get { return myImageFolderList; }
+        //    set
+        //    {
+        //        myImageFolderList = value;
+        //        RaisePropertyChanged("MyImageFolderList");
+        //    }
+        //}
 
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             Compare();
             myPropDataTable = MyDataCollectorClass.myDataTable;
             RaisePropertyChanged("MyPropDataTable");
+            //update the solution
+            this.OnNodeModified(forceExecute: true);
         }
         private int _rowIndex;
         public int RowIndex
@@ -356,32 +359,32 @@ namespace pCOLADnamespace
                     //the CSVControl should be created only once
                     _CSVControl = new CSVControl();
 
-                    List<MyImageFolder> mifs = new List<MyImageFolder>();//contains MyImageFolder with prop MyImageFolderPath and List<MyImage>
-                    List<MyImage> mis = new List<MyImage>();//contains MyImage with prop MyImagePath
-                    List<string> mip = new List<string>();//contains MyImagePath
-                    for (int i = 0; i < myPropDataTable.Rows.Count; i++)
-                    {
-                        Item it = (Item)myPropDataTable.Rows[i]["Parameter"];
-                        string pn = (string)it.Value;//the name of the parameter
-                        mip= Functions.imagePaths(pn);//list of image paths in folder with parameter name
-                        MyImageFolder mif = new MyImageFolder(pn);
-                        foreach (var ip in mip)
-                        {
-                            MyImage mi = new MyImage(ip);
-                            mis.Add(mi);
-                            //mif.MyImageList.Add(mi);
-                        }
-                        mif.MyImageList = mis;
-                        mifs.Add(mif);                        
-                    }
-                    MyImageFolderList = mifs;
+                    //List<MyImageFolder> mifs = new List<MyImageFolder>();//contains MyImageFolder with prop MyImageFolderPath and List<MyImage>
+                    //List<MyImage> mis = new List<MyImage>();//contains MyImage with prop MyImagePath
+                    //List<string> mip = new List<string>();//contains MyImagePath
+                    //for (int i = 0; i < myPropDataTable.Rows.Count; i++)
+                    //{
+                    //    Item it = (Item)myPropDataTable.Rows[i]["Parameter"];
+                    //    string pn = (string)it.Value;//the name of the parameter
+                    //    mip= Functions.imagePaths(pn);//list of image paths in folder with parameter name
+                    //    MyImageFolder mif = new MyImageFolder(pn);
+                    //    foreach (var ip in mip)
+                    //    {
+                    //        MyImage mi = new MyImage(ip);
+                    //        mis.Add(mi);
+                    //        //mif.MyImageList.Add(mi);
+                    //    }
+                    //    mif.MyImageList = mis;
+                    //    mifs.Add(mif);                        
+                    //}
+                    //MyImageFolderList = mifs;
                     
-                    List<string> myTestList = new List<string>();
-                    for (int i = 0; i < MyImageFolderList.Count + 1; i++)
-                    {
-                        myTestList.Add(i.ToString());
-                    }
-                    TestList = myTestList;
+                    //List<string> myTestList = new List<string>();
+                    //for (int i = 0; i < MyImageFolderList.Count + 1; i++)
+                    //{
+                    //    myTestList.Add(i.ToString());
+                    //}
+                    //TestList = myTestList;
                     //compare the csv file with the copy
                     Compare();
                     //niet nodig?
@@ -465,6 +468,26 @@ namespace pCOLADnamespace
         {
             return true;
         }
+        private bool CanShare(object obj)
+        {
+            return true;
+        }
+        private bool CanHistory(object obj)
+        {
+            return true;
+        }
+        private bool CanCancel(object obj)
+        {
+            return true;
+        }
+        private bool CanCheckAll(object obj)
+        {
+            return true;
+        }
+        private bool CanUnCheckAll(object obj)
+        {
+            return true;
+        }
         private void ShowParams(object obj)
         {
             //switch the On boolean to show or not the *.csv file
@@ -491,19 +514,14 @@ namespace pCOLADnamespace
             }
 
         }
-        private bool CanShare(object obj)
-        {
-            return true;
-        }
         private void Share(object obj)
         {
-
-            //add a timestamp and owner name to the author column\
-            int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
-            DateTime time = DateTime.UtcNow;
-            MyDataCollectorClass.myDataTable.Rows[lastrow]["Date"] = new Item(time.ToString());
-            MyDataCollectorClass.myDataTable.Rows[lastrow]["Author"] = new Item(MyDataCollectorClass.userName);
             //write myDataTable to the csv files if something changed
+            // er gaat iets fout er komt een ; teveel in de csv file aan het eind...!!!
+
+
+
+            myPropDataTable = MyDataCollectorClass.myDataTable;
             string csv = Functions.ToCSV(myPropDataTable);
             if (oldCSV == csv)
             {
@@ -513,56 +531,53 @@ namespace pCOLADnamespace
             {
                 try
                 {
-                    myPropDataTable = MyDataCollectorClass.myDataTable;
+                    //myPropDataTable = MyDataCollectorClass.myDataTable;
+                    //should avoid SystemFileWatcher to fire when you save yourself...
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;                    
                     File.WriteAllText(MyDataCollectorClass.inputFile, csv);
                     File.WriteAllText(MyDataCollectorClass.inputFileCopy, csv);
-                    //apend myDataTable to the history file, if there are changes!!!
+                    //add a timestamp and owner name to the author column for the History file
+                    int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
+                    DateTime time = DateTime.UtcNow;
+                    myPropDataTable.Rows[lastrow]["Date"] = new Item(time.ToString());
+                    myPropDataTable.Rows[lastrow]["Author"] = new Item(MyDataCollectorClass.userName);
+                    csv = Functions.ToCSV(myPropDataTable);
                     historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     //check if file exist
                     if (!File.Exists(historyFile))
                     {
-                        File.Copy(MyDataCollectorClass.inputFile, historyFile, true);
-                        //File.AppendAllText(historyFile,Environment.NewLine);
+                        //File.Copy(MyDataCollectorClass.inputFile, historyFile);
+                        File.Create(historyFile);
                     }
-                    else
-                    {
+                    //else
+                    //{
                         File.AppendAllText(historyFile, Environment.NewLine + csv);
-
-                    }
+                    //}
+                    //reset myPropDataTable to myDataTable to get rid of the time stamp
+                        myPropDataTable = MyDataCollectorClass.myDataTable;
                     ShowParams(OnOff);//closes the CSVControl and sets the On property to false
                     RaisePropertyChanged("OnOff"); //sets the OnOff button to red
                     //you should reset everything so next hit of OnOff button shows only new changes
 
-                    MyDataCollectorClass.formPopulate = false;//so the original csvDataTable will be used
+                    MyDataCollectorClass.formPopulate = false;
+                    //since formPopulate is false you will read the csv file. But if it was just created
+                    //there are no items!!!
                     MyDataCollectorClass.openCSV();
+                    MyDataCollectorClass.addNewPararemeters();
                     //MyDataCollectorClass.addNewPararemeters(); //then you add the new parameters twice
                     //probably have to change the items.IsChanged property!!!
                     //Compare();
                     oldCSV = csv;
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 }
                 catch (System.Exception e)
                 {
                     MessageBox.Show("Exception source: {0}", e.Source);
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
 
             }
-        }
-        private bool CanHistory(object obj)
-        {
-            return true;
-        }
-        private bool CanCancel(object obj)
-        {
-            return true;
-        }
-        private bool CanCheckAll(object obj)
-        {
-            return true;
-        }
-        private bool CanUnCheckAll(object obj)
-        {
-            return true;
         }
         private void History(object obj)
         {
@@ -573,7 +588,7 @@ namespace pCOLADnamespace
             }
             else
             {
-                if (!HistoryOn)//is on when you show the History file
+                if (!HistoryOn)//HistoryOn is true when you show the History file, false if you hit the button to hide
                 {
                     string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     if (!File.Exists(HistoryFile))
@@ -602,7 +617,6 @@ namespace pCOLADnamespace
                 }
             }
         }
-
         private void Cancel(object obj)
         {
             //closeCSVControl();
@@ -624,7 +638,6 @@ namespace pCOLADnamespace
             this.isChecked = false;
             UncheckAllButton = false;
         }
-        #endregion
         private void Compare()
         {
             //compare csv and copy of csv here!!!
@@ -642,6 +655,10 @@ namespace pCOLADnamespace
 
             if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
             {
+                if (MyDataCollectorClass.copyDataTable.Rows.Count<1)
+                {
+                    return;
+                }
                 DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];
                 for (int i = 0; i < MyDataCollectorClass.myDataTable.Rows.Count; i++)
                 {
@@ -656,7 +673,14 @@ namespace pCOLADnamespace
                         drc = MyDataCollectorClass.copyDataTable.NewRow();
                         for (int k = 0; k < MyDataCollectorClass.copyDataTable.Columns.Count; k++)
                         {
-                            drc[k] = new Item("@#$%!!!");
+                            //if (MyDataCollectorClass.copyDataTable.Columns[k].ColumnName=="Images")
+                            //{
+                            //    drc[k] = new List<MyImage>();
+                            //}
+                            //else
+                            //{
+                                drc[k] = new Item("@#$%!!!"); 
+                            //}
                             //don't add the row to the table because then you get trouble with primarykey
                         }
                     }
@@ -724,5 +748,6 @@ namespace pCOLADnamespace
             //still red keeps turning up... so after sharing you should set all items.SetChanged to false!!! Or
             //simply kill the csv!!!
         }
+        #endregion
     }
 }
