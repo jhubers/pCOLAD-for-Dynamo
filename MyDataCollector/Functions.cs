@@ -31,7 +31,6 @@ namespace MyDataCollector
             //do something with the returnList
             return returnList;
         }
-
         public static DataTable ListToTable(List<string> Ls)
         {
             //this function uses the first line of the list as ; seperated headers
@@ -57,9 +56,9 @@ namespace MyDataCollector
                         //}
                         //else
                         //{
-                            //change the pCOLLECT "Value" column into "New Value"
-                            if (word == "Value") { newWord = "New Value"; }
-                            returnTable.Columns.Add(newWord, typeof(Item));
+                        //change the pCOLLECT "Value" column into "New Value"
+                        if (word == "Value") { newWord = "New Value"; }
+                        returnTable.Columns.Add(newWord, typeof(Item));
                         //}
                     }
                 }
@@ -94,6 +93,7 @@ namespace MyDataCollector
                                     li.Add(it);
                                 }
                                 Item ni = new Item(word);
+                                ni.imageFileNameList = lis;
                                 ni.ImageList = li;
                                 row[x] = ni;
                             }
@@ -138,7 +138,6 @@ namespace MyDataCollector
             }
             return returnTable;
         }
-
         public static DataTable MergeAll(IList<DataTable> tables, String primaryKeyColumn)
         {
             //you can call this function as follows:
@@ -193,7 +192,7 @@ namespace MyDataCollector
 
             return table;
         }
-        public static string ToCSV(DataTable tbl)
+        public static string ToCSV(DataTable tbl, string tblName)
         {
             StringBuilder strb = new StringBuilder();
 
@@ -201,34 +200,72 @@ namespace MyDataCollector
             strb.AppendLine(tbl.Columns.Cast<DataColumn>().Aggregate(
                 (object x, object y) => x + ";" + y).ToString());
 
-            //rows But have to create multiline string if several lines in one cell!!!
+            //rows But have to create multiline string if several lines in one cell
+            //make difference if myPropDataTable is used or historyDataTable
             foreach (DataRow dr in tbl.Rows)
             {
                 string S = "";
+                string columnType = "";
                 foreach (var i in dr.ItemArray)
                 {
-                    if (i.GetType()==typeof(Item))
-                    {
-                        Item y = (Item)i;
-                        if (y.textValue.Contains("\n"))
-                        {
+                    columnType = (i.GetType().ToString());
+                    //columnType = (i.GetType() == typeof(string)) ? "string" : "";//default
+                    #region replace with Switch
+                    //if (i.GetType() == typeof(Item))
+                    //{
+                    //    Item y = (Item)i;
+                    //    if (y.textValue.Contains("\n"))//it does when saving the History file
+                    //    {
 
-                            S = y.textValue.Replace("\n", Environment.NewLine);
-                            S = "\"" + S + "\"";
-                        }
-                        else
-                        {
-                            S += y.textValue;
-                        }
-                    }
-                    else
+                    //        S = y.textValue.Replace("\n", Environment.NewLine);
+                    //        S = "\"" + S + "\"";
+                    //    }
+                    //    else
+                    //    {
+                    //        S += y.textValue;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    S += i;
+                    //}
+
+                    #endregion
+                    switch (columnType)
                     {
-                        S += i;
+                        case "MyDataCollector.Item":
+                            Item y = (Item)i;
+                            S += y.textValue;
+                            break;
+                        case "System.Collections.Generic.List`1[System.String]":
+                            //only if historyDataTable is passed
+                            if (tblName == "historyDataTable")
+                            {
+                                foreach (string s in (List<string>)i)
+                                    if (s.Length>0)
+                                    {
+                                        {
+                                            S += s + Environment.NewLine;
+                                        }
+                                    }                                
+                                //remove the last new line
+                                if (S.Length > 1)
+                                {
+                                    S = S.Remove(S.Length - 2);                                    
+                                }
+                                //build the multiline for csv
+                                S = "\"" + S + "\"";
+                            }
+                            break;
+
+                        default:
+                            S += i;
+                            break;
                     }
                     S += ";";
                 }
                 //remove last ;
-                S=S.Remove(S.Length - 1);
+                S = S.Remove(S.Length - 1);
                 strb.AppendLine(S);
             }
             //tbl.AsEnumerable().Select(s => strb.AppendLine(
@@ -333,8 +370,8 @@ namespace MyDataCollector
                 foreach (var filter in filters)
                 {
                     filesFound.AddRange(Directory.GetFiles(searchFolder, String.Format("*.{0}", filter), searchOption));
-                }                
-            } 
+                }
+            }
             return filesFound;
         }
     }

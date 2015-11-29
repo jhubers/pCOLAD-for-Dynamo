@@ -153,9 +153,9 @@
         </Grid.RowDefinitions>
         <DataGrid Grid.Row="0" x:Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn"                   
 			CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" Focusable="False"
-			CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=TwoWay}"
-			CurrentCell="{Binding CellInfo, Mode=TwoWay}" x:FieldModifier="public" 
-			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" VerticalAlignment="Top">
+			CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=OneWay}"
+			CurrentCell="{Binding CellInfo, Mode=OneWay}" x:FieldModifier="public" 
+			SelectedIndex="{Binding RowIndex, Mode=OneWay}" VerticalAlignment="Top">
             <DataGrid.Columns >
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>
@@ -323,7 +323,7 @@
 				HorizontalAlignment="Left" Command="{Binding CheckAllCommand}"
                 Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
 
-            <!--When you show the History.CSV file hide all other buttons and hilite the History button !!!-->
+            <!--When you show the History.CSV file hide all other buttons and hilite the History button.-->
             <ToggleButton x:Name="History" Grid.Column="2" Content="History" Command="{Binding HistoryCommand}"
 				VerticalAlignment="Bottom" Margin="0,0,83,0" Style="{DynamicResource MyToggleButtonStyle}" HorizontalAlignment="Right">
                 <ToggleButton.Resources>

@@ -93,7 +93,7 @@ namespace pCOLADnamespace
             // specify what methods are called, or how your data is passed
             // when execution occurs.
 
-            // WARNING!!!
+            // WARNING!
             // Do not throw an exception during AST creation. If you
             // need to convey a failure of this node, then use
             // AstFactory.BuildNullNode to pass out null.

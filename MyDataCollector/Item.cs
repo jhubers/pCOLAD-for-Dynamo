@@ -30,6 +30,16 @@ namespace MyDataCollector
         {
             TextValue = value;
         }
+        //public List<string> imageFileNameList { get; set; }
+        public List<string> imageFileNameList;
+        public List<string> ImageFileNameList
+        {
+            get { return imageFileNameList; }
+            set
+            {
+                imageFileNameList = value;
+            }
+        }
         public List<MyImage> imageList;
         public List<MyImage> ImageList
         {

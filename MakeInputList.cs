@@ -34,13 +34,13 @@ namespace pCOLADnamespace
                         ReturnList.AddRange(l2);
                         break;
                     case "Filename":
-                        //we do nothing with the filename; catch it with the inputAstNodes!!!have to work on this
+                        //we do nothing with the filename; catch it with the inputAstNodes
                         // no have to open the file in code so need the path
                         break;
                     case "CodeBlockNodeModel":
                         // If the Inputs are from pCOLLECT then this is OK
                         // If the Inputs are from pSHARE you should make it recognizable in the ReturnList
-                        // so you can make a difference with the inputs from pCOLLECTs!!!
+                        // so you can make a difference with the inputs from pCOLLECTs
                         // or maybe make a case for the paths?
                         Dynamo.Nodes.CodeBlockNodeModel cbnm = (Dynamo.Nodes.CodeBlockNodeModel)nm;
                         string s = cbnm.Code;

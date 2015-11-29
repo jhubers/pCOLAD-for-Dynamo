@@ -30,6 +30,7 @@ namespace pCOLADnamespace
         private string oldCSV = "";
         private bool On = false;
         public static bool HistoryOn = false;
+        //public static bool AutoPlayOn = false;
         private bool CheckAllButton = false;
         private bool UncheckAllButton = false;
         private string _OnOffButton = "";
@@ -61,6 +62,7 @@ namespace pCOLADnamespace
                 //RaisePropertyChanged("TestList");
             }
         }
+        public static DynamoModel dm;
         ////the idea is that in myImageFolderList we store a list of folder path objects (MyImageFolder)
         ////then we can bind to that list and display the MyImagePath property of the nested object (MyImage)        
         //private List<MyImageFolder> myImageFolderList;
@@ -81,6 +83,7 @@ namespace pCOLADnamespace
             RaisePropertyChanged("MyPropDataTable");
             //update the solution
             this.OnNodeModified(forceExecute: true);
+            runtype(dm);
         }
         private int _rowIndex;
         public int RowIndex
@@ -313,7 +316,7 @@ namespace pCOLADnamespace
             //newNewValueCommand = new DelegateCommand(NewNewValue, CanNewNewValue);
             //ImportanceCommand = new DelegateCommand(Importance, CanImportance);
             //newImportanceCommand = new DelegateCommand(NewImportance, CanNewImportance);
-            // update UI 
+            // update UI            
             OnOffButton = "Share";
         }
         #endregion
@@ -378,7 +381,7 @@ namespace pCOLADnamespace
                     //    mifs.Add(mif);                        
                     //}
                     //MyImageFolderList = mifs;
-                    
+
                     //List<string> myTestList = new List<string>();
                     //for (int i = 0; i < MyImageFolderList.Count + 1; i++)
                     //{
@@ -424,10 +427,13 @@ namespace pCOLADnamespace
 
             public void CustomizeView(pSHARE model, NodeView nodeView)
             {
-
                 var pSHAREControl = new pSHAREcontrol();
                 nodeView.inputGrid.Children.Add(pSHAREControl);
-                pSHAREControl.DataContext = model;
+                pSHAREControl.DataContext = model;                
+                Dynamo.ViewModels.NodeViewModel vm = nodeView.ViewModel;
+                Dynamo.Models.NodeModel nm = vm.NodeModel;
+                Dynamo.ViewModels.DynamoViewModel dvm = vm.DynamoViewModel;
+                pSHARE.dm = dvm.Model;
             }
             /// <summary>
             /// Here you can do any cleanup you require if you've assigned callbacks for particular 
@@ -445,6 +451,28 @@ namespace pCOLADnamespace
         {
             //if pSHARE is ON the solution should be recalculated. Doesn't acutally work.
             actual.ResetEngine(true);
+        }
+        public void runtype(DynamoModel actual)
+        {
+            //!!!check if Automatic running is on
+            DynamoModel dm = actual;
+            foreach (var item in dm.Workspaces)
+            {
+                if (item.GetType() == typeof(HomeWorkspaceModel))
+                {
+                    HomeWorkspaceModel hm = (HomeWorkspaceModel)item;
+                    RunType rt = hm.RunSettings.RunType;
+                    if (rt == RunType.Automatic)
+                    {
+                        MyDataCollectorClass.AutoPlay = true;
+                        hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
+                    }
+                    else
+                    {
+                        MyDataCollectorClass.AutoPlay = false;
+                    }
+                }
+            }
         }
         /// <summary>
         /// close the CSV display
@@ -502,7 +530,7 @@ namespace pCOLADnamespace
                 else
                 {
                     MessageBox.Show("Please hit the Run button first...");
-                    //set the button to red again!!!
+                    //set the button to red again
                     RaisePropertyChanged("OnOff");
                 }
             }
@@ -517,12 +545,8 @@ namespace pCOLADnamespace
         private void Share(object obj)
         {
             //write myDataTable to the csv files if something changed
-            // er gaat iets fout er komt een ; teveel in de csv file aan het eind...!!!
-
-
-
             myPropDataTable = MyDataCollectorClass.myDataTable;
-            string csv = Functions.ToCSV(myPropDataTable);
+            string csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
             if (oldCSV == csv)
             {
                 MessageBox.Show("Nothing changed with last share ...");
@@ -532,8 +556,8 @@ namespace pCOLADnamespace
                 try
                 {
                     //myPropDataTable = MyDataCollectorClass.myDataTable;
-                    //should avoid SystemFileWatcher to fire when you save yourself...
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;                    
+                    //avoid SystemFileWatcher to fire when you save yourself.
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
                     File.WriteAllText(MyDataCollectorClass.inputFile, csv);
                     File.WriteAllText(MyDataCollectorClass.inputFileCopy, csv);
                     //add a timestamp and owner name to the author column for the History file
@@ -541,7 +565,7 @@ namespace pCOLADnamespace
                     DateTime time = DateTime.UtcNow;
                     myPropDataTable.Rows[lastrow]["Date"] = new Item(time.ToString());
                     myPropDataTable.Rows[lastrow]["Author"] = new Item(MyDataCollectorClass.userName);
-                    csv = Functions.ToCSV(myPropDataTable);
+                    csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
                     historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     //check if file exist
                     if (!File.Exists(historyFile))
@@ -549,24 +573,46 @@ namespace pCOLADnamespace
                         //File.Copy(MyDataCollectorClass.inputFile, historyFile);
                         File.Create(historyFile);
                     }
-                    //else
-                    //{
-                        File.AppendAllText(historyFile, Environment.NewLine + csv);
-                    //}
+                    //Save the image file names to the historyFile
+                    //Replace the Item.imageList property in column "Images"
+                    //by a List<string> imageFileNameList property of Item
+                    string historyCSV = "";
+                    DataTable historyDataTable = myPropDataTable.Clone();
+                    historyDataTable.Columns[0].DataType = typeof(List<string>);
+
+                    foreach (DataRow dr in myPropDataTable.Rows)
+                    {
+                        //Item temp; // = new Item("");
+                        //temp = (Item)dr["Parameter"];
+                        Item temp = (Item)dr["Images"];
+                        DataRow historyDr = historyDataTable.NewRow();
+                        foreach (DataColumn dc in myPropDataTable.Columns)
+                        {
+                            if (dc.ColumnName == "Images")
+                            {
+                                historyDr["Images"] = temp.imageFileNameList;
+                            }
+                            else
+                            {
+                                historyDr[dc.ColumnName] = dr[dc.ColumnName];
+                            }
+                        }
+                        historyDataTable.Rows.Add(historyDr);
+                        //dr["Images"] = temp.imageFileNameList;
+                    }
+                    historyCSV = Functions.ToCSV(historyDataTable, "historyDataTable");
+                    File.AppendAllText(historyFile, Environment.NewLine + historyCSV);
                     //reset myPropDataTable to myDataTable to get rid of the time stamp
-                        myPropDataTable = MyDataCollectorClass.myDataTable;
+                    myPropDataTable = MyDataCollectorClass.myDataTable;
                     ShowParams(OnOff);//closes the CSVControl and sets the On property to false
                     RaisePropertyChanged("OnOff"); //sets the OnOff button to red
                     //you should reset everything so next hit of OnOff button shows only new changes
 
                     MyDataCollectorClass.formPopulate = false;
                     //since formPopulate is false you will read the csv file. But if it was just created
-                    //there are no items!!!
+                    //there are no items
                     MyDataCollectorClass.openCSV();
                     MyDataCollectorClass.addNewPararemeters();
-                    //MyDataCollectorClass.addNewPararemeters(); //then you add the new parameters twice
-                    //probably have to change the items.IsChanged property!!!
-                    //Compare();
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 }
@@ -632,7 +678,6 @@ namespace pCOLADnamespace
         }
         private void UnCheckAll(object obj)
         {
-            //gaat iets fout...!!!
             UncheckAllButton = true;
             this._isChecked = false;
             this.isChecked = false;
@@ -640,7 +685,7 @@ namespace pCOLADnamespace
         }
         private void Compare()
         {
-            //compare csv and copy of csv here!!!
+            //compare csv and copy of csv here. Now only works after saving first time!!!
             //compare the comment, New Value and importance values of the two tables
             //but not for the History file
             ////for this to work you will have to fill myDataTable with new Items, 
@@ -655,7 +700,7 @@ namespace pCOLADnamespace
 
             if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
             {
-                if (MyDataCollectorClass.copyDataTable.Rows.Count<1)
+                if (MyDataCollectorClass.copyDataTable.Rows.Count < 1)
                 {
                     return;
                 }
@@ -679,7 +724,7 @@ namespace pCOLADnamespace
                             //}
                             //else
                             //{
-                                drc[k] = new Item("@#$%!!!"); 
+                            drc[k] = new Item("@#$%!");
                             //}
                             //don't add the row to the table because then you get trouble with primarykey
                         }
@@ -697,7 +742,7 @@ namespace pCOLADnamespace
                         {
                             //Item x = new Item(dr[cn].ToString());
                             //x.IsChanged = true;
-                            //no idea why this can happen...!!!
+                            //no idea why this can happen...
                             if (dr[cn] as MyDataCollector.Item == null)
                             {
                                 dr[cn] = new Item("");
@@ -744,9 +789,6 @@ namespace pCOLADnamespace
                 }
                 myPropDataTable = MyDataCollectorClass.myDataTable;
             }
-            //but if you shared the csv file, then copyDataTable and myDataTable are same...!!!
-            //still red keeps turning up... so after sharing you should set all items.SetChanged to false!!! Or
-            //simply kill the csv!!!
         }
         #endregion
     }

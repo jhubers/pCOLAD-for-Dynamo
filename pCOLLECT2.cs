@@ -77,8 +77,8 @@ namespace pCOLADnamespace
             // collections with PortData objects describing your ports.
             // we'll use the PortData.NickName as indicator
             // we'll use the PortData.ToolTip as header in the csv.file
-            // In fact you should derive the NickNames and ToolTips from the dyn.file!!!
-            // Because if new attributes are added it is a pain to add them everytime!!!
+            // In fact you should derive the NickNames and ToolTips from the dyn.file
+            // Because if new attributes are added it is a pain to add them everytime
             InPortData.Add(new PortData("P", "Parameter"));
             InPortData.Add(new PortData("V", "New Value"));
             InPortData.Add(new PortData("I", "Importance"));
@@ -123,13 +123,13 @@ namespace pCOLADnamespace
             // specify what methods are called, or how your data is passed
             // when execution occurs.
 
-            // WARNING!!!
+            // WARNING!
             // Do not throw an exception during AST creation. If you
             // need to convey a failure of this node, then use
             // AstFactory.BuildNullNode to pass out null.
 
             // Make a list from the inputs, using the MakeInputList class.
-            // In fact not used in pCOLLECT!!!So you can comment next two lines...
+            // In fact not used in pCOLLECT! So you can comment next two lines...
 
             //List<string> InputList = MakeInputList.InputList(InputNodes);
             //_outputListProp = InputList;
@@ -153,8 +153,8 @@ namespace pCOLADnamespace
             //build a new output List<AssociativeNode>consisting of fieldnames seperated by ';' and
             // on next inputAstNodes with ';' added
             List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
-            // the headings should become flexible in future!!!
-            // also use the creation of output similar to pSHARE and pPARAM!!!
+            // the headings should become flexible in future
+            // also use the creation of output similar to pSHARE and pPARAM
             string inputNames = "";
             foreach (var item in InPortData)
             {
@@ -212,7 +212,7 @@ namespace pCOLADnamespace
                 //AstFactory.BuildAssignment(
                 //    GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(inputAstNodes)),
                 // we output the headers and on next line the values seperated by ';'
-                //Have to find a way to make it a dynamic node, meaning add or delete inputs!!!
+                //Have to find a way to make it a dynamic node, meaning add or delete inputs
                             //ProtoCore.AST.AssociativeAST.DynamicNode dn= new DynamicNode();
                 AstFactory.BuildAssignment(
                     GetAstIdentifierForOutputIndex(0), AstFactory.BuildExprList(pCOLLECToutputList)),
@@ -355,7 +355,7 @@ namespace pCOLADnamespace
         //    }
         //    inputNames.Remove(inputNames.Length - 2);
         //    inputList.Add(inputNames);
-        //    //Maybe build a node with these inputNames and add it to the pCOLLECTouputs node?!!!
+        //    //Maybe build a node with these inputNames and add it to the pCOLLECTouputs node?
         //    var headers = AstFactory.BuildExprList(inputList);
         //    var arguments = new List<AssociativeNode>();
         //    arguments.Add(headers);
@@ -472,7 +472,7 @@ namespace pCOLADnamespace
             string a1 = "";
             D1.Topmost = true;
             //the input indicator is what appears on the pCOLLECT input as node
-            //inorder to make it appear next time you run Dynamo, it must be stored somewhere!!!
+            //inorder to make it appear next time you run Dynamo, it must be stored somewhere
             D1.Question.Content = "Please give one or two charactors as input indicator for this attribute...";
             D1.Show();
             D1.Answer.Focus();

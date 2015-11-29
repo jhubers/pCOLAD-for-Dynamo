@@ -18,7 +18,6 @@ using System.Windows.Threading;
 namespace MyDataCollector
 {
     [IsVisibleInDynamoLibrary(false)]
-
     public static class MyDataCollectorClass
     {
 
@@ -38,6 +37,7 @@ namespace MyDataCollector
         public static DataTable copyDataTable;
         public static event EventHandler UpdateCSVControl = delegate { };
         private static DataTable mergedDataTable;
+        public static bool AutoPlay;
 
         public static void openCSV()
         {            
@@ -81,6 +81,7 @@ namespace MyDataCollector
             newParamTables.Add(myDataTable);
             foreach (List<string> ls in pSHAREoutputs)
             {
+               //with Automatic run the first ls has null in line two giving errors!!!
                 DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
                 //since you removed owner from pCOLLECT add it here 
                 //maybe was wrong, because owner can change? Then simply disconnect pCOLLECT concerned!
@@ -132,14 +133,17 @@ namespace MyDataCollector
                 //next function returns a list of strings with only the path names of files
                 //with extension in filters
                 List<string> files = Functions.GetFilesFrom(imageFolderPath, filters, false);
+                List<string> fileNames = new List<string>();
                 foreach (string st in files)
                 {
+                    fileNames.Add(Path.GetFileName(st));
                     //create an new MyImage with ImagePath
                     MyImage it = new MyImage(st);
                     lmi.Add(it);
                 }
                 //set the ImageList property of the new Item                    
                 Item ni = new Item("");
+                ni.ImageFileNameList = fileNames;
                 ni.ImageList = lmi;
                 myDataTable.Rows[i]["Images"] = ni;
 
@@ -170,7 +174,7 @@ namespace MyDataCollector
             //Populate myDataTable with the csv file
             openCSV();
             // Union the pCOLLECTs to myDataTable
-            // Check if not only 1 pCOLLECT is connected otherwise you get an error!!!
+            // Check if not only 1 pCOLLECT is connected otherwise you get an error
             if (pSHAREoutputs.Count > 1)
             {
                 addNewPararemeters();
@@ -183,7 +187,7 @@ namespace MyDataCollector
                 pSHAREoutputList.Add(myDataTable.Rows[i]["Parameter"].ToString());
                 pSHAREoutputList.Add(myDataTable.Rows[i]["New Value"].ToString());
             }
-            //when you change a parameter you should have immediate update of the display!!!
+            //when you change a parameter you should have immediate update of the display when you hit run.
             UpdateCSVControl(null, EventArgs.Empty);
             return pSHAREoutputList;
         }
@@ -226,15 +230,25 @@ namespace MyDataCollector
 
             string msg = "Some changes occured in the shared information. I will start over... " +
             "Hit the Run button if you are not in Automatic mode.";
+            if (AutoPlay)
+            {
+                //stop watching because otherwise you get nummerous messages
+                ImagesWatcher.EnableRaisingEvents = false;
+                CSVwatcher.EnableRaisingEvents = false;
+            }
             if (Application.Current.Dispatcher.CheckAccess())
             {
                 MessageBox.Show(Application.Current.MainWindow, msg);
+                ImagesWatcher.EnableRaisingEvents = true;
+                CSVwatcher.EnableRaisingEvents = true;
             }
             else
             {
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
                     MessageBox.Show(Application.Current.MainWindow, msg);
+                    ImagesWatcher.EnableRaisingEvents = true;
+                    CSVwatcher.EnableRaisingEvents = true;
                 }));
             }
 
@@ -251,8 +265,8 @@ namespace MyDataCollector
         //    //pCOLLECT should output a list of ;-separated strings in the format:
         //    //Parameter;New Value;Importance;Comments;Owner;Extra Attribute Name;Extra Attribute Name; ...etc
         //    //And on a second line the ;-separated string values of these attributes.
-        //    //But how do we get the names of the inputs?!!! Maybe have to create a node in pCOLLECT script and add
-        //    //this node to it?!!!
+        //    //But how do we get the names of the inputs? Maybe have to create a node in pCOLLECT script and add
+        //    //this node to it?
         //    List<string> pCOLLECToutputList = new List<string>();
         //    //string pCOLLECTattributes = "";
 
