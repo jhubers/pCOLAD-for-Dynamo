@@ -38,6 +38,7 @@ namespace MyDataCollector
         public static event EventHandler UpdateCSVControl = delegate { };
         private static DataTable mergedDataTable;
         public static bool AutoPlay;
+        public static string testValue;
 
         public static void openCSV()
         {            
@@ -149,6 +150,11 @@ namespace MyDataCollector
 
             }
         }
+
+        public static string projection(int i)
+        {
+            return "Value = " + i.ToString();
+        }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
             inputFile = _IfilePath;
@@ -225,24 +231,21 @@ namespace MyDataCollector
         }
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
+            //stop watching because otherwise you get nummerous messages
+            ImagesWatcher.EnableRaisingEvents = false;
+            CSVwatcher.EnableRaisingEvents = false;
             //show the message on top of Dynamo. Because it comes from a different thread
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
 
             string msg = "Some changes occured in the shared information. I will start over... " +
             "Hit the Run button if you are not in Automatic mode.";
-            if (AutoPlay)
-            {
-                //stop watching because otherwise you get nummerous messages
-                ImagesWatcher.EnableRaisingEvents = false;
-                CSVwatcher.EnableRaisingEvents = false;
-            }
-            if (Application.Current.Dispatcher.CheckAccess())
-            {
-                MessageBox.Show(Application.Current.MainWindow, msg);
-                ImagesWatcher.EnableRaisingEvents = true;
-                CSVwatcher.EnableRaisingEvents = true;
-            }
-            else
+            //if (AutoPlay)
+            //{
+            //    //stop watching because otherwise you get nummerous messages
+            //    ImagesWatcher.EnableRaisingEvents = false;
+            //    CSVwatcher.EnableRaisingEvents = false;
+            //}
+            if  (!Application.Current.Dispatcher.CheckAccess())
             {
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
@@ -251,6 +254,12 @@ namespace MyDataCollector
                     CSVwatcher.EnableRaisingEvents = true;
                 }));
             }
+            //else
+            //{
+            //    MessageBox.Show(Application.Current.MainWindow, msg);
+            //    ImagesWatcher.EnableRaisingEvents = true;
+            //    CSVwatcher.EnableRaisingEvents = true;
+            //}
 
             //Update the CSVControll with new csv file.
             formPopulate = false;

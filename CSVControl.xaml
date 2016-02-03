@@ -154,8 +154,8 @@
         <DataGrid Grid.Row="0" x:Name="myXamlTable" AutoGeneratingColumn="myXamlTable_AutoGeneratingColumn"                   
 			CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" Focusable="False"
 			CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=OneWay}"
-			CurrentCell="{Binding CellInfo, Mode=OneWay}" x:FieldModifier="public" 
-			SelectedIndex="{Binding RowIndex, Mode=OneWay}" VerticalAlignment="Top">
+			CurrentCell="{Binding CellInfo, Mode=TwoWay}" x:FieldModifier="public" 
+			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" VerticalAlignment="Top">
             <DataGrid.Columns >
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>

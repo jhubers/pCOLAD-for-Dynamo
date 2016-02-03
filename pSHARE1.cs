@@ -12,7 +12,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using Dynamo.Wpf;
 using MyDataCollector;
-
+using Dynamo.Nodes;
+using System.Linq;
 
 namespace pCOLADnamespace
 {
@@ -26,6 +27,7 @@ namespace pCOLADnamespace
     public class pSHARE : NodeModel
     {
         #region properties
+        public static string ttt;
         private string historyFile = "";
         private string oldCSV = "";
         private bool On = false;
@@ -196,7 +198,7 @@ namespace pCOLADnamespace
                             // remove username from the cell
                             cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                             //remove double and end commas
-                            cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
+                            cellContent = Regex.Replace(cellContent, "/{2/}", "/").Trim('/');
                             dr["Obstruction"] = new Item(cellContent.Trim());
                         }
                     }
@@ -217,7 +219,7 @@ namespace pCOLADnamespace
                             {
                                 if (!cellContent.Contains(MyDataCollectorClass.userName))
                                 {
-                                    dr["Obstruction"] = new Item(cellContent + "," + MyDataCollectorClass.userName);
+                                    dr["Obstruction"] = new Item(cellContent + "/" + MyDataCollectorClass.userName);
                                 }
                             }
                         }
@@ -239,7 +241,7 @@ namespace pCOLADnamespace
                             }
                             else
                             {
-                                dr["Obstruction"] = new Item(cellContent + "," + MyDataCollectorClass.userName);
+                                dr["Obstruction"] = new Item(cellContent + "/" + MyDataCollectorClass.userName);
                             }
                         }
                         else
@@ -247,7 +249,7 @@ namespace pCOLADnamespace
                             // remove username from the cell
                             cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                             //remove double and end commas
-                            cellContent = Regex.Replace(cellContent, ",{2,}", ",").Trim(',');
+                            cellContent = Regex.Replace(cellContent, "/{2/}", "/").Trim('/');
                             dr["Obstruction"] = new Item(cellContent.Trim());
                         }
                         RaisePropertyChanged("MyPropDataTable");
@@ -330,7 +332,19 @@ namespace pCOLADnamespace
         [IsVisibleInDynamoLibrary(false)]
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
+            //Func<int, string> projection = x => "Value=" + x;
+            var x = new Func<int,string> (MyDataCollectorClass.projection);
+            int[] values = { 3, 7, 10 };
+            var strings = values.Select(MyDataCollectorClass.projection);
+
+            foreach (string s in strings)
+            {
+                Console.WriteLine(s);
+            }
+
+
             var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
+            string testj = MyDataCollectorClass.inputFile;
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
             return new[] 
@@ -545,6 +559,7 @@ namespace pCOLADnamespace
         private void Share(object obj)
         {
             //write myDataTable to the csv files if something changed
+            Boolean newHistoryFile = false;
             myPropDataTable = MyDataCollectorClass.myDataTable;
             string csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
             if (oldCSV == csv)
@@ -556,22 +571,23 @@ namespace pCOLADnamespace
                 try
                 {
                     //myPropDataTable = MyDataCollectorClass.myDataTable;
-                    //avoid SystemFileWatcher to fire when you save yourself.
+                    //avoid SystemFileWatcher to fire when you save the csv file yourself.
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
                     File.WriteAllText(MyDataCollectorClass.inputFile, csv);
                     File.WriteAllText(MyDataCollectorClass.inputFileCopy, csv);
                     //add a timestamp and owner name to the author column for the History file
-                    int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
+                    //int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
                     DateTime time = DateTime.UtcNow;
-                    myPropDataTable.Rows[lastrow]["Date"] = new Item(time.ToString());
-                    myPropDataTable.Rows[lastrow]["Author"] = new Item(MyDataCollectorClass.userName);
+                    myPropDataTable.Rows[1]["Date"] = new Item("utc " + time.ToString());
+                    myPropDataTable.Rows[1]["Author"] = new Item(MyDataCollectorClass.userName);
                     csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
                     historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     //check if file exist
                     if (!File.Exists(historyFile))
                     {
                         //File.Copy(MyDataCollectorClass.inputFile, historyFile);
-                        File.Create(historyFile);
+                        File.Create(historyFile).Close();
+                        newHistoryFile = true;
                     }
                     //Save the image file names to the historyFile
                     //Replace the Item.imageList property in column "Images"
@@ -601,7 +617,15 @@ namespace pCOLADnamespace
                         //dr["Images"] = temp.imageFileNameList;
                     }
                     historyCSV = Functions.ToCSV(historyDataTable, "historyDataTable");
-                    File.AppendAllText(historyFile, Environment.NewLine + historyCSV);
+                    if (newHistoryFile)
+                        {
+                        File.AppendAllText(historyFile, historyCSV);
+                    }
+                    else
+                    {
+                        File.AppendAllText(historyFile, Environment.NewLine + historyCSV);
+                    }
+
                     //reset myPropDataTable to myDataTable to get rid of the time stamp
                     myPropDataTable = MyDataCollectorClass.myDataTable;
                     ShowParams(OnOff);//closes the CSVControl and sets the On property to false
@@ -618,7 +642,7 @@ namespace pCOLADnamespace
                 }
                 catch (System.Exception e)
                 {
-                    MessageBox.Show("Exception source: {0}", e.Source);
+                    MessageBox.Show("Exception source: {0}", e.Message);
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
@@ -640,6 +664,9 @@ namespace pCOLADnamespace
                     if (!File.Exists(HistoryFile))
                     {
                         MessageBox.Show("There is no history file (yet). Please hit the Share button first ...");
+                        //reset the buttons
+                        //HistoryOn = true;
+                        //History(new Object());
                         return;
                     }
                     MyDataCollectorClass.formPopulate = false;

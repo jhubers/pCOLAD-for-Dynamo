@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Autodesk.DesignScript.Runtime;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
 namespace MyDataCollector
+
 {
+    [IsVisibleInDynamoLibrary(false)]
     public class Item : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

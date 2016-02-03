@@ -109,12 +109,7 @@ namespace pCOLADnamespace
         }
         private void myCheckBox_Loaded(object sender, RoutedEventArgs e)
         {
-            //set the checkbox to the value in the hidden column "Accepted"
-            //this should only happen the first time you add pSHARE
-            //or you should update column "Accepted" 
-            //if (firsttime)
-            //{
-
+            //if you select the checkbox the username should appear in the column Obstruction.
             CheckBox cb = (CheckBox)sender;
             //the last row is not a valid DataRowView
             if (cb.DataContext != null && cb.DataContext.GetType() == typeof(DataRowView))
@@ -135,8 +130,6 @@ namespace pCOLADnamespace
                 }
                 cb.IsChecked = b;
             }
-            //}
-
         }
         private void Image_MouseUp(object sender, MouseButtonEventArgs e)
         {
