@@ -7,6 +7,8 @@ using Dynamo.Models;
 using System.Windows;
 using ProtoCore.AST.AssociativeAST;
 using System.Collections.ObjectModel;
+using Dynamo.Graph.Nodes;
+
 namespace pCOLADnamespace
 {
     public static class MakeInputList
@@ -42,7 +44,7 @@ namespace pCOLADnamespace
                         // If the Inputs are from pSHARE you should make it recognizable in the ReturnList
                         // so you can make a difference with the inputs from pCOLLECTs
                         // or maybe make a case for the paths?
-                        Dynamo.Nodes.CodeBlockNodeModel cbnm = (Dynamo.Nodes.CodeBlockNodeModel)nm;
+                        CodeBlockNodeModel cbnm = (CodeBlockNodeModel)nm;
                         string s = cbnm.Code;
                         if (s.Length > 1 && s[0] == '\"')
                         {

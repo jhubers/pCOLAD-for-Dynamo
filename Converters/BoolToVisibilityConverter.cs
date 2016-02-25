@@ -7,16 +7,16 @@ using System.Windows.Media;
 namespace pCOLADnamespace
 {
     [ValueConversion(typeof(bool), typeof(Visibility))]
-    public class BoolToOppositeBoolConverter : IValueConverter
+    public class BoolToVisibilityConverter : IValueConverter
     {
-        public Boolean TrueValue { get; set; }
-        public Boolean FalseValue { get; set; }
+        public Visibility TrueValue { get; set; }
+        public Visibility FalseValue { get; set; }
 
-        public BoolToOppositeBoolConverter()
+        public BoolToVisibilityConverter()
         {
             // set defaults
-            FalseValue = false;
-            TrueValue = true;
+            FalseValue = Visibility.Hidden;
+            TrueValue = Visibility.Visible;
         }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

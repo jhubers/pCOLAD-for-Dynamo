@@ -8,17 +8,23 @@
              xmlns:local="clr-namespace:pCOLADnamespace"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
-             SizeToContent="WidthAndHeight"
-             Title="pCOLAD"
+             SizeToContent="WidthAndHeight" 
+             MaxHeight="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
+             Top="{DynamicResource {x:Static SystemParameters.VirtualScreenTopKey}}"
+             Title="pCOLAD" 
              >
     <Window.Resources>
         <local:pSHARE x:Key="myDataContext"/>
+        <local:BoolToOppositeBoolConverter x:Key="BoolToOppositeBoolConverter"
+                                           FalseValue="True"
+                                           TrueValue="False" />
         <local:BoolToVisibilityConverter x:Key="BoolToVisibleConverter"
                                FalseValue= "Visible"
                                TrueValue="Hidden" />
         <local:ObjectToForegroundConverter x:Key="MyObjectToForegroundConverter"/>
         <local:testConverter x:Key="myTestConverter"/>
         <local:DataRowToFullPathListConverter x:Key="myDataRowToListConverter"/>
+        <local:ImageTemplateSelector x:Key="myImageTemplateSelector"/>
 
         <!--<local:BindingProxy x:Key="proxy" Data="{Binding}" />-->
         <Style x:Key="ButtonFocusVisual">
@@ -144,6 +150,26 @@
             Background="{Binding [Importance],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
             />
         </DataTemplate>-->
+        <DataTemplate x:Key="imagesOn">
+            <ItemsControl ItemsSource="{Binding  
+                                Converter={StaticResource myDataRowToListConverter}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate >
+                        <Border x:Name="imageBorder1" BorderThickness="1" BorderBrush="Black"                                                
+                                                MouseLeave="imageBorder_MouseLeave"
+                                                MouseEnter="imageBorder_MouseEnter" Height="16">
+                            <!-- try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow -->
+                            <Image x:Name="myImage" Source="{Binding MyImagePath}"
+                                               MouseUp="Image_MouseUp"  HorizontalAlignment="Center">
+                            </Image>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </DataTemplate>
+        <DataTemplate x:Key="imagesOff">
+            <!--just empty cells-->
+        </DataTemplate>
     </Window.Resources>
 
     <Grid AllowDrop="False">
@@ -191,25 +217,30 @@
                 </DataGridTemplateColumn>-->
 
                 <DataGridTemplateColumn x:Name="dgtc">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
+                    <DataGridTemplateColumn.CellTemplateSelector>
+                        <local:ImageTemplateSelector
+                            WithImage="{StaticResource imagesOn}"
+                            WithoutImage="{StaticResource imagesOff}"/>
+                        <!--<DataTemplate>
                             <ItemsControl ItemsSource="{Binding  
                                 Converter={StaticResource myDataRowToListConverter}}">
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border x:Name="imageBorder" BorderThickness="1" BorderBrush="Black"                                                
+                                    <DataTemplate >
+                                        <Border x:Name="imageBorder" BorderThickness="1" BorderBrush="Black"   
                                                 MouseLeave="imageBorder_MouseLeave"
                                                 MouseEnter="imageBorder_MouseEnter" Height="16">
-                                            <!-- try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow -->
-                                            <Image x:Name="myImage" Source="{Binding MyImagePath}"
+                                            
+                                         --><!--try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow--><!--
+
+                                            <Image x:Name="myImage" Source="{Binding MyImagePath}" Visibility="{Binding HistoryOn, Converter={StaticResource BoolToVisibleConverter}}"
                                                MouseUp="Image_MouseUp"  HorizontalAlignment="Center">
                                             </Image>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
+                        </DataTemplate>-->
+                    </DataGridTemplateColumn.CellTemplateSelector>
                 </DataGridTemplateColumn>
 
 
@@ -325,7 +356,8 @@
 
             <!--When you show the History.CSV file hide all other buttons and hilite the History button.-->
             <ToggleButton x:Name="History" Grid.Column="2" Content="History" Command="{Binding HistoryCommand}"
-				VerticalAlignment="Bottom" Margin="0,0,83,0" Style="{DynamicResource MyToggleButtonStyle}" HorizontalAlignment="Right">
+				VerticalAlignment="Bottom" Margin="0,0,83,0" Style="{DynamicResource MyToggleButtonStyle}"
+                HorizontalAlignment="Right" IsChecked="{Binding HistoryOn, Mode=TwoWay}">
                 <ToggleButton.Resources>
                     <Style x:Key="MyToggleButtonStyle" TargetType="{x:Type ToggleButton}">
                         <Setter Property="Background" Value="#FF1F3B53"/>
@@ -376,7 +408,7 @@
                                                 <VisualState x:Name="Unfocused" />
                                             </VisualStateGroup>
                                             <VisualStateGroup x:Name="CheckStates">
-                                                <VisualState x:Name="Checked">
+                                                <VisualState x:Name="Checked" >
                                                     <Storyboard>
                                                         <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Background">
                                                             <EasingColorKeyFrame KeyTime="0" Value="#FF14F082"/>

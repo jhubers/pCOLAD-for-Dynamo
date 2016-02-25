@@ -12,8 +12,9 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using Dynamo.Wpf;
 using MyDataCollector;
-using Dynamo.Nodes;
 using System.Linq;
+using Dynamo.Graph.Nodes;
+using Dynamo.Graph.Workspaces;
 
 namespace pCOLADnamespace
 {
@@ -23,21 +24,42 @@ namespace pCOLADnamespace
     [NodeCategory("pCOLAD")]
     [NodeDescription("Load and share changes to parameters.")]
     [IsDesignScriptCompatible]
+    //[InPortNamesAttribute("N", "I", "L", "U")]
+    //[InPortDescriptionsAttribute(
+    //    "Input (a List.CreateList) of pCOLLECT output(s)",
+    //    "Input a FilePath for the shared csv files.",
+    //    "Input a FilePath for the local copy of the csv file.",
+    //    "Input a the user namen (Code Block).")]
+    //[InPortTypesAttribute ("string", "string", "string", "string")]
+    //[OutPortNamesAttribute ("O")]
+    //[OutPortDescriptionsAttribute ("Output of parameter name and value on next line; two by two.")]
+    //[OutPortTypesAttribute ("string")]
+
     #endregion
     public class pSHARE : NodeModel
     {
+        
         #region properties
         public static string ttt;
         private string historyFile = "";
         private string oldCSV = "";
         private bool On = false;
-        public static bool HistoryOn = false;
+        public static bool historyOn;
+        public bool HistoryOn
+        {
+            get { return historyOn; }
+            set
+            {
+                historyOn = value;
+                RaisePropertyChanged("HistoryOn");
+            }
+        }
         //public static bool AutoPlayOn = false;
         private bool CheckAllButton = false;
         private bool UncheckAllButton = false;
         private string _OnOffButton = "";
         public DataTable latestMyDataTable;
-        CSVControl _CSVControl;
+        public CSVControl _CSVControl;
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
         /// </summary>
@@ -65,19 +87,7 @@ namespace pCOLADnamespace
             }
         }
         public static DynamoModel dm;
-        ////the idea is that in myImageFolderList we store a list of folder path objects (MyImageFolder)
-        ////then we can bind to that list and display the MyImagePath property of the nested object (MyImage)        
-        //private List<MyImageFolder> myImageFolderList;
-        //public List<MyImageFolder> MyImageFolderList 
-        //{
-        //    get { return myImageFolderList; }
-        //    set
-        //    {
-        //        myImageFolderList = value;
-        //        RaisePropertyChanged("MyImageFolderList");
-        //    }
-        //}
-
+        
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             Compare();
@@ -330,6 +340,7 @@ namespace pCOLADnamespace
         /// <param name="inputAstNodes"></param>
         /// <returns></return
         [IsVisibleInDynamoLibrary(false)]
+        
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             //Func<int, string> projection = x => "Value=" + x;
@@ -360,17 +371,32 @@ namespace pCOLADnamespace
             //make sure that control doesn't exist.
             try
             {
-                //check if the control exist already
+                //checking the processes doesn't work. Only Revit is found.
+                //Dynamo.ViewModels.DynamoViewModel dv;
+                //dv = 
+                //Dynamo.UI.Prompts.EditWindow thisDynamo = new Dynamo.UI.Prompts.EditWindow();
+
+
                 bool isCSVControlOpen = false;
-                foreach (Window w in Application.Current.Windows)
+                if (_CSVControl != null)
                 {
-                    if (w is CSVControl)
-                    {
-                        isCSVControlOpen = true;
-                        w.Show();
-                        w.Activate();
-                    }
+                    _CSVControl.Close();
                 }
+                //Application.Current.Windows throws a null error in Revit/Dynamo
+
+                //if (Application.Current != null)
+                //{
+                //    foreach (Window w in Application.Current.Windows)
+                //    {
+                //        if (w is CSVControl)
+                //        {
+                //            isCSVControlOpen = true;
+                //            w.Show();
+                //            w.Activate();
+                //        }
+                //    }
+
+                //}                
                 if (!isCSVControlOpen)
                 {
                     //the CSVControl should be created only once
@@ -423,7 +449,7 @@ namespace pCOLADnamespace
 
             catch (System.Exception e)
             {
-                MessageBox.Show("Exception deze source: {0}", e.Source);
+                MessageBox.Show("Exception deze source: {0}", e.Message);
             }
         }
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>
@@ -438,23 +464,45 @@ namespace pCOLADnamespace
             /// <param name="model">The NodeModel representing the node's core logic.</param>
             /// <param name="nodeView">The NodeView representing the node in the graph.</param>
             //probably Dynamo has a method that makes it go here asa pSHARE is loaded
-
             public void CustomizeView(pSHARE model, NodeView nodeView)
             {
                 var pSHAREControl = new pSHAREcontrol();
                 nodeView.inputGrid.Children.Add(pSHAREControl);
                 pSHAREControl.DataContext = model;                
                 Dynamo.ViewModels.NodeViewModel vm = nodeView.ViewModel;
-                Dynamo.Models.NodeModel nm = vm.NodeModel;
+                NodeModel nm = vm.NodeModel;
                 Dynamo.ViewModels.DynamoViewModel dvm = vm.DynamoViewModel;
-                pSHARE.dm = dvm.Model;
+                pSHARE.dm = dvm.Model;                
+                //subscribe to the shutdown event in order to avoid _CSVcontrol being left behind
+                //first you need an instance of the DynamoModel
+                //dm.ShutdownStarted += closeCSVcontrolFrom_dm(dm);
+
             }
             /// <summary>
             /// Here you can do any cleanup you require if you've assigned callbacks for particular 
             /// UI events on your node.
             /// </summary>
+            //private pSHARE parent;
+            //public pSHARENodeViewCustomization()
+            //{
+            //}
+            //public pSHARENodeViewCustomization(pSHARE parent)
+            //{
+            //    this.parent = parent;
+            //}
+            //public DynamoModelHandler closeCSVcontrolFrom_dm(DynamoModel dm)
+            //{
+            //    if (parent != null | parent._CSVControl != null)
+            //    {
+            //        parent._CSVControl.Close();
+            //    }
+            //    return null;
+            //}
 
-            public void Dispose() { }
+
+            public void Dispose()
+            {
+            }
 
         }
         /// <summary>
@@ -493,16 +541,20 @@ namespace pCOLADnamespace
         /// </summary>
         public void closeCSVControl()
         {
-            foreach (Window w in Application.Current.Windows)
+            if (_CSVControl != null)
             {
-                if (w is CSVControl)
-                {
-                    //w.Hide();
-                    //MyDataCollectorClass.myDataTable = MyDataCollectorClass.csvDataTable.Copy();
-                    //MyPropDataTable = MyDataCollectorClass.myDataTable;
-                    w.Close();
-                }
+                _CSVControl.Close(); 
             }
+            //foreach (Window w in Application.Current.Windows)
+            //{
+            //    if (w is CSVControl)
+            //    {
+            //        //w.Hide();
+            //        //MyDataCollectorClass.myDataTable = MyDataCollectorClass.csvDataTable.Copy();
+            //        //MyPropDataTable = MyDataCollectorClass.myDataTable;
+            //        w.Close();
+            //    }
+            //}
         }
         #endregion
         #region command methods
@@ -543,6 +595,7 @@ namespace pCOLADnamespace
                 }
                 else
                 {
+                    //MyPropDataTable = MyDataCollectorClass.myDataTable;
                     MessageBox.Show("Please hit the Run button first...");
                     //set the button to red again
                     RaisePropertyChanged("OnOff");
@@ -578,8 +631,8 @@ namespace pCOLADnamespace
                     //add a timestamp and owner name to the author column for the History file
                     //int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
                     DateTime time = DateTime.UtcNow;
-                    myPropDataTable.Rows[1]["Date"] = new Item("utc " + time.ToString());
-                    myPropDataTable.Rows[1]["Author"] = new Item(MyDataCollectorClass.userName);
+                    myPropDataTable.Rows[0]["Date"] = new Item("utc " + time.ToString("dd/MM/yyyy HH:mm:ss"));
+                    myPropDataTable.Rows[0]["Author"] = new Item(MyDataCollectorClass.userName);
                     csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
                     historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     //check if file exist
@@ -658,15 +711,15 @@ namespace pCOLADnamespace
             }
             else
             {
-                if (!HistoryOn)//HistoryOn is true when you show the History file, false if you hit the button to hide
+                if (historyOn)//historyOn is false when you show the History file, true if you hit the button to hide
                 {
                     string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     if (!File.Exists(HistoryFile))
                     {
-                        MessageBox.Show("There is no history file (yet). Please hit the Share button first ...");
-                        //reset the buttons
-                        //HistoryOn = true;
-                        //History(new Object());
+                        MessageBox.Show("There is no History.csv file (yet). Please hit the Share button first ...");
+                        //reset the buttons. Don't know how!!!
+                        HistoryOn = false;
+                        //History(HistoryCommand);
                         return;
                     }
                     MyDataCollectorClass.formPopulate = false;

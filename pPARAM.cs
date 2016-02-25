@@ -7,6 +7,7 @@ using Dynamo.Wpf;
 using MyDataCollector;
 using System;
 using Dynamo.Nodes;
+using Dynamo.Graph.Nodes;
 
 namespace pCOLADnamespace
 {

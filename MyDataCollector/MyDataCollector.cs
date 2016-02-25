@@ -39,6 +39,8 @@ namespace MyDataCollector
         private static DataTable mergedDataTable;
         public static bool AutoPlay;
         public static string testValue;
+        public static DateTime lastRead = DateTime.MinValue;
+        public static DateTime lastWriteTime;
 
         public static void openCSV()
         {            
@@ -231,11 +233,12 @@ namespace MyDataCollector
         }
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
-            //stop watching because otherwise you get nummerous messages
+            //stop watching because otherwise you get nummerous messages (that doesn't work)
             ImagesWatcher.EnableRaisingEvents = false;
             CSVwatcher.EnableRaisingEvents = false;
             //show the message on top of Dynamo. Because it comes from a different thread
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
+            lastWriteTime = File.GetLastWriteTime(inputFile);
 
             string msg = "Some changes occured in the shared information. I will start over... " +
             "Hit the Run button if you are not in Automatic mode.";
@@ -245,16 +248,19 @@ namespace MyDataCollector
             //    ImagesWatcher.EnableRaisingEvents = false;
             //    CSVwatcher.EnableRaisingEvents = false;
             //}
-            if  (!Application.Current.Dispatcher.CheckAccess())
+            if (lastWriteTime!=lastRead)
             {
-                Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                if (!Application.Current.Dispatcher.CheckAccess())
                 {
-                    MessageBox.Show(Application.Current.MainWindow, msg);
-                    ImagesWatcher.EnableRaisingEvents = true;
-                    CSVwatcher.EnableRaisingEvents = true;
-                }));
-            }
-            //else
+                    Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    {
+                        MessageBox.Show(Application.Current.MainWindow, msg);
+                        ImagesWatcher.EnableRaisingEvents = true;
+                        CSVwatcher.EnableRaisingEvents = true;
+                    }));
+                }
+                lastRead = lastWriteTime;
+            }            //else
             //{
             //    MessageBox.Show(Application.Current.MainWindow, msg);
             //    ImagesWatcher.EnableRaisingEvents = true;

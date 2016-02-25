@@ -2,19 +2,13 @@
 using System.Windows;
 using Autodesk.DesignScript.Runtime;
 using Dynamo.Controls;
-using Dynamo.Models;
-using Dynamo.UI;
 using Dynamo.UI.Commands;
 using ProtoCore.AST.AssociativeAST;
 using Dynamo.Wpf;
 using System;
-using Dynamo.Nodes;
-using pCOLADnamespace;
-using System.Linq;
-using System.Windows.Controls;
-using MyDataCollector;
 using System.Xml;
-using Dynamo.Utilities;
+using Dynamo.Graph.Nodes;
+using Dynamo.Graph;
 
 namespace pCOLADnamespace
 {
@@ -43,6 +37,12 @@ namespace pCOLADnamespace
     // The description will display in the tooltip
     // and in the help window for the node.
     [NodeDescription("Collects parameters and their attributes for pSHARE.")]
+    //[InPortNamesAttribute("P", "V", "I", "C")]
+    //[InPortDescriptionsAttribute("Parameter", "New Value", "Importance", "Comments")]
+    //[InPortTypesAttribute("string", "string", "string", "string")]
+    //[OutPortNamesAttribute("N")]
+    //[OutPortDescriptionsAttribute("List of ;-seperated strings.")]
+    //[OutPortTypesAttribute("string")]
 
     [IsDesignScriptCompatible]
     public class pCOLLECT : NodeModel
@@ -83,10 +83,11 @@ namespace pCOLADnamespace
             InPortData.Add(new PortData("V", "New Value"));
             InPortData.Add(new PortData("I", "Importance"));
             InPortData.Add(new PortData("C", "Comments"));
+            OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
+
             //InPortData.Add(new PortData("O", "Owner"));
             // Nodes can have an arbitrary number of inputs and outputs.
             // If you want more ports, just create more PortData objects.
-            OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
             //OutPortData.Add(new PortData("some awesome", "A result."));
 
             // This call is required to ensure that your ports are
@@ -160,6 +161,10 @@ namespace pCOLADnamespace
             {
                 inputNames += item.ToolTipString + ";";
             }
+            //foreach (Attribute item in InPortNamesAttribute.GetCustomAttributes(typeof(string),true))
+            //{
+            //    inputNames += item + ";";
+            //}
             inputNames = inputNames.Remove(inputNames.Length - 1);
             //var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
             var headings = AstFactory.BuildStringNode(inputNames);
