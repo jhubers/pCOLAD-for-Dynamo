@@ -353,13 +353,14 @@ namespace pCOLADnamespace
                 Console.WriteLine(s);
             }
 
-
             var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
-            string testj = MyDataCollectorClass.inputFile;
-            //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
-            var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
-            return new[] 
-            { 
+            //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
+            //after running the solution.
+            //string testj = MyDataCollectorClass.inputFile;
+                //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
+                var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
+                return new[]
+                {
                 AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
              };
         }

@@ -147,6 +147,9 @@ namespace MyDataCollector
                 throw new ArgumentException("Tables must not be empty", "tables");
             if (primaryKeyColumn != null)
                 foreach (DataTable t in tables)
+                    // the first table is null!!! Check reason maybe if (newParamTables.Count > 1) in stead of >2 when adding new parameters.
+
+
                     if (!t.Columns.Contains(primaryKeyColumn))
                         throw new ArgumentException("All tables must have the specified primarykey column " + primaryKeyColumn, "primaryKeyColumn");
 

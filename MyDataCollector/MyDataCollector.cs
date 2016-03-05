@@ -14,6 +14,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace MyDataCollector
 {
@@ -43,7 +45,7 @@ namespace MyDataCollector
         public static DateTime lastWriteTime;
 
         public static void openCSV()
-        {            
+        {
             if (!formPopulate)
             {
                 myDataTable = null;
@@ -84,7 +86,7 @@ namespace MyDataCollector
             newParamTables.Add(myDataTable);
             foreach (List<string> ls in pSHAREoutputs)
             {
-               //with Automatic run the first ls has null in line two giving errors!!!
+                //with Automatic run the first ls has null in line two giving errors!!!
                 DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
                 //since you removed owner from pCOLLECT add it here 
                 //maybe was wrong, because owner can change? Then simply disconnect pCOLLECT concerned!
@@ -112,7 +114,11 @@ namespace MyDataCollector
                 }
                 newParamTables.Add(newParamTable);
             }
-            if (newParamTables.Count > 2)
+            //merging tables needs more than 1 table of course. But if you connect only 1 pCOLLECT
+            //you have at this point only 1 table. With one table you get the warning to put a List.Create
+            //between pCOLLECT and pSHARE. But if you ignore that message, and hit the pSHARE button,
+            //you get the warning to first hit the Run button and this keeps showing up.
+            if (newParamTables.Count > 1)
             {
                 DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
                 myDataTable = TblUnion;
@@ -174,26 +180,37 @@ namespace MyDataCollector
                 if (item.Count == 1)
                 {
                     MessageBox.Show("Please put a List.Create node between pCOLLECT and pSHARE...");
-                    return null;
+                    //subItem = "WARNING: output is not generated. Did you connect the input without a List.Create?";
+                    //item[0] = "WARNING: output is not generated. Did you connect the input without a List.Create?";
+                    //you have to return null so you can count the number of datatables before merging
+                    //better would be that you can not continue!!! Put pSHARE in error.How?                    
+                    //return null;
                 }
-                pSHAREoutputs.Add(item);
+                else
+                {
+                    pSHAREoutputs.Add(item);
+                }
             }
             //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
             //Populate myDataTable with the csv file
             openCSV();
             // Union the pCOLLECTs to myDataTable
             // Check if not only 1 pCOLLECT is connected otherwise you get an error
-            if (pSHAREoutputs.Count > 1)
+            List<string> pSHAREoutputList = new List<string>();
+            if (pSHAREoutputs.Count > 0)
             {
                 addNewPararemeters();
+                //now myDataTable contains the union of the csv file and the new parameters
+                //so, you can use the columns "Parameter" and "New Value"
+                for (int i = 0; i < myDataTable.Rows.Count; i++)
+                {
+                    pSHAREoutputList.Add(myDataTable.Rows[i]["Parameter"].ToString());
+                    pSHAREoutputList.Add(myDataTable.Rows[i]["New Value"].ToString());
+                }
             }
-            List<string> pSHAREoutputList = new List<string>();
-            //now myDataTable contains the union of the csv file and the new parameters
-            //so, you can use the columns "Parameter" and "New Value"
-            for (int i = 0; i < myDataTable.Rows.Count; i++)
+            else
             {
-                pSHAREoutputList.Add(myDataTable.Rows[i]["Parameter"].ToString());
-                pSHAREoutputList.Add(myDataTable.Rows[i]["New Value"].ToString());
+                pSHAREoutputList.Add("WARNING: output is not generated. Did you connect the input without a List.Create?");
             }
             //when you change a parameter you should have immediate update of the display when you hit run.
             UpdateCSVControl(null, EventArgs.Empty);
@@ -231,6 +248,9 @@ namespace MyDataCollector
             ImagesWatcher.Deleted += OnChanged;
             ImagesWatcher.EnableRaisingEvents = true;
         }
+        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
+        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
             //stop watching because otherwise you get nummerous messages (that doesn't work)
@@ -248,30 +268,67 @@ namespace MyDataCollector
             //    ImagesWatcher.EnableRaisingEvents = false;
             //    CSVwatcher.EnableRaisingEvents = false;
             //}
-            if (lastWriteTime!=lastRead)
+            if (lastWriteTime != lastRead)
             {
-                if (!Application.Current.Dispatcher.CheckAccess())
+                //if (Application.Current != null) //in Revit Application.Current is null!
+                //{
+                //if (!Application.Current.Dispatcher.CheckAccess())
+                if (!Dispatcher.CurrentDispatcher.CheckAccess())
                 {
-                    Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    //Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
-                        MessageBox.Show(Application.Current.MainWindow, msg);
-                        ImagesWatcher.EnableRaisingEvents = true;
-                        CSVwatcher.EnableRaisingEvents = true;
-                    }));
+                            //MessageBox.Show(Application.Current.MainWindow, msg);
+                            MessageBox.Show(msg);
+                            ImagesWatcher.EnableRaisingEvents = true;
+                            CSVwatcher.EnableRaisingEvents = true;
+                        }));
+                    }
+                else
+                {
+                    //Dynamo.Wpf.BrowserWindow w;
+                    ////List<string> openwindows = new List<string>();
+                    ////Process[] processlist = Process.GetProcesses();
+
+                    ////foreach (Process process in processlist)
+                    ////{
+
+                    ////    if (process.ProcessName=="Revit")
+                    ////    {
+                    ////        IntPtr handle = process.MainWindowHandle;
+
+                    ////        // Use EnumChildWindows on handle ...
+
+                    ////    }
+                    ////    if (!String.IsNullOrEmpty(process.MainWindowTitle))
+                    ////    {
+                    ////        openwindows.Add("Process name =" + process.ProcessName +  "ID = " + process.Id + "MainWindowTitle = "+ process.MainWindowTitle);
+                    ////    }
+                    ////}
+                    Process[] anotherApps = Process.GetProcessesByName("Revit");
+                    if (anotherApps.Length == 0) return;
+                    if (anotherApps[0] != null)
+                    {
+                        var allChildWindows = new WindowHandleInfo(anotherApps[0].MainWindowHandle).GetAllChildHandles();
+                    }
+                    //Window w 
+                    MessageBox.Show(msg);
+                    //MessageBox.Show(Application.Current.MainWindow, msg);
+                    ImagesWatcher.EnableRaisingEvents = true;
+                    CSVwatcher.EnableRaisingEvents = true;
                 }
+                //}
                 lastRead = lastWriteTime;
-            }            //else
-            //{
-            //    MessageBox.Show(Application.Current.MainWindow, msg);
-            //    ImagesWatcher.EnableRaisingEvents = true;
-            //    CSVwatcher.EnableRaisingEvents = true;
-            //}
+            }
 
             //Update the CSVControll with new csv file.
             formPopulate = false;
             openCSV();
             addNewPararemeters();
             UpdateCSVControl(null, EventArgs.Empty);
+            ImagesWatcher.EnableRaisingEvents = true;
+            CSVwatcher.EnableRaisingEvents = true;
+
         }
 
         #region OldFunc
@@ -310,6 +367,56 @@ namespace MyDataCollector
         }
 
         #endregion
+    }
+    public class WindowHandleInfo
+    {
+        private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
+
+        [DllImport("user32")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
+
+        private IntPtr _MainHandle;
+
+        public WindowHandleInfo(IntPtr handle)
+        {
+            this._MainHandle = handle;
+        }
+
+        public List<IntPtr> GetAllChildHandles()
+        {
+            List<IntPtr> childHandles = new List<IntPtr>();
+
+            GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
+            IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
+
+            try
+            {
+                EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
+                EnumChildWindows(this._MainHandle, childProc, pointerChildHandlesList);
+            }
+            finally
+            {
+                gcChildhandlesList.Free();
+            }
+
+            return childHandles;
+        }
+
+        private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
+        {
+            GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
+
+            if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
+            {
+                return false;
+            }
+
+            List<IntPtr> childHandles = gcChildhandlesList.Target as List<IntPtr>;
+            childHandles.Add(hWnd);
+
+            return true;
+        }
     }
 }
 
