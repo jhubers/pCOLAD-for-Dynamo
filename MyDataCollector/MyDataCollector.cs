@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using Dynamo.Controls;
 
 namespace MyDataCollector
 {
@@ -39,11 +40,14 @@ namespace MyDataCollector
         public static DataTable csvDataTable;
         public static DataTable copyDataTable;
         public static event EventHandler UpdateCSVControl = delegate { };
+        public static event EventHandler Message = delegate { };
         private static DataTable mergedDataTable;
         public static bool AutoPlay;
         public static string testValue;
         public static DateTime lastRead = DateTime.MinValue;
         public static DateTime lastWriteTime;
+        public static string msg = "";
+        public static DynamoView dv;
 
         public static void openCSV()
         {
@@ -107,7 +111,8 @@ namespace MyDataCollector
                         string p2 = userName;
                         if (t1 == t2 && p1 != p2)
                         {
-                            MessageBox.Show("Parameter " + t2 + " already exists. Please use another parameter name...");
+
+                            MessageBox.Show(dv, "Parameter " + t2 + " already exists. Please use another parameter name...");
                             //replace the Parameter by ERROR
                             newParamTable.Rows[i]["Parameter"] = new Item("---ERROR---");
                         }
@@ -190,7 +195,9 @@ namespace MyDataCollector
             }
             if (OnepCOLLECT)
             {
-                MessageBox.Show("Please put a List.Create node between pCOLLECT and pSHARE...");
+                msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
+
+                MessageBox.Show(dv, msg);
             }
             //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
             //Populate myDataTable with the csv file
@@ -274,64 +281,73 @@ namespace MyDataCollector
                 //if (Application.Current != null) //in Revit Application.Current is null!
                 //{
                 //if (!Application.Current.Dispatcher.CheckAccess())
-                if (!Dispatcher.CurrentDispatcher.CheckAccess())
-                {
-                    //Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                    Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                    {
-                            //MessageBox.Show(Application.Current.MainWindow, msg);
-                            MessageBox.Show(msg);
-                            ImagesWatcher.EnableRaisingEvents = true;
-                            CSVwatcher.EnableRaisingEvents = true;
-                        }));
-                    }
-                else
-                {
-                    //Process[] anotherApps = Process.GetProcessesByName("Revit");
-                    //if (anotherApps.Length > 0)
-                    //{
-                    //    if (anotherApps[0] != null)
-                    //    {
-                    //        //List<IntPtr> allChildWindows = new WindowHandleInfo(anotherApps[0].MainWindowHandle).GetAllChildHandles();
-                    //        //foreach (var cw in allChildWindows)
-                    //        //{
-                    //        //    childWindowNames.Add(cw.ToString());
-                    //        //}
-                    //        anotherApps[0].Refresh();
-                    //        var hwnd = anotherApps[0].MainWindowHandle;
-                    //        var window = HwndSource.FromHwnd((IntPtr)hwnd);
-                    //        dynamic customWindow = window.RootVisual;
-                    ////        you get errors not calling from the right thread
-                    //        MessageBox.Show(customWindow,"OwnerWindow name = " + customWindow.Name);
+                //don't know how to get the right dispatcher, so invoke always...
+                //Dispatcher dp = Dispatcher.CurrentDispatcher;
+                //string sdp = dp.Thread.Name + "  " + dp.Thread.GetType().ToString();
+                //if (!Dispatcher.CurrentDispatcher.CheckAccess())
+                //{
+                //Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                dv.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                 {
+                     //MessageBox.Show(Application.Current.MainWindow, msg);
+                     MessageBox.Show(dv, msg);
+                     formPopulate = false;
+                     openCSV();
+                     addNewPararemeters();
+                     //but hide the _CSVControl anyway to make clear something changed
+                     formPopulate = false;
+                     UpdateCSVControl(null, EventArgs.Empty);
+                     ImagesWatcher.EnableRaisingEvents = true;
+                     CSVwatcher.EnableRaisingEvents = true;
+                 }));
+                //    }
+                //else
+                //{
+                //    //Process[] anotherApps = Process.GetProcessesByName("Revit");
+                //    //if (anotherApps.Length > 0)
+                //    //{
+                //    //    if (anotherApps[0] != null)
+                //    //    {
+                //    //        //List<IntPtr> allChildWindows = new WindowHandleInfo(anotherApps[0].MainWindowHandle).GetAllChildHandles();
+                //    //        //foreach (var cw in allChildWindows)
+                //    //        //{
+                //    //        //    childWindowNames.Add(cw.ToString());
+                //    //        //}
+                //    //        anotherApps[0].Refresh();
+                //    //        var hwnd = anotherApps[0].MainWindowHandle;
+                //    //        var window = HwndSource.FromHwnd((IntPtr)hwnd);
+                //    //        dynamic customWindow = window.RootVisual;
+                //    ////        you get errors not calling from the right thread
+                //    //        MessageBox.Show(customWindow,"OwnerWindow name = " + customWindow.Name);
 
-                    //    }
-                    //}
-                    //Window w 
-                    //in order to show the message above Dynamo you will have to get the window of Dynamo
-                    //or if you manage to display the CSVcontrol (which is a window) above Dynamo
-                    //make a message event and subscribe pSHARE and other objects to it so you can 
-                    //put _CSVcontrol as windowOwner!!!
+                //    //    }
+                //    //}
+                //    //Window w 
+                //    //in order to show the message above Dynamo you will have to get the window of Dynamo
+                //    //or if you manage to display the CSVcontrol (which is a window) above Dynamo
+                //    //make a message event and subscribe pSHARE and other objects to it so you can 
+                //    //put _CSVcontrol as windowOwner!!!
 
-
-
-
-                    MessageBox.Show(msg);
-                    //MessageBox.Show(Application.Current.MainWindow, msg);
-                    ImagesWatcher.EnableRaisingEvents = true;
-                    CSVwatcher.EnableRaisingEvents = true;
-                }
+                //    MessageBox.Show(dv,msg);
+                //    //MessageBox.Show(Application.Current.MainWindow, msg);
+                //    ImagesWatcher.EnableRaisingEvents = true;
+                //    CSVwatcher.EnableRaisingEvents = true;
+                //}
                 //}
                 lastRead = lastWriteTime;
             }
+            // close the _CSVControl
 
             //Update the CSVControll with new csv file.
-            formPopulate = false;
-            openCSV();
-            addNewPararemeters();
-            UpdateCSVControl(null, EventArgs.Empty);
-            ImagesWatcher.EnableRaisingEvents = true;
-            CSVwatcher.EnableRaisingEvents = true;
-
+            //formPopulate = false;
+            //openCSV();
+            //addNewPararemeters();
+            ////but hide the _CSVControl anyway to make clear something changed
+            //formPopulate = false;
+            //UpdateCSVControl(null, EventArgs.Empty);
+            //ImagesWatcher.EnableRaisingEvents = true;
+            //CSVwatcher.EnableRaisingEvents = true;
         }
 
         #region OldFunc

@@ -448,7 +448,7 @@ namespace pCOLADnamespace
                         //check if it is not a default input
                         if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
                         {
-                            MessageBox.Show("Can't delete default inputs...");
+                            MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
                             return;
                         }
                         List<string> inportDataNames = new List<string>();
@@ -464,7 +464,7 @@ namespace pCOLADnamespace
                         }
                         else
                         {
-                            MessageBox.Show("That input does not exist. Please try again...");
+                            MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
                         }
                     }
 
@@ -524,7 +524,7 @@ namespace pCOLADnamespace
                                     }
                                     else
                                     {
-                                        MessageBox.Show("This attribute already exist. Please try again...");
+                                        MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
                                     }
 
                                 }
@@ -532,7 +532,7 @@ namespace pCOLADnamespace
                         }
                         else
                         {
-                            MessageBox.Show("This attribute indicator already exist. Please try again...");
+                            MessageBox.Show(pSHARE.dv, "This attribute indicator already exist. Please try again...");
 
                         }
                     }

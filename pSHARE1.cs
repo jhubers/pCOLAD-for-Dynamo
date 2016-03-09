@@ -92,6 +92,10 @@ namespace pCOLADnamespace
         public static NodeView nv;
         public static DynamoView dv;
 
+        public void MessageHandler(object o, EventArgs e)
+        {
+            MessageBox.Show(pSHARE.dv, e.ToString());
+        }
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             Compare();
@@ -100,6 +104,11 @@ namespace pCOLADnamespace
             //update the solution
             this.OnNodeModified(forceExecute: true);
             runtype(dm);
+            if (!MyDataCollectorClass.formPopulate)
+            {
+                ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                RaisePropertyChanged("OnOff"); //sets the OnOff button to red
+            }
         }
         private int _rowIndex;
         public int RowIndex
@@ -313,6 +322,7 @@ namespace pCOLADnamespace
         public pSHARE()
         {
             MyDataCollectorClass.UpdateCSVControl += CSVUpdateHandler;
+            MyDataCollectorClass.Message += MessageHandler;
             InPortData.Add(new PortData("N", "Input (a List.CreateList) of pCOLLECT output(s)"));
             InPortData.Add(new PortData("I", "Input a FilePath for the shared csv files."));
             InPortData.Add(new PortData("L", "Input a FilePath for the local copy of the csv file."));
@@ -457,7 +467,7 @@ namespace pCOLADnamespace
 
             catch (System.Exception e)
             {
-                MessageBox.Show("Exception: {0}", e.Message);
+                MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
             }
         }
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>
@@ -485,7 +495,7 @@ namespace pCOLADnamespace
                 pSHARE.dm = dvm.Model;
                 //looking for a window to use as owner for messages and _CSVcontrol
                 pSHARE.dv = FindUpVisualTree<DynamoView>(nv);
-
+                MyDataCollectorClass.dv = pSHARE.dv;
                 //subscribe to the shutdown event in order to avoid _CSVcontrol being left behind
                 //first you need an instance of the DynamoModel//doesn't work and now because
                 //DynamoView is owner of _CSVcontrol is closes automatically
@@ -551,6 +561,7 @@ namespace pCOLADnamespace
                     if (rt == RunType.Automatic)
                     {
                         MyDataCollectorClass.AutoPlay = true;
+                        MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
                         hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
                     }
                     else
@@ -620,7 +631,7 @@ namespace pCOLADnamespace
                 else
                 {
                     //MyPropDataTable = MyDataCollectorClass.myDataTable;
-                    MessageBox.Show("Please hit the Run button first...");
+                    MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
                     //set the button to red again
                     RaisePropertyChanged("OnOff");
                 }
@@ -641,7 +652,7 @@ namespace pCOLADnamespace
             string csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
             if (oldCSV == csv)
             {
-                MessageBox.Show("Nothing changed with last share ...");
+                MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
             }
             else
             {
@@ -719,7 +730,7 @@ namespace pCOLADnamespace
                 }
                 catch (System.Exception e)
                 {
-                    MessageBox.Show("Exception: {0}", e.Message);
+                    MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
@@ -731,7 +742,7 @@ namespace pCOLADnamespace
             //show History.csv
             if (MyDataCollectorClass.inputFile == null)
             {
-                MessageBox.Show("Please connect file path to pSHARE and run the solution ...");
+                MessageBox.Show(pSHARE.dv, "Please connect file path to pSHARE and run the solution ...");
             }
             else
             {
@@ -740,7 +751,7 @@ namespace pCOLADnamespace
                     string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     if (!File.Exists(HistoryFile))
                     {
-                        MessageBox.Show("There is no History.csv file (yet). Please hit the Share button first ...");
+                        MessageBox.Show(pSHARE.dv, "There is no History.csv file (yet). Please hit the Share button first ...");
                         //reset the buttons. Don't know how!!!
                         HistoryOn = false;
                         //History(HistoryCommand);
