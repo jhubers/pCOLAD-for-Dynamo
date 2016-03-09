@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Dynamo.Controls;
+using Dynamo.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -20,13 +22,19 @@ namespace pCOLADnamespace
     /// </summary>
     public partial class CSVControl : Window
     {
+        //private readonly DynamoViewModel dynamoViewModel;
         //bool firsttime = true;
         /// <summary>
         /// initialize the CSV control
         /// </summary>
         public CSVControl()
         {
+            //this.dynamoViewModel = dynamoViewModel;
             InitializeComponent();
+            //doesn't work because the instance of DynamoView is not in the visual tree of CSVControl
+            //var view = FindUpVisualTree<DynamoView>(this);
+            //Owner = view;
+            Owner = pSHARE.dv;
         }
         private void myXamlTable_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
@@ -176,54 +184,63 @@ namespace pCOLADnamespace
             }
         }
 
-        static public void BringToFront(Panel pParent, ContentPresenter pToMove)
-        {
-            try
-            {
-                int currentIndex = Canvas.GetZIndex(pToMove);
-                int zIndex = 0;
-                int maxZ = 0;
-                ContentPresenter child;
-                for (int i = 0; i < pParent.Children.Count; i++)
-                {
-                    if (pParent.Children[i] is ContentPresenter &&
-                        pParent.Children[i] != pToMove)
-                    {
-                        child = pParent.Children[i] as ContentPresenter;
-                        zIndex = Canvas.GetZIndex(child);
-                        maxZ = Math.Max(maxZ, zIndex);
-                        if (zIndex > currentIndex)
-                        {
-                            Canvas.SetZIndex(child, zIndex - 1);
-                        }
-                    }
-                }
-                Canvas.SetZIndex(pToMove, maxZ);
-            }
-            catch (Exception ex)
-            {
-            }
-        }
-        public static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
-        {
-            // get parent item
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+        //static public void BringToFront(Panel pParent, ContentPresenter pToMove)
+        //{
+        //    try
+        //    {
+        //        int currentIndex = Canvas.GetZIndex(pToMove);
+        //        int zIndex = 0;
+        //        int maxZ = 0;
+        //        ContentPresenter child;
+        //        for (int i = 0; i < pParent.Children.Count; i++)
+        //        {
+        //            if (pParent.Children[i] is ContentPresenter &&
+        //                pParent.Children[i] != pToMove)
+        //            {
+        //                child = pParent.Children[i] as ContentPresenter;
+        //                zIndex = Canvas.GetZIndex(child);
+        //                maxZ = Math.Max(maxZ, zIndex);
+        //                if (zIndex > currentIndex)
+        //                {
+        //                    Canvas.SetZIndex(child, zIndex - 1);
+        //                }
+        //            }
+        //        }
+        //        Canvas.SetZIndex(pToMove, maxZ);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //    }
+        //}
+        //public static T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
+        //{
+        //    // get parent item
+        //    DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
-            // we’ve reached the end of the tree
-            if (parentObject == null) return null;
+        //    // we’ve reached the end of the tree
+        //    if (parentObject == null) return null;
 
-            // check if the parent matches the type we’re looking for
-            T parent = parentObject as T;
-            if (parent != null)
-            {
-                return parent;
-            }
-            else
-            {
-                // use recursion to proceed with next level
-                return FindVisualParent<T>(parentObject);
-            }
-        }
+        //    // check if the parent matches the type we’re looking for
+        //    T parent = parentObject as T;
+        //    if (parent != null)
+        //    {
+        //        return parent;
+        //    }
+        //    else
+        //    {
+        //        // use recursion to proceed with next level
+        //        return FindVisualParent<T>(parentObject);
+        //    }
+        //}
+        //private static T FindUpVisualTree<T>(DependencyObject initial) where T : DependencyObject
+        //{
+        //    DependencyObject current = initial;
 
+        //    while (current != null && current.GetType() != typeof(T))
+        //    {
+        //        current = VisualTreeHelper.GetParent(current);
+        //    }
+        //    return current as T;
+        //}
     }
 }

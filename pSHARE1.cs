@@ -15,6 +15,7 @@ using MyDataCollector;
 using System.Linq;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
+using System.Windows.Media;
 
 namespace pCOLADnamespace
 {
@@ -87,7 +88,10 @@ namespace pCOLADnamespace
             }
         }
         public static DynamoModel dm;
-        
+        public static Dynamo.ViewModels.DynamoViewModel dvm;
+        public static NodeView nv;
+        public static DynamoView dv;
+
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             Compare();
@@ -401,6 +405,9 @@ namespace pCOLADnamespace
                 if (!isCSVControlOpen)
                 {
                     //the CSVControl should be created only once
+                    //Dynamo.ViewModels.NodeViewModel vm = pSHARE.nv.ViewModel;
+                    //NodeModel nm = vm.NodeModel;
+                    //Dynamo.ViewModels.DynamoViewModel dvm = vm.DynamoViewModel;                    
                     _CSVControl = new CSVControl();
 
                     //List<MyImageFolder> mifs = new List<MyImageFolder>();//contains MyImageFolder with prop MyImageFolderPath and List<MyImage>
@@ -450,7 +457,7 @@ namespace pCOLADnamespace
 
             catch (System.Exception e)
             {
-                MessageBox.Show("Exception deze source: {0}", e.Message);
+                MessageBox.Show("Exception: {0}", e.Message);
             }
         }
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>
@@ -468,14 +475,20 @@ namespace pCOLADnamespace
             public void CustomizeView(pSHARE model, NodeView nodeView)
             {
                 var pSHAREControl = new pSHAREcontrol();
+                pSHARE.nv = nodeView;
                 nodeView.inputGrid.Children.Add(pSHAREControl);
                 pSHAREControl.DataContext = model;                
                 Dynamo.ViewModels.NodeViewModel vm = nodeView.ViewModel;
-                NodeModel nm = vm.NodeModel;
-                Dynamo.ViewModels.DynamoViewModel dvm = vm.DynamoViewModel;
-                pSHARE.dm = dvm.Model;                
+                //NodeModel nm = vm.NodeModel;                
+                pSHARE.dvm = vm.DynamoViewModel;
+                //you need the DynamoModel to check the runtype
+                pSHARE.dm = dvm.Model;
+                //looking for a window to use as owner for messages and _CSVcontrol
+                pSHARE.dv = FindUpVisualTree<DynamoView>(nv);
+
                 //subscribe to the shutdown event in order to avoid _CSVcontrol being left behind
-                //first you need an instance of the DynamoModel
+                //first you need an instance of the DynamoModel//doesn't work and now because
+                //DynamoView is owner of _CSVcontrol is closes automatically
                 //dm.ShutdownStarted += closeCSVcontrolFrom_dm(dm);
 
             }
@@ -500,6 +513,16 @@ namespace pCOLADnamespace
             //    return null;
             //}
 
+            private static T FindUpVisualTree<T>(DependencyObject initial) where T : DependencyObject
+            {
+                DependencyObject current = initial;
+
+                while (current != null && current.GetType() != typeof(T))
+                {
+                    current = VisualTreeHelper.GetParent(current);
+                }
+                return current as T;
+            }
 
             public void Dispose()
             {
@@ -696,7 +719,7 @@ namespace pCOLADnamespace
                 }
                 catch (System.Exception e)
                 {
-                    MessageBox.Show("Exception source: {0}", e.Message);
+                    MessageBox.Show("Exception: {0}", e.Message);
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               

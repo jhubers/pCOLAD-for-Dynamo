@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace MyDataCollector
 {
@@ -171,6 +172,7 @@ namespace MyDataCollector
             inputFileCopy = _LfilePath;
             userName = _owner;
             pSHAREoutputs.Clear();
+            bool OnepCOLLECT = false;
             foreach (List<string> item in _Ninputs)
             {
                 //If you connect only 1 pCOLLECT directly to pSHARE you get an error while merging datatables
@@ -179,17 +181,16 @@ namespace MyDataCollector
                 //So in that case show a warning that you always should put a List.Create node in between.
                 if (item.Count == 1)
                 {
-                    MessageBox.Show("Please put a List.Create node between pCOLLECT and pSHARE...");
-                    //subItem = "WARNING: output is not generated. Did you connect the input without a List.Create?";
-                    //item[0] = "WARNING: output is not generated. Did you connect the input without a List.Create?";
-                    //you have to return null so you can count the number of datatables before merging
-                    //better would be that you can not continue!!! Put pSHARE in error.How?                    
-                    //return null;
+                    OnepCOLLECT = true;
                 }
                 else
                 {
                     pSHAREoutputs.Add(item);
                 }
+            }
+            if (OnepCOLLECT)
+            {
+                MessageBox.Show("Please put a List.Create node between pCOLLECT and pSHARE...");
             }
             //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
             //Populate myDataTable with the csv file
@@ -286,32 +287,34 @@ namespace MyDataCollector
                     }
                 else
                 {
-                    //Dynamo.Wpf.BrowserWindow w;
-                    ////List<string> openwindows = new List<string>();
-                    ////Process[] processlist = Process.GetProcesses();
+                    //Process[] anotherApps = Process.GetProcessesByName("Revit");
+                    //if (anotherApps.Length > 0)
+                    //{
+                    //    if (anotherApps[0] != null)
+                    //    {
+                    //        //List<IntPtr> allChildWindows = new WindowHandleInfo(anotherApps[0].MainWindowHandle).GetAllChildHandles();
+                    //        //foreach (var cw in allChildWindows)
+                    //        //{
+                    //        //    childWindowNames.Add(cw.ToString());
+                    //        //}
+                    //        anotherApps[0].Refresh();
+                    //        var hwnd = anotherApps[0].MainWindowHandle;
+                    //        var window = HwndSource.FromHwnd((IntPtr)hwnd);
+                    //        dynamic customWindow = window.RootVisual;
+                    ////        you get errors not calling from the right thread
+                    //        MessageBox.Show(customWindow,"OwnerWindow name = " + customWindow.Name);
 
-                    ////foreach (Process process in processlist)
-                    ////{
-
-                    ////    if (process.ProcessName=="Revit")
-                    ////    {
-                    ////        IntPtr handle = process.MainWindowHandle;
-
-                    ////        // Use EnumChildWindows on handle ...
-
-                    ////    }
-                    ////    if (!String.IsNullOrEmpty(process.MainWindowTitle))
-                    ////    {
-                    ////        openwindows.Add("Process name =" + process.ProcessName +  "ID = " + process.Id + "MainWindowTitle = "+ process.MainWindowTitle);
-                    ////    }
-                    ////}
-                    Process[] anotherApps = Process.GetProcessesByName("Revit");
-                    if (anotherApps.Length == 0) return;
-                    if (anotherApps[0] != null)
-                    {
-                        var allChildWindows = new WindowHandleInfo(anotherApps[0].MainWindowHandle).GetAllChildHandles();
-                    }
+                    //    }
+                    //}
                     //Window w 
+                    //in order to show the message above Dynamo you will have to get the window of Dynamo
+                    //or if you manage to display the CSVcontrol (which is a window) above Dynamo
+                    //make a message event and subscribe pSHARE and other objects to it so you can 
+                    //put _CSVcontrol as windowOwner!!!
+
+
+
+
                     MessageBox.Show(msg);
                     //MessageBox.Show(Application.Current.MainWindow, msg);
                     ImagesWatcher.EnableRaisingEvents = true;
@@ -368,55 +371,55 @@ namespace MyDataCollector
 
         #endregion
     }
-    public class WindowHandleInfo
-    {
-        private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
+    //public class WindowHandleInfo
+    //{
+    //    private delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
 
-        [DllImport("user32")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
+    //    [DllImport("user32")]
+    //    [return: MarshalAs(UnmanagedType.Bool)]
+    //    private static extern bool EnumChildWindows(IntPtr window, EnumWindowProc callback, IntPtr lParam);
 
-        private IntPtr _MainHandle;
+    //    private IntPtr _MainHandle;
 
-        public WindowHandleInfo(IntPtr handle)
-        {
-            this._MainHandle = handle;
-        }
+    //    public WindowHandleInfo(IntPtr handle)
+    //    {
+    //        this._MainHandle = handle;
+    //    }
 
-        public List<IntPtr> GetAllChildHandles()
-        {
-            List<IntPtr> childHandles = new List<IntPtr>();
+    //    public List<IntPtr> GetAllChildHandles()
+    //    {
+    //        List<IntPtr> childHandles = new List<IntPtr>();
 
-            GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
-            IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
+    //        GCHandle gcChildhandlesList = GCHandle.Alloc(childHandles);
+    //        IntPtr pointerChildHandlesList = GCHandle.ToIntPtr(gcChildhandlesList);
 
-            try
-            {
-                EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
-                EnumChildWindows(this._MainHandle, childProc, pointerChildHandlesList);
-            }
-            finally
-            {
-                gcChildhandlesList.Free();
-            }
+    //        try
+    //        {
+    //            EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
+    //            EnumChildWindows(this._MainHandle, childProc, pointerChildHandlesList);
+    //        }
+    //        finally
+    //        {
+    //            gcChildhandlesList.Free();
+    //        }
 
-            return childHandles;
-        }
+    //        return childHandles;
+    //    }
 
-        private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
-        {
-            GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
+    //    private bool EnumWindow(IntPtr hWnd, IntPtr lParam)
+    //    {
+    //        GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
 
-            if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
-            {
-                return false;
-            }
+    //        if (gcChildhandlesList == null || gcChildhandlesList.Target == null)
+    //        {
+    //            return false;
+    //        }
 
-            List<IntPtr> childHandles = gcChildhandlesList.Target as List<IntPtr>;
-            childHandles.Add(hWnd);
+    //        List<IntPtr> childHandles = gcChildhandlesList.Target as List<IntPtr>;
+    //        childHandles.Add(hWnd);
 
-            return true;
-        }
-    }
+    //        return true;
+    //    }
+    //}
 }
 
