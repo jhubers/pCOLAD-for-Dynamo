@@ -47,6 +47,7 @@ namespace pCOLADnamespace
     [IsDesignScriptCompatible]
     public class pCOLLECT : NodeModel
     {
+        private bool firstTime = true;
         private List<string> _outputListProp;
         public List<string> outputListProp
         {
@@ -264,18 +265,23 @@ namespace pCOLADnamespace
 
         protected override void SerializeCore(XmlElement element, SaveContext context)
         {
-            base.SerializeCore(element, context);
-            var xmlDocument = element.OwnerDocument;
-            var subNode = xmlDocument.CreateElement("ExtraInputs"); 
-            foreach (var item in InPortData)
+            //this runs every minute or so... that disturbs my filesystemwatcher
+            if (firstTime)
             {
-                if (item.NickName=="P"|item.NickName=="V"|item.NickName=="I"|item.NickName=="C")
-                {                   
-                    continue;
+                base.SerializeCore(element, context);
+                var xmlDocument = element.OwnerDocument;
+                var subNode = xmlDocument.CreateElement("ExtraInputs");
+                foreach (var item in InPortData)
+                {
+                    if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
+                    {
+                        continue;
+                    }
+                    subNode.SetAttribute(item.NickName, item.ToolTipString);
                 }
-                subNode.SetAttribute(item.NickName,item.ToolTipString);
+                element.AppendChild(subNode);
+                firstTime = false;
             }
-            element.AppendChild(subNode);
         }
         protected override void DeserializeCore(XmlElement element, SaveContext context)
         {
@@ -432,6 +438,7 @@ namespace pCOLADnamespace
         private void RemoveInput(object obj)
         {
             Dialogue1 D1 = new Dialogue1();
+            D1.Owner = pSHARE.dv;
             string a1 = "";
             D1.Topmost = true;
             D1.Question.Content = "Please give the one or two charactors of the input you want to remove...";
@@ -474,6 +481,7 @@ namespace pCOLADnamespace
         {
             //use an extra window xaml as dialogue and use the input in text boxes
             Dialogue1 D1 = new Dialogue1();
+            D1.Owner = pSHARE.dv;
             string a1 = "";
             D1.Topmost = true;
             //the input indicator is what appears on the pCOLLECT input as node
@@ -498,6 +506,7 @@ namespace pCOLADnamespace
                         if (!inportDataNames.Contains(a1))
                         {
                             Dialogue1 D2 = new Dialogue1();
+                            D2.Owner = pSHARE.dv;
                             string a2 = "";
                             D2.Topmost = true;
                             D2.Question.Content = "Please give the name for this attribute...";

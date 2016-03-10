@@ -716,8 +716,9 @@ namespace pCOLADnamespace
 
                     //reset myPropDataTable to myDataTable to get rid of the time stamp
                     myPropDataTable = MyDataCollectorClass.myDataTable;
-                    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
-                    RaisePropertyChanged("OnOff"); //sets the OnOff button to red
+                    //better show a message that save was ok
+                    //ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                    //RaisePropertyChanged("OnOff"); //sets the OnOff button to red
                     //you should reset everything so next hit of OnOff button shows only new changes
 
                     MyDataCollectorClass.formPopulate = false;
@@ -727,6 +728,9 @@ namespace pCOLADnamespace
                     MyDataCollectorClass.addNewPararemeters();
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    //find a way to close it automatically or make your own AutoMessageXaml
+                    MessageBox.Show(pSHARE.dv,"CSV file successfully saved...","pCOLAD",MessageBoxButton.OK,MessageBoxImage.Information,MessageBoxResult.None);
+                    
                 }
                 catch (System.Exception e)
                 {
@@ -737,6 +741,7 @@ namespace pCOLADnamespace
 
             }
         }
+
         private void History(object obj)
         {
             //show History.csv
