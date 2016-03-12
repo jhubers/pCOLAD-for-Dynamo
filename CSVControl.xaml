@@ -11,7 +11,8 @@
              SizeToContent="WidthAndHeight" 
              MaxHeight="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
              Top="{DynamicResource {x:Static SystemParameters.VirtualScreenTopKey}}"
-             Title="pCOLAD"     
+             Title="pCOLAD" Closed="Window_Closing"
+    
              >
     <Window.Resources>
         <local:pSHARE x:Key="myDataContext"/>
@@ -171,7 +172,15 @@
             <!--just empty cells-->
         </DataTemplate>
     </Window.Resources>
-
+    
+    <!--trigger the closing by the red cross top left. Doesn't work. Try with Blend? 
+    runs also when you close by code when you hit the Cancel button. So it runs then twice!-->
+    <!--<i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            --><!--<i:InvokeCommandAction Command="{Binding CancelCommand}" CommandParameter="{Binding}"/>
+            <i:InvokeCommandAction Command="{Binding CancelCommand}"/>--><!--
+        </i:EventTrigger>
+    </i:Interaction.Triggers>-->
     <Grid AllowDrop="False">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>

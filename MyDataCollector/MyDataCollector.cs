@@ -50,7 +50,7 @@ namespace MyDataCollector
         public static DynamoView dv;
 
         public static void openCSV()
-        {
+        {            
             if (!formPopulate)
             {
                 myDataTable = null;

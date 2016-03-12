@@ -39,7 +39,7 @@ namespace pCOLADnamespace
     #endregion
     public class pSHARE : NodeModel
     {
-        
+
         #region properties
         public static string ttt;
         private string historyFile = "";
@@ -354,11 +354,11 @@ namespace pCOLADnamespace
         /// <param name="inputAstNodes"></param>
         /// <returns></return
         [IsVisibleInDynamoLibrary(false)]
-        
+
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             //Func<int, string> projection = x => "Value=" + x;
-            var x = new Func<int,string> (MyDataCollectorClass.projection);
+            var x = new Func<int, string>(MyDataCollectorClass.projection);
             int[] values = { 3, 7, 10 };
             var strings = values.Select(MyDataCollectorClass.projection);
 
@@ -371,10 +371,10 @@ namespace pCOLADnamespace
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
             //after running the solution.
             //string testj = MyDataCollectorClass.inputFile;
-                //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
-                var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
-                return new[]
-                {
+            //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
+            var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
+            return new[]
+            {
                 AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
              };
         }
@@ -487,7 +487,7 @@ namespace pCOLADnamespace
                 var pSHAREControl = new pSHAREcontrol();
                 pSHARE.nv = nodeView;
                 nodeView.inputGrid.Children.Add(pSHAREControl);
-                pSHAREControl.DataContext = model;                
+                pSHAREControl.DataContext = model;
                 Dynamo.ViewModels.NodeViewModel vm = nodeView.ViewModel;
                 //NodeModel nm = vm.NodeModel;                
                 pSHARE.dvm = vm.DynamoViewModel;
@@ -578,7 +578,9 @@ namespace pCOLADnamespace
         {
             if (_CSVControl != null)
             {
-                _CSVControl.Close(); 
+                //if the user clicks the close button top right the .Close method gives an error!!!
+                _CSVControl.Close();
+
             }
             //foreach (Window w in Application.Current.Windows)
             //{
@@ -640,7 +642,13 @@ namespace pCOLADnamespace
             {
                 On = false;
                 //close *.csv display
-                closeCSVControl();
+                //but if user hit red X button top right than already closing and would give error
+                //to avoid running CancelCommand again set .Canceling to true
+                if (!_CSVControl.ClosingStarted)
+                {
+                    _CSVControl.Canceling = true;
+                    closeCSVControl();
+                }
             }
 
         }
@@ -706,7 +714,7 @@ namespace pCOLADnamespace
                     }
                     historyCSV = Functions.ToCSV(historyDataTable, "historyDataTable");
                     if (newHistoryFile)
-                        {
+                    {
                         File.AppendAllText(historyFile, historyCSV);
                     }
                     else
@@ -729,8 +737,13 @@ namespace pCOLADnamespace
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
-                    MessageBox.Show(pSHARE.dv,"CSV file successfully saved...","pCOLAD",MessageBoxButton.OK,MessageBoxImage.Information,MessageBoxResult.None);
-                    
+                    TempMessage tm = new TempMessage();
+                    tm.MessageString = "CSV file successfully saved...";
+                    MyDataCollector.TempMessageXAML tma = new TempMessageXAML();
+                    tma.DataContext = tm;
+                    tma.Show();
+                    //MessageBox.Show(pSHARE.dv,"CSV file successfully saved...","pCOLAD",MessageBoxButton.OK,MessageBoxImage.Information,MessageBoxResult.None);
+
                 }
                 catch (System.Exception e)
                 {

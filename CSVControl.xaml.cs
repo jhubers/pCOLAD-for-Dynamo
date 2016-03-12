@@ -6,6 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -27,6 +29,8 @@ namespace pCOLADnamespace
         /// <summary>
         /// initialize the CSV control
         /// </summary>
+        public bool ClosingStarted = false;
+        public bool Canceling = false;
         public CSVControl()
         {
             //this.dynamoViewModel = dynamoViewModel;
@@ -36,6 +40,7 @@ namespace pCOLADnamespace
             //Owner = view;
             Owner = pSHARE.dv;
         }
+
         private void myXamlTable_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
             //Set properties on the columns during auto-generation
@@ -183,7 +188,21 @@ namespace pCOLADnamespace
                 }
             }
         }
-
+        //make a difference if user hit the red X button top right or the Cancel button
+        //With X-button you first go here and then to CancelCommand, So set Closing property to 
+        //true and then in CancelCommand don't close again.
+        //But check if you come from CancelCommand, then you don't do anything
+        private void Window_Closing(object sender, EventArgs e)
+        {
+            if (!Canceling)
+            {
+                ClosingStarted = true;
+                // run the CancelCommand by simulating click on Cancel button
+                ButtonAutomationPeer peer = new ButtonAutomationPeer(Cancel);
+                IInvokeProvider invokeProv = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                invokeProv.Invoke(); 
+            }
+        }
         //static public void BringToFront(Panel pParent, ContentPresenter pToMove)
         //{
         //    try
