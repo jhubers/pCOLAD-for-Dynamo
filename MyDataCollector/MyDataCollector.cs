@@ -172,6 +172,7 @@ namespace MyDataCollector
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
             inputFile = _IfilePath;
+            //but in this way you create a watcher everytime you run the solution!!!
             watch();
             ShareInputFile = _IfilePath;
             inputFileCopy = _LfilePath;
@@ -196,8 +197,10 @@ namespace MyDataCollector
             if (OnepCOLLECT)
             {
                 msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
-
-                MessageBox.Show(dv, msg);
+                dv.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                {
+                    MessageBox.Show(dv, msg);
+                }));
             }
             //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
             //Populate myDataTable with the csv file

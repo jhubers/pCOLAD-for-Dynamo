@@ -192,7 +192,7 @@ namespace pCOLADnamespace
         //With X-button you first go here and then to CancelCommand, So set Closing property to 
         //true and then in CancelCommand don't close again.
         //But check if you come from CancelCommand, then you don't do anything
-        private void Window_Closing(object sender, EventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!Canceling)
             {

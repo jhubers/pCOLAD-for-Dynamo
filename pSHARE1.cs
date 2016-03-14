@@ -16,6 +16,7 @@ using System.Linq;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace pCOLADnamespace
 {
@@ -467,7 +468,10 @@ namespace pCOLADnamespace
 
             catch (System.Exception e)
             {
-                MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
+                dv.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                {
+                    MessageBox.Show(dv, "Exception: {0}", e.Message);
+                }));
             }
         }
         public class pSHARENodeViewCustomization : INodeViewCustomization<pSHARE>

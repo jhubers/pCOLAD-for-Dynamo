@@ -11,7 +11,7 @@
              SizeToContent="WidthAndHeight" 
              MaxHeight="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
              Top="{DynamicResource {x:Static SystemParameters.VirtualScreenTopKey}}"
-             Title="pCOLAD" Closed="Window_Closing"
+             Title="pCOLAD" Closing="Window_Closing" 
     
              >
     <Window.Resources>

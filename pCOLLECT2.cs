@@ -265,9 +265,10 @@ namespace pCOLADnamespace
 
         protected override void SerializeCore(XmlElement element, SaveContext context)
         {
-            //this runs every minute or so... that disturbs my filesystemwatcher
-            if (firstTime)
-            {
+            //this runs every 15 seconds or so... that disturbs my filesystemwatcher
+            //firstTime werkt niet!!! Want als je de dynamo file saved, doet hij niets!!!
+            //if (firstTime)
+            //{
                 base.SerializeCore(element, context);
                 var xmlDocument = element.OwnerDocument;
                 var subNode = xmlDocument.CreateElement("ExtraInputs");
@@ -281,7 +282,7 @@ namespace pCOLADnamespace
                 }
                 element.AppendChild(subNode);
                 firstTime = false;
-            }
+            //}
         }
         protected override void DeserializeCore(XmlElement element, SaveContext context)
         {
