@@ -660,8 +660,37 @@ namespace pCOLADnamespace
         {
             //write myDataTable to the csv files if something changed
             Boolean newHistoryFile = false;
-            myPropDataTable = MyDataCollectorClass.myDataTable;
+            //myPropDataTable = MyDataCollectorClass.myDataTable;
+
+            //the New Value should be copied to Old Value if changed and should be in the inputFileCopy,
+            //in Grasshopper Old Value changes asa you change a value, if you change it again
+            //the Old Value is not the one that was shared before...
+            //The only way to find out is to compare here if New Value in myPropDataTable 
+            //is different from the one in inputFileCopy and if so copy that one to Old Value
+            //MyDataCollectorClass.copyDataTable holds the data from the inputFileCopy
+            //but was changed in the Compare() method to get equal number of rows and columns...
+            //But MyDataCollectorClass.copyCSVlist didn't change
+            DataTable oldTable = Functions.ListToTable(MyDataCollectorClass.copyCsvList);
+            //now check if New Values are different and if so change the Old Values
+
+
+            //but now New Value and Old Value are always the same in csv!!!
+            //in pCOLAD for Grasshopper you simply copy the inputFile to the inputFileCopy...
+            //but there the Old Value gets updated every time you change the New Value.
+            //If you do that in between shares then the Old Value is not the one in the inputFileCopy...
+
+            //Item oldNewItem, newItem;
+            //for (int i = 0; i < oldTable.Rows.Count; i++)
+            //{
+            //    oldNewItem = (Item)oldTable.Rows[i]["New Value"];
+            //    newItem = (Item)myPropDataTable.Rows[i]["New Value"];
+            //    if (oldNewItem.textValue!=newItem.textValue)
+            //    {
+            //        MyPropDataTable.Rows[i]["Old Value"] = newItem;
+            //    }
+            //}
             string csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
+            //but if you put the date in myPropDataTable after this, oldCSV will always be different from csv            
             if (oldCSV == csv)
             {
                 MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
@@ -680,6 +709,9 @@ namespace pCOLADnamespace
                     DateTime time = DateTime.UtcNow;
                     myPropDataTable.Rows[0]["Date"] = new Item("utc " + time.ToString("dd/MM/yyyy HH:mm:ss"));
                     myPropDataTable.Rows[0]["Author"] = new Item(MyDataCollectorClass.userName);
+                    
+                    //but the date should be equal to that in inputFile
+                    //otherwise files will never be eaqual
                     csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
                     historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
                     //check if file exist
@@ -728,16 +760,16 @@ namespace pCOLADnamespace
 
                     //reset myPropDataTable to myDataTable to get rid of the time stamp
                     myPropDataTable = MyDataCollectorClass.myDataTable;
-                    //better show a message that save was ok
-                    //ShowParams(OnOff);//closes the CSVControl and sets the On property to false
-                    //RaisePropertyChanged("OnOff"); //sets the OnOff button to red
-                    //you should reset everything so next hit of OnOff button shows only new changes
 
+                    //reset everything so next hit of OnOff button shows only new changes
                     MyDataCollectorClass.formPopulate = false;
                     //since formPopulate is false you will read the csv file. But if it was just created
                     //there are no items
                     MyDataCollectorClass.openCSV();
+                    //now MyDataCollectorClass.myDataTable is filled with the csv file (inputFile)
+                    //and MyDataCollectorClass.copyDataTable is filled with the inputFileCopy
                     MyDataCollectorClass.addNewPararemeters();
+                    //now MyDataCollectorClass.myDataTable contains also the output of pSHARE if different
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
@@ -846,7 +878,10 @@ namespace pCOLADnamespace
                 {
                     //normally copyDataTable has less rows then myDataTable
                     //all extra rows in myDataTable should be red, so add strange strings
-                    if (i < MyDataCollectorClass.copyDataTable.Rows.Count)
+                    //but why does this happen if somebody else changes the csv file?
+                    //is myDataTable not updated then?!!!
+                    //btw changed < into <= in next line!!!
+                    if (i <= MyDataCollectorClass.copyDataTable.Rows.Count)
                     {
                         drc = MyDataCollectorClass.copyDataTable.Rows[i];
                     }
@@ -883,6 +918,11 @@ namespace pCOLADnamespace
                             if (dr[cn] as MyDataCollector.Item == null)
                             {
                                 dr[cn] = new Item("");
+                            }
+                            //write the New Value to the Old Value.
+                            if (cn == "New Value")
+                            {
+                                dr["Old Value"] = drc[cn];
                             }
                             (dr[cn] as MyDataCollector.Item).SetChanged();
                         }

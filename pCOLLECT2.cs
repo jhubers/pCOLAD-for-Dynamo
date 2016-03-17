@@ -281,7 +281,7 @@ namespace pCOLADnamespace
                     subNode.SetAttribute(item.NickName, item.ToolTipString);
                 }
                 element.AppendChild(subNode);
-                firstTime = false;
+                //firstTime = false;
             //}
         }
         protected override void DeserializeCore(XmlElement element, SaveContext context)

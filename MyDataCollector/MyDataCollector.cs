@@ -48,6 +48,7 @@ namespace MyDataCollector
         public static DateTime lastWriteTime;
         public static string msg = "";
         public static DynamoView dv;
+        public static bool firstTime = true;
 
         public static void openCSV()
         {            
@@ -172,8 +173,18 @@ namespace MyDataCollector
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
             inputFile = _IfilePath;
-            //but in this way you create a watcher everytime you run the solution!!!
-            watch();
+            //create filesystemwatcher only once
+            if (firstTime)
+            {
+                watch();
+                firstTime = false;
+            }
+            // inputFile can also be the History.csv file... to return to project.csv file use ShareInputFile
+            // In fact it would be better if you copy the input file to a local file!!!
+            // And copy that file to an old_local file, like you did in pCOLAD for Grasshopper
+            // Let's do that in a new branch 0.2
+            // What about the History.csv file? Will that be in the dropBox? Yes automatically created there.
+
             ShareInputFile = _IfilePath;
             inputFileCopy = _LfilePath;
             userName = _owner;
