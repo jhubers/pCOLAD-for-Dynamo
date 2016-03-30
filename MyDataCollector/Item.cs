@@ -59,6 +59,13 @@ namespace MyDataCollector
             IsChanged = true;
             NotifyPropertyChanged("IsChanged");
         }
+        public bool IsDeleted{ get; set; }
+        public void SetDeleted()
+        {
+            IsDeleted = true;
+            NotifyPropertyChanged("IsDeleted");
+        }
+
         public void SetSame()
         {
             IsChanged = false;

@@ -105,6 +105,7 @@
   <ItemGroup>
     <Compile Include="Converters\BoolToOppositeBoolConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\ObjectToStrikeThroughConverter.cs" />
     <Compile Include="CSVControl.xaml.cs">
       <DependentUpon>CSVControl.xaml</DependentUpon>
     </Compile>

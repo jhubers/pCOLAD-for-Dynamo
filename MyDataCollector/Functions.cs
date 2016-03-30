@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MyDataCollector
 {
@@ -99,6 +100,7 @@ namespace MyDataCollector
                             }
                             else
                             {
+                                //waarom is alleen New Value rood?
                                 row[x] = new Item(word);
                             }
                         }
@@ -131,11 +133,7 @@ namespace MyDataCollector
             //set the primary key of the table so you can easily merge tables. The key is an array of columns
             //but we use only the column with the Parameter name, which is the second displayed
             //but remember that you hide the "Accepted" column.
-            if (!MyDataCollectorClass.inputFile.Contains("History"))
-            {
-                returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
-
-            }
+            returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
             return returnTable;
         }
         public static DataTable MergeAll(IList<DataTable> tables, String primaryKeyColumn)
@@ -245,16 +243,16 @@ namespace MyDataCollector
                             if (tblName == "historyDataTable")
                             {
                                 foreach (string s in (List<string>)i)
-                                    if (s.Length>0)
+                                    if (s.Length > 0)
                                     {
                                         {
                                             S += s + Environment.NewLine;
                                         }
-                                    }                                
+                                    }
                                 //remove the last new line
                                 if (S.Length > 1)
                                 {
-                                    S = S.Remove(S.Length - 2);                                    
+                                    S = S.Remove(S.Length - 2);
                                 }
                                 //build the multiline for csv
                                 S = "\"" + S + "\"";
@@ -275,6 +273,26 @@ namespace MyDataCollector
             //    s.ItemArray.Aggregate((x, y) => x + ";" + y).ToString())).ToList();
             return strb.ToString().TrimEnd();
         }
+        public static void FileExist(string filename)
+        {
+            if (!File.Exists(filename))
+            {
+                MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                {
+                MessageBoxResult result = MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        File.WriteAllText(filename, "Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                        return;
+                    case MessageBoxResult.No:
+                        MessageBox.Show(MyDataCollectorClass.dv, "Please connect the right file path and run the application again...", "pCOLAD");
+                        return;
+                    }
+                }));
+            }
+        }
+
         public static List<string> CSVtoList(string filename)
         {
             List<string> csvList = new List<string>();
@@ -294,32 +312,25 @@ namespace MyDataCollector
             }
             catch (FileNotFoundException)
             {
-                //MessageBox.Show("We couldn't find the file: " + inputFile + ". Are you sure it exists?");
-                MessageBoxResult result = MessageBox.Show("We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
-                switch (result)
+                MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                    case MessageBoxResult.Yes:
-                        File.Create(filename);
-                        csvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
-                        return csvList;
-
-                    case MessageBoxResult.No:
-                        MessageBox.Show("Please connect the right file path and run the application again...", "pCOLAD");
-                        return csvList;
-
-                    //case MessageBoxResult.Cancel:
-                    //    MessageBox.Show("Nevermind then...", "My App");
-                    //    break;
-                }
+                MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Are you sure it exists?");
+                }));
             }
             catch (DirectoryNotFoundException)
             {
-                MessageBox.Show("We couldn't find the file. Are you sure the directory exists?");
+                MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                {
+                MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file. Are you sure the directory exists?");
+                }));
                 return csvList;
             }
             catch (Exception e)
             {
+                MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                {
                 MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
+                }));
                 return csvList;
             }
             return csvList;
@@ -327,7 +338,7 @@ namespace MyDataCollector
         public static List<string> imagePaths(string paramName)
         {
             List<string> returnList = new List<string>();
-            string directory = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1);
+            string directory = MyDataCollectorClass.sharedFile.Remove(MyDataCollectorClass.sharedFile.LastIndexOf("\\") + 1);
             directory += paramName;
             if (!Directory.Exists(directory))
             {

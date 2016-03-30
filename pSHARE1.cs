@@ -60,7 +60,7 @@ namespace pCOLADnamespace
         private bool CheckAllButton = false;
         private bool UncheckAllButton = false;
         private string _OnOffButton = "";
-        public DataTable latestMyDataTable;
+        public DataTable latestlocalDataTable;
         public CSVControl _CSVControl;
         /// <summary>
         /// the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
@@ -95,16 +95,25 @@ namespace pCOLADnamespace
 
         public void MessageHandler(object o, EventArgs e)
         {
+            dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+            {
             MessageBox.Show(pSHARE.dv, e.ToString());
+            }));
         }
         public void CSVUpdateHandler(object o, EventArgs e)
         {
+            //compares localDataTable with oldDataTable
             Compare();
-            myPropDataTable = MyDataCollectorClass.myDataTable;
-            RaisePropertyChanged("MyPropDataTable");
+            MyPropDataTable = MyDataCollectorClass.localDataTable;
+            //RaisePropertyChanged("MyPropDataTable");//is done automatically if you set MyPropDataTable
             //update the solution
             this.OnNodeModified(forceExecute: true);
+            //make sure runtype is manual
             runtype(dm);
+            //switch off the csv display if somebody changed shared file externally
+            //you can not do it there, because detection of change is in MyDataCollector
+            //and you don't have access to properties of pSHARE there, also related to watch()
+            //which is also there
             if (!MyDataCollectorClass.formPopulate)
             {
                 ShowParams(OnOff);//closes the CSVControl and sets the On property to false
@@ -214,7 +223,7 @@ namespace pCOLADnamespace
             {
                 if (CheckAllButton)
                 {
-                    foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
+                    foreach (DataRow dr in MyDataCollectorClass.localDataTable.Rows)
                     {
                         string cellContent = dr["Obstruction"].ToString();
                         if (cellContent.Contains(MyDataCollectorClass.userName))
@@ -232,7 +241,7 @@ namespace pCOLADnamespace
                 {
                     if (UncheckAllButton)
                     {
-                        foreach (DataRow dr in MyDataCollectorClass.myDataTable.Rows)
+                        foreach (DataRow dr in MyDataCollectorClass.localDataTable.Rows)
                         {
                             string cellContent = dr["Obstruction"].ToString();
                             if (cellContent == "")
@@ -253,7 +262,7 @@ namespace pCOLADnamespace
                     {
                         _isChecked = value;
                         //OnPropertyChanged("isChecked"); //this sets all checkboxes to checked...
-                        DataRow dr = MyDataCollectorClass.myDataTable.Rows[_rowIndex];
+                        DataRow dr = MyDataCollectorClass.localDataTable.Rows[_rowIndex];
                         //also change the value in the hidden column "Accepted"
                         //dr["Accepted"] = value;
                         string cellContent = dr["Obstruction"].ToString();
@@ -371,7 +380,7 @@ namespace pCOLADnamespace
             var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
             //after running the solution.
-            //string testj = MyDataCollectorClass.inputFile;
+            //string testj = MyDataCollectorClass.sharedFile;
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
             return new[]
@@ -450,12 +459,12 @@ namespace pCOLADnamespace
                     //compare the csv file with the copy
                     Compare();
                     //niet nodig?
-                    //this.MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    //this.MyPropDataTable = MyDataCollectorClass.localDataTable;
                     //bind the datatable to the xaml datagrid
                     //_CSVControl.myXamlTable.ItemsSource = this.MyPropDataTable.DefaultView;
-                    ////Binding CSVControlBinding = new Binding("MyDataTableProp");
+                    ////Binding CSVControlBinding = new Binding("localDataTableProp");
                     ////CSVControlBinding.Mode = BindingMode.TwoWay;
-                    //_CSVControl.myXamlTable.ItemsSource = MyDataCollectorClass.myDataTable.DefaultView;
+                    //_CSVControl.myXamlTable.ItemsSource = MyDataCollectorClass.localDataTable.DefaultView;
                     ////_CSVControl.myXamlTable.SetBinding(DataGrid.ItemsSourceProperty, CSVControlBinding);
                     _CSVControl.DataContext = this;
                     _CSVControl.Show();
@@ -468,7 +477,7 @@ namespace pCOLADnamespace
 
             catch (System.Exception e)
             {
-                dv.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
                     MessageBox.Show(dv, "Exception: {0}", e.Message);
                 }));
@@ -564,8 +573,11 @@ namespace pCOLADnamespace
                     RunType rt = hm.RunSettings.RunType;
                     if (rt == RunType.Automatic)
                     {
-                        MyDataCollectorClass.AutoPlay = true;
+                        //MyDataCollectorClass.AutoPlay = true;
+                        dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                        {
                         MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
+                        }));
                         hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
                     }
                     else
@@ -591,8 +603,8 @@ namespace pCOLADnamespace
             //    if (w is CSVControl)
             //    {
             //        //w.Hide();
-            //        //MyDataCollectorClass.myDataTable = MyDataCollectorClass.csvDataTable.Copy();
-            //        //MyPropDataTable = MyDataCollectorClass.myDataTable;
+            //        //MyDataCollectorClass.localDataTable = MyDataCollectorClass.csvDataTable.Copy();
+            //        //MyPropDataTable = MyDataCollectorClass.localDataTable;
             //        w.Close();
             //    }
             //}
@@ -636,8 +648,11 @@ namespace pCOLADnamespace
                 }
                 else
                 {
-                    //MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    //MyPropDataTable = MyDataCollectorClass.localDataTable;
+                    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    {
                     MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
+                    }));
                     //set the button to red again
                     RaisePropertyChanged("OnOff");
                 }
@@ -658,26 +673,35 @@ namespace pCOLADnamespace
         }
         private void Share(object obj)
         {
-            //write myDataTable to the csv files if something changed
+            //write localDataTable to the csv files if something changed
             Boolean newHistoryFile = false;
-            //myPropDataTable = MyDataCollectorClass.myDataTable;
+            //myPropDataTable = MyDataCollectorClass.localDataTable;
 
-            //the New Value should be copied to Old Value if changed and should be in the inputFileCopy,
+            //the New Value should be copied to Old Value if changed and should be in the oldLocalCopy,
             //in Grasshopper Old Value changes asa you change a value, if you change it again
             //the Old Value is not the one that was shared before...
             //The only way to find out is to compare here if New Value in myPropDataTable 
-            //is different from the one in inputFileCopy and if so copy that one to Old Value
-            //MyDataCollectorClass.copyDataTable holds the data from the inputFileCopy
-            //but was changed in the Compare() method to get equal number of rows and columns...
+            //is different from the one in oldLocalCopy and if so copy that one to Old Value
+            //MyDataCollectorClass.oldDataTable holds the data from the oldLocalCopy
+            //but was changed in the Compare() method to get equal number of rows and columns... Not anymore.
             //But MyDataCollectorClass.copyCSVlist didn't change
-            DataTable oldTable = Functions.ListToTable(MyDataCollectorClass.copyCsvList);
+            //DataTable oldTable = Functions.ListToTable(MyDataCollectorClass.copyCsvList);
             //now check if New Values are different and if so change the Old Values
-
+            //this updates immediatally the display
+            foreach (DataRow dr in myPropDataTable.Rows)
+            {
+                //in fact should compare if difference with Old Value. Later!!!
+                if ((dr["New Value"] as MyDataCollector.Item).IsChanged &&
+                    (dr["Owner"] as MyDataCollector.Item).textValue == MyDataCollectorClass.userName)
+                {
+                    dr["Old Value"] = dr["New Value"];
+                }
+            }
 
             //but now New Value and Old Value are always the same in csv!!!
-            //in pCOLAD for Grasshopper you simply copy the inputFile to the inputFileCopy...
+            //in pCOLAD for Grasshopper you simply copy the sharedFile to the oldLocalCopy...
             //but there the Old Value gets updated every time you change the New Value.
-            //If you do that in between shares then the Old Value is not the one in the inputFileCopy...
+            //If you do that in between shares then the Old Value is not the one in the oldLocalCopy...
 
             //Item oldNewItem, newItem;
             //for (int i = 0; i < oldTable.Rows.Count; i++)
@@ -691,33 +715,47 @@ namespace pCOLADnamespace
             //}
             string csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
             //but if you put the date in myPropDataTable after this, oldCSV will always be different from csv            
-            if (oldCSV == csv)
+            if (oldCSV.Equals(csv))
             {
+                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                {
                 MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
+                }));
             }
             else
             {
                 try
                 {
-                    //myPropDataTable = MyDataCollectorClass.myDataTable;
-                    //avoid SystemFileWatcher to fire when you save the csv file yourself.
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
-                    File.WriteAllText(MyDataCollectorClass.inputFile, csv);
-                    File.WriteAllText(MyDataCollectorClass.inputFileCopy, csv);
                     //add a timestamp and owner name to the author column for the History file
-                    //int lastrow = MyDataCollectorClass.myDataTable.Rows.Count - 1;
+                    //int lastrow = MyDataCollectorClass.localDataTable.Rows.Count - 1;
                     DateTime time = DateTime.UtcNow;
                     myPropDataTable.Rows[0]["Date"] = new Item("utc " + time.ToString("dd/MM/yyyy HH:mm:ss"));
                     myPropDataTable.Rows[0]["Author"] = new Item(MyDataCollectorClass.userName);
-                    
-                    //but the date should be equal to that in inputFile
-                    //otherwise files will never be eaqual
                     csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
-                    historyFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
+                    //myPropDataTable = MyDataCollectorClass.localDataTable;
+                    //avoid SystemFileWatcher to fire when you save the csv file yourself.
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+                    File.WriteAllText(MyDataCollectorClass.sharedFile, csv);
+                    //in Grasshopper save to local is not done, but there you run automatically and reload
+                    //and copy local the sharedFile every time. Here only at start of a session with pSHARE
+                    //and OnChange when somebody else changed the project csv file in DropBox
+                    //but since you work with DataTables new and old no need to write either
+                    //but how can there be a difference then to localFile and oldLocalFile?!!!
+
+                    // not to local file otherwise you don't get difference between New Value and Old Value
+                    // localFile will be copied when you hit Run
+                    File.WriteAllText(MyDataCollectorClass.localFile, csv);
+                    File.WriteAllText(MyDataCollectorClass.oldLocalFile, csv);
+                    //MyDataCollectorClass.makeOldDataTable();
+
+                    ////but the date should be equal to that in sharedFile
+                    ////otherwise files will never be eaqual!!!or keep date out of comparison!!!
+                    //csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
+                    historyFile = MyDataCollectorClass.sharedFile.Remove(MyDataCollectorClass.sharedFile.LastIndexOf("\\") + 1) + "History.csv";
                     //check if file exist
                     if (!File.Exists(historyFile))
                     {
-                        //File.Copy(MyDataCollectorClass.inputFile, historyFile);
+                        //File.Copy(MyDataCollectorClass.sharedFile, historyFile);
                         File.Create(historyFile).Close();
                         newHistoryFile = true;
                     }
@@ -757,19 +795,44 @@ namespace pCOLADnamespace
                     {
                         File.AppendAllText(historyFile, Environment.NewLine + historyCSV);
                     }
+                    //in order to see the changes in the display of the parameters you must update 
+                    //the dependency property MyPropDataTable
+                    //or simply set isChanged of all items to false
+                    //no that doesn't go to the converter
+                    //ClearChanged();
+                    //myPropDataTable = MyDataCollectorClass.localDataTable;
+                    //closeCSVControl();
+                    //RaisePropertyChanged("MyPropDataTable");
+                    //foreach (DataRow dr in myPropDataTable.Rows)
+                    //{
+                    //    foreach (DataColumn dc in myPropDataTable.Columns)
+                    //    {
+                    //        (dr[dc.ColumnName] as MyDataCollector.Item).IsChanged = false;
+                    //    }
+                    //}
+                    MyDataCollectorClass.makeOldDataTable();
+                    Compare();
+                    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                    //RaisePropertyChanged("OnOff");
+                    //compares localDataTable with oldDataTable
+                    //updates the solution
+                    //makes sure that runtype is manual
+                    //switches pSHARE button to off the and closes the CSVcontrol
+                    //CSVUpdateHandler(null, EventArgs.Empty);
 
-                    //reset myPropDataTable to myDataTable to get rid of the time stamp
-                    myPropDataTable = MyDataCollectorClass.myDataTable;
+                    ////reset myPropDataTable to localDataTable to get rid of the time stamp
+                    //myPropDataTable = MyDataCollectorClass.localDataTable;
 
-                    //reset everything so next hit of OnOff button shows only new changes
-                    MyDataCollectorClass.formPopulate = false;
-                    //since formPopulate is false you will read the csv file. But if it was just created
-                    //there are no items
-                    MyDataCollectorClass.openCSV();
-                    //now MyDataCollectorClass.myDataTable is filled with the csv file (inputFile)
-                    //and MyDataCollectorClass.copyDataTable is filled with the inputFileCopy
-                    MyDataCollectorClass.addNewPararemeters();
-                    //now MyDataCollectorClass.myDataTable contains also the output of pSHARE if different
+                    ////reset everything so next hit of OnOff button shows only new changes
+                    //MyDataCollectorClass.formPopulate = false;
+                    ////since formPopulate is false you will read the csv file. But if it was just created
+                    ////there are no items
+                    //MyDataCollectorClass.openCSV(MyDataCollectorClass.sharedFile);
+                    ////now MyDataCollectorClass.localDataTable is filled with the csv file (sharedFile)
+                    ////and MyDataCollectorClass.oldDataTable is filled with the oldLocalCopy
+                    //MyDataCollectorClass.addNewPararemeters();
+                    ////now MyDataCollectorClass.localDataTable contains also the output of pSHARE if different
+                    //Compare();
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
@@ -778,56 +841,64 @@ namespace pCOLADnamespace
                     MyDataCollector.TempMessageXAML tma = new TempMessageXAML();
                     tma.DataContext = tm;
                     tma.Show();
+                    ShowParams(OnOff);//opens the CSVControl and sets the On property to true
+                    //ShowCSV();
                     //MessageBox.Show(pSHARE.dv,"CSV file successfully saved...","pCOLAD",MessageBoxButton.OK,MessageBoxImage.Information,MessageBoxResult.None);
 
                 }
                 catch (System.Exception e)
                 {
+                    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    {
                     MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    }));
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
 
             }
         }
-
         private void History(object obj)
         {
             //show History.csv
-            if (MyDataCollectorClass.inputFile == null)
+            if (MyDataCollectorClass.sharedFile == null)
             {
+                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                {
                 MessageBox.Show(pSHARE.dv, "Please connect file path to pSHARE and run the solution ...");
+                }));
             }
             else
             {
-                if (historyOn)//historyOn is false when you show the History file, true if you hit the button to hide
+                if (historyOn)//historyOn is false when you show the History file
                 {
-                    string HistoryFile = MyDataCollectorClass.inputFile.Remove(MyDataCollectorClass.inputFile.LastIndexOf("\\") + 1) + "History.csv";
+                    string HistoryFile = MyDataCollectorClass.sharedFile.Remove(MyDataCollectorClass.sharedFile.LastIndexOf("\\") + 1) + "History.csv";
                     if (!File.Exists(HistoryFile))
                     {
+                        dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                        {
                         MessageBox.Show(pSHARE.dv, "There is no History.csv file (yet). Please hit the Share button first ...");
+                        }));
                         //reset the buttons. Don't know how!!!
                         HistoryOn = false;
                         //History(HistoryCommand);
                         return;
                     }
                     MyDataCollectorClass.formPopulate = false;
-                    //first set myDataTable to the History file by changing the inputFile property.
-                    MyDataCollectorClass.inputFile = HistoryFile;
-                    MyDataCollectorClass.openCSV();
-                    //apperently MyPropDataTable is not the same as myDataTable...
-                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    //first set localDataTable to the History file by changing the sharedFile property.
+                    MyDataCollectorClass.openCSV(HistoryFile);
+                    //apperently MyPropDataTable is not the same as localDataTable...
+                    this.MyPropDataTable = MyDataCollectorClass.localDataTable;
                     HistoryOn = true;
                 }
                 else
                 {
                     //Show the csv file and add new parameters
-                    MyDataCollectorClass.inputFile = MyDataCollectorClass.ShareInputFile;
                     //Re-open csv is avoided because formPopulate is true
-                    MyDataCollectorClass.openCSV();
+                    MyDataCollectorClass.openCSV(MyDataCollectorClass.sharedFile);
                     MyDataCollectorClass.addNewPararemeters();
                     Compare();
-                    this.MyPropDataTable = MyDataCollectorClass.myDataTable;
+                    this.MyPropDataTable = MyDataCollectorClass.localDataTable;
                     HistoryOn = false;
                 }
             }
@@ -852,120 +923,187 @@ namespace pCOLADnamespace
             this.isChecked = false;
             UncheckAllButton = false;
         }
-        private void Compare()
+        private void ClearChanged()
         {
-            //compare csv and copy of csv here. Now only works after saving first time!!!
-            //compare the comment, New Value and importance values of the two tables
-            //but not for the History file
-            ////for this to work you will have to fill myDataTable with new Items, 
-            ////because INotifyPropertyChanged is not implemented there.
-            //for (int i = 0; i < MyDataCollectorClass.myDataTable.Columns.Count; i++)
+            foreach (DataRow localDataRow in MyDataCollectorClass.localDataTable.Rows)
+            {
+                foreach (DataColumn localDataColumn in MyDataCollectorClass.localDataTable.Columns)
+                {
+                    if ((localDataRow[localDataColumn] as MyDataCollector.Item) != null)
+                    {
+                        (localDataRow[localDataColumn] as MyDataCollector.Item).IsChanged = false;
+                    }
+                }
+            }
+            //foreach (DataRow localDataRow in myPropDataTable.Rows)
             //{
-            //    for (int j = 0; j < MyDataCollectorClass.myDataTable.Rows.Count; j++)
+            //    foreach (DataColumn localDataColumn in myPropDataTable.Columns)
             //    {
-            //        MyDataCollectorClass.myDataTable.Rows[j][i] = new Item(MyDataCollectorClass.myDataTable.Rows[j][i].ToString());
+            //        if ((localDataRow[localDataColumn] as MyDataCollector.Item) != null)
+            //        {
+            //            (localDataRow[localDataColumn] as MyDataCollector.Item).IsChanged = false;
+            //        }
             //    }
             //}
 
-            if (MyDataCollectorClass.inputFile != null && !MyDataCollectorClass.inputFile.Contains("History"))
+        }
+
+        private void Compare()
+        {
+            //compare csv and copy of csv here. Now only works after saving first time!!!
+            //if a cell in localDataTable is different from a corresponing cell in oldDataTable, make it red
+            //you get an error if the corresponding cell does not exist
+            //onother thing is that you can not rely on the same order of columns, so use names
+            //also the Parameter column is primary, so must have unique values. You can not just add empty rows!!!
+
+            //During processing initially localDataTable contains copy of shared csv file + own parameters. 
+            //If you compare a cell that doesn’t exist in one or the other data table you get an error. 
+            //For rows you can check existance if the Rows.Find(“key value”) returns null. 
+            //For columns check existance if the oldDataTable.Column[localDataTable.Column.ColumnName] == null. 
+            //So with a foreach loop through all rows of localDataTable and 
+            //If Rows.Find (“key value”) != null  and If oldDataTable.Column[localDataTable.Column.ColumnName] != null 
+            //a foreach sub loop through the columns ensures that you can compare the Items in the cells. 
+            //Else and Else run SetChanged() on the Item in the localDataTable.
+
+            //But what about deleted columns or rows? For later!!!
+            //Best would be to mark them with '?' in front of the value and delete them if everybody removes his/her objection
+            //How to mark them in the display? Can the text get strike through? Yes with converter (made it already).
+
+            #region newCompare
+            // first reset all items
+            ClearChanged();
+
+            foreach (DataRow localDataRow in MyDataCollectorClass.localDataTable.Rows)
             {
-                if (MyDataCollectorClass.copyDataTable.Rows.Count < 1)
+                DataRow oldDataRow = MyDataCollectorClass.oldDataTable.Rows.Find(localDataRow["Parameter"]);
+                if (oldDataRow != null)
                 {
-                    return;
-                }
-                DataRow drc = MyDataCollectorClass.copyDataTable.Rows[0];
-                for (int i = 0; i < MyDataCollectorClass.myDataTable.Rows.Count; i++)
-                {
-                    //normally copyDataTable has less rows then myDataTable
-                    //all extra rows in myDataTable should be red, so add strange strings
-                    //but why does this happen if somebody else changes the csv file?
-                    //is myDataTable not updated then?!!!
-                    //btw changed < into <= in next line!!!
-                    if (i <= MyDataCollectorClass.copyDataTable.Rows.Count)
+                    foreach (DataColumn localDataColumn in MyDataCollectorClass.localDataTable.Columns)
                     {
-                        drc = MyDataCollectorClass.copyDataTable.Rows[i];
-                    }
-                    else
-                    {
-                        drc = MyDataCollectorClass.copyDataTable.NewRow();
-                        for (int k = 0; k < MyDataCollectorClass.copyDataTable.Columns.Count; k++)
+                        //Item in localDataColumn can be null WHY? if there is no oldLocalFile yet??
+                        //then you can not compare it, but won't you get an error when sharing?
+                        //So add an empty Item
+                        MyDataCollector.Item test1 = (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item);
+                        if (test1 == null)
                         {
-                            //if (MyDataCollectorClass.copyDataTable.Columns[k].ColumnName=="Images")
-                            //{
-                            //    drc[k] = new List<MyImage>();
-                            //}
-                            //else
-                            //{
-                            drc[k] = new Item("@#$%!");
-                            //}
-                            //don't add the row to the table because then you get trouble with primarykey
+                            localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
                         }
-                    }
-                    DataRow dr = MyDataCollectorClass.myDataTable.Rows[i];
-                    for (int j = 0; j < MyDataCollectorClass.myDataTable.Columns.Count; j++)
-                    {
-                        string cn = MyDataCollectorClass.myDataTable.Columns[j].ColumnName;
-                        //if pCOLLECT adds an attribute the column does not exist yet in copyDataTable
-                        if (!MyDataCollectorClass.copyDataTable.Columns.Contains(cn))
+                        //MyDataCollector.Item test2 = (oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item);
+                        if (MyDataCollectorClass.oldDataTable.Columns[localDataColumn.ColumnName] != null)
                         {
-                            MyDataCollectorClass.copyDataTable.Columns.Add(cn, typeof(Item));
-                        }
-                        if (!Object.Equals(drc[cn], dr[cn]))
-                        {
-                            //Item x = new Item(dr[cn].ToString());
-                            //x.IsChanged = true;
-                            //no idea why this can happen...
-                            if (dr[cn] as MyDataCollector.Item == null)
+                            //use .Equelas instead of != because otherwise you get a reference and not a value comparison
+                            if (!(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).textValue.Equals((oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).textValue))
                             {
-                                dr[cn] = new Item("");
+                                if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
+                                {
+                                    (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                                }
                             }
-                            //write the New Value to the Old Value.
-                            if (cn == "New Value")
-                            {
-                                dr["Old Value"] = drc[cn];
-                            }
-                            (dr[cn] as MyDataCollector.Item).SetChanged();
                         }
                         else
                         {
-                            if (dr[cn] as MyDataCollector.Item == null)
+                            //a column is missing in oldDataTable, but that doesn't matter, you don't have to add it, just
+                            //run SetChanged() on Item in this cell in localDataTable 
+                            if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) == null)
                             {
-                                dr[cn] = new Item("");
+                                localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
                             }
-                            (dr[cn] as MyDataCollector.Item).SetSame();
+                            (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
                         }
                     }
-
-                    //if comments are different and editted by somebody else
-                    //then you should do something!!!
-
-                    //if (!Object.Equals(drc["Comments"], dr["Comments"]))
-                    //{
-                    //    (dr["Comments"] as MyDataCollector.Item).SetChanged();
-                    //}
-                    ////else
-                    ////{
-                    ////    (dr["Comments"] as MyDataCollector.Item).SetSame();
-                    ////}
-                    //if (!Object.Equals(drc["New Value"], dr["New Value"]))
-                    //{
-                    //    (dr["New Value"] as MyDataCollector.Item).SetChanged();
-                    //}
-                    ////else
-                    ////{
-                    ////    (dr["New Value"] as MyDataCollector.Item).SetSame();
-                    ////}
-                    //if (!Object.Equals(drc["Importance"], dr["Importance"]))
-                    //{
-                    //    (dr["Importance"] as MyDataCollector.Item).SetChanged();
-                    //}
-                    ////else
-                    ////{
-                    ////    (dr["Importance"] as MyDataCollector.Item).SetSame();
-                    ////}
                 }
-                myPropDataTable = MyDataCollectorClass.myDataTable;
+                else
+                {
+                    // a row is missing
+                    foreach (DataColumn localDataColumn in MyDataCollectorClass.localDataTable.Columns)
+                    {
+                        if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) == null)
+                        {
+                            localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
+                        }
+                        (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                    }
+                }
             }
+            #endregion
+            #region oldCompare
+            //if (MyDataCollectorClass.sharedFile != null) // && !MyDataCollectorClass.inputFile.Contains("History"))
+            //{
+            //    if (MyDataCollectorClass.oldDataTable.Rows.Count < 1)
+            //    {
+            //        return;
+            //    }
+            //    DataRow drc = MyDataCollectorClass.oldDataTable.Rows[0];
+            //    for (int i = 0; i < MyDataCollectorClass.localDataTable.Rows.Count; i++)
+            //    {
+            //        //often oldDataTable has less rows then localDataTable
+            //        //all extra rows in localDataTable should be red, so add strange strings
+            //        //but why does this happen if somebody else changes the csv file?
+            //        //is localDataTable not updated then?!!! 
+            //        //note that Rows.Count is always one more than available Rows[i] because
+            //        //you start at 0. Therefore check if i < not i <=
+
+            //        if (i < MyDataCollectorClass.oldDataTable.Rows.Count)
+            //        {
+            //            drc = MyDataCollectorClass.oldDataTable.Rows[i];
+            //        }
+            //        else
+            //        {
+            //            drc = MyDataCollectorClass.oldDataTable.NewRow();
+            //            for (int k = 0; k < MyDataCollectorClass.oldDataTable.Columns.Count; k++)
+            //            {
+            //                //if (MyDataCollectorClass.oldDataTable.Columns[k].ColumnName=="Images")
+            //                //{
+            //                //    drc[k] = new List<MyImage>();
+            //                //}
+            //                //else
+            //                //{
+            //                drc[k] = new Item("@#$%!");
+            //                //}
+            //                //don't add the row to the table because then you get trouble with primarykey
+            //            }
+            //        }
+            //        DataRow dr = MyDataCollectorClass.localDataTable.Rows[i];
+            //        for (int j = 0; j < MyDataCollectorClass.localDataTable.Columns.Count; j++)
+            //        {
+            //            string cn = MyDataCollectorClass.localDataTable.Columns[j].ColumnName;
+            //            //if pCOLLECT adds an attribute the column does not exist yet in oldDataTable
+            //            if (!MyDataCollectorClass.oldDataTable.Columns.Contains(cn))
+            //            {
+            //                MyDataCollectorClass.oldDataTable.Columns.Add(cn, typeof(Item));
+            //            }
+            //            if (!Object.Equals(drc[cn], dr[cn]))
+            //            {
+            //                //Item x = new Item(dr[cn].ToString());
+            //                //x.IsChanged = true;
+            //                //no idea why this can happen...
+            //                if (dr[cn] as MyDataCollector.Item == null)
+            //                {
+            //                    dr[cn] = new Item("");
+            //                }
+            //                //write the New Value to the Old Value. 
+            //                if (cn == "New Value")
+            //                {
+            //                    if (drc[cn] as MyDataCollector.Item.TextValue != "@#$%!")
+            //                    {
+            //                        dr["Old Value"] = drc[cn];
+            //                    }
+            //                }
+            //                (dr[cn] as MyDataCollector.Item).SetChanged();
+            //            }
+            //            else
+            //            {
+            //                if (dr[cn] as MyDataCollector.Item == null)
+            //                {
+            //                    dr[cn] = new Item("");
+            //                }
+            //                (dr[cn] as MyDataCollector.Item).SetSame();
+            //            }
+            //        }
+            //    }
+            //    myPropDataTable = MyDataCollectorClass.localDataTable;
+            #endregion            }
+            myPropDataTable = MyDataCollectorClass.localDataTable;
         }
         #endregion
     }

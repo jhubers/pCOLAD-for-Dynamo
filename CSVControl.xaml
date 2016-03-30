@@ -25,6 +25,7 @@
         <local:ObjectToForegroundConverter x:Key="MyObjectToForegroundConverter"/>
         <local:testConverter x:Key="myTestConverter"/>
         <local:DataRowToFullPathListConverter x:Key="myDataRowToListConverter"/>
+        <local:ObjectToStrikeThroughConverter x:Key="myObjectToStrikeThroughConverter"/>
         <local:ImageTemplateSelector x:Key="myImageTemplateSelector"/>
 
         <!--<local:BindingProxy x:Key="proxy" Data="{Binding}" />-->
@@ -111,6 +112,12 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <DataTemplate x:Key="deletedCells">
+            <TextBlock 
+            Text="{Binding Mode=OneWay}" 
+            TextDecorations="{Binding Converter={StaticResource myObjectToStrikeThroughConverter}, Mode=OneWay}"
+            />
+        </DataTemplate>
         <DataTemplate x:Key="changedCells">
             <TextBlock 
             Text="{Binding Mode=OneWay}" 
@@ -172,13 +179,15 @@
             <!--just empty cells-->
         </DataTemplate>
     </Window.Resources>
-    
+
     <!--trigger the closing by the red cross top left. Doesn't work. Try with Blend? 
     runs also when you close by code when you hit the Cancel button. So it runs then twice!-->
     <!--<i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
-            --><!--<i:InvokeCommandAction Command="{Binding CancelCommand}" CommandParameter="{Binding}"/>
-            <i:InvokeCommandAction Command="{Binding CancelCommand}"/>--><!--
+            -->
+    <!--<i:InvokeCommandAction Command="{Binding CancelCommand}" CommandParameter="{Binding}"/>
+            <i:InvokeCommandAction Command="{Binding CancelCommand}"/>-->
+    <!--
         </i:EventTrigger>
     </i:Interaction.Triggers>-->
     <Grid AllowDrop="False">
@@ -239,7 +248,9 @@
                                                 MouseLeave="imageBorder_MouseLeave"
                                                 MouseEnter="imageBorder_MouseEnter" Height="16">
                                             
-                                         --><!--try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow--><!--
+                                         -->
+                        <!--try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow-->
+                        <!--
 
                                             <Image x:Name="myImage" Source="{Binding MyImagePath}" Visibility="{Binding HistoryOn, Converter={StaticResource BoolToVisibleConverter}}"
                                                MouseUp="Image_MouseUp"  HorizontalAlignment="Center">

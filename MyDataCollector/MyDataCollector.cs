@@ -26,19 +26,20 @@ namespace MyDataCollector
     {
 
         // later replace with an input
-        public static string inputFile; // = "D:\\Temp\\test2.csv";        
+        public static string sharedFile; //the project csv file in DropBox        
         public static FileSystemWatcher CSVwatcher;
         public static FileSystemWatcher ImagesWatcher;
-        public static string ShareInputFile;//to store the inputFile path so you can change it for the History file path
-        public static string inputFileCopy;
+        //public static string csvFile;//can be the sharedFile or the HistoryFile
+        public static string localFile;//local copy of sharedFile
+        public static string oldLocalFile;//before last changed localFile
         public static string userName;// = "Hans";
         public static bool formPopulate = false;
         public static List<string> csvList = new List<string>();
-        public static List<string> copyCsvList = new List<string>();
+        public static List<string> oldCsvList = new List<string>();
         public static List<List<string>> pSHAREoutputs = new List<List<string>>();
-        public static DataTable myDataTable;
+        public static DataTable localDataTable;
         public static DataTable csvDataTable;
-        public static DataTable copyDataTable;
+        public static DataTable oldDataTable;
         public static event EventHandler UpdateCSVControl = delegate { };
         public static event EventHandler Message = delegate { };
         private static DataTable mergedDataTable;
@@ -48,48 +49,54 @@ namespace MyDataCollector
         public static DateTime lastWriteTime;
         public static string msg = "";
         public static DynamoView dv;
-        public static bool firstTime = true;
+        public static bool firstRun = true;
 
-        public static void openCSV()
-        {            
+        public static void makeOldDataTable()
+        {
+            oldDataTable = null;
+            oldCsvList.Clear();
+            oldCsvList = Functions.CSVtoList(oldLocalFile);
+            //if you start with empty csv file ...
+            if (oldCsvList.Count == 0)
+            {
+                oldCsvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+            }
+            oldDataTable = Functions.ListToTable(oldCsvList);
+        }
+
+        public static void openCSV(string csvs)
+        {
             if (!formPopulate)
             {
-                myDataTable = null;
-                copyDataTable = null;
+                //this is used for project csv file and History file
+                localDataTable = null;
                 csvList.Clear();
-                copyCsvList.Clear();
                 //first make a List<string> out of the csv-file (because pCOLLECTs are also turned into List<string>
                 //then turn List<string> into a DataTable with Functions.ListToTable
-                //first make a list and datatable from the copy csv-file
-                copyCsvList = Functions.CSVtoList(inputFileCopy);
-                csvList = Functions.CSVtoList(inputFile);
-                //if you start with an empty csv file...
+                csvList = Functions.CSVtoList(csvs);
+                //if you start with empty csv files ...
                 if (csvList.Count == 0)
                 {
                     csvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
                 }
-                if (copyCsvList.Count == 0)
-                {
-                    copyCsvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
-                }
-                myDataTable = Functions.ListToTable(csvList);
-                copyDataTable = Functions.ListToTable(copyCsvList);
-                csvDataTable = myDataTable.Copy();
+                localDataTable = Functions.ListToTable(csvList);
+                csvDataTable = localDataTable.Copy();
                 //UpdateCSVControl(null, EventArgs.Empty);                
             }
             else
             {
-                myDataTable = csvDataTable.Copy();
+                //the display is there already, no need to load csv files just use the stored version
+                localDataTable = csvDataTable.Copy();
             }
 
         }
         public static void addNewPararemeters()
         {
-            //add the outputs of pSHARE to myDataTable so they can be shown in the display
+            //add the outputs of pSHARE to localDataTable so they can be shown in the display
             //but before you have to build the common multiple, or use the union of dataTables
             //turn list of list of strings into List of DataTables
             List<DataTable> newParamTables = new List<DataTable>();
-            newParamTables.Add(myDataTable);
+            newParamTables.Add(localDataTable);
             foreach (List<string> ls in pSHAREoutputs)
             {
                 //with Automatic run the first ls has null in line two giving errors!!!
@@ -104,16 +111,18 @@ namespace MyDataCollector
                 {
                     //since you removed owner from pCOLLECT add it here 
                     newParamTable.Rows[i]["Owner"] = new Item(userName);
-                    for (int j = i; j < myDataTable.Rows.Count; j++)
+                    for (int j = i; j < localDataTable.Rows.Count; j++)
                     {
-                        string t1 = myDataTable.Rows[j]["Parameter"].ToString();
+                        string t1 = localDataTable.Rows[j]["Parameter"].ToString();
                         string t2 = newParamTable.Rows[i]["Parameter"].ToString();
-                        string p1 = myDataTable.Rows[j]["Owner"].ToString();
+                        string p1 = localDataTable.Rows[j]["Owner"].ToString();
                         string p2 = userName;
                         if (t1 == t2 && p1 != p2)
                         {
-
+                            dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                            {
                             MessageBox.Show(dv, "Parameter " + t2 + " already exists. Please use another parameter name...");
+                            }));
                             //replace the Parameter by ERROR
                             newParamTable.Rows[i]["Parameter"] = new Item("---ERROR---");
                         }
@@ -128,23 +137,23 @@ namespace MyDataCollector
             if (newParamTables.Count > 1)
             {
                 DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
-                myDataTable = TblUnion;
-                //make a copy of myDataTable so you can return to it if changes are undone
-                if (!formPopulate && !inputFile.Contains("History"))
+                localDataTable = TblUnion;
+                //make a copy of localDataTable so you can return to it if changes are undone
+                if (!formPopulate) // && !sharedFile.Contains("History"))
                 {
-                    mergedDataTable = myDataTable.Copy();
+                    mergedDataTable = localDataTable.Copy();
                     formPopulate = true;
                 }
             }
             //add a property ImageList to Item with image paths from the folder with the
             //name of the parameter in the Images folder in the DropBox
-            //also for the parameters in myDataTable...So do it after the merge.
-            for (int i = 0; i < myDataTable.Rows.Count; i++)
+            //also for the parameters in localDataTable...So do it after the merge.
+            for (int i = 0; i < localDataTable.Rows.Count; i++)
             {
 
                 List<MyImage> lmi = new List<MyImage>();
-                string inputFolder = inputFile.Remove(inputFile.LastIndexOf("\\") + 1);
-                string imageFolderPath = inputFolder + "Images\\" + myDataTable.Rows[i]["Parameter"].ToString();
+                string inputFolder = sharedFile.Remove(sharedFile.LastIndexOf("\\") + 1);
+                string imageFolderPath = inputFolder + "Images\\" + localDataTable.Rows[i]["Parameter"].ToString();
                 var filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp" };
                 //next function returns a list of strings with only the path names of files
                 //with extension in filters
@@ -161,7 +170,7 @@ namespace MyDataCollector
                 Item ni = new Item("");
                 ni.ImageFileNameList = fileNames;
                 ni.ImageList = lmi;
-                myDataTable.Rows[i]["Images"] = ni;
+                localDataTable.Rows[i]["Images"] = ni;
 
             }
         }
@@ -172,21 +181,35 @@ namespace MyDataCollector
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
-            inputFile = _IfilePath;
-            //create filesystemwatcher only once
-            if (firstTime)
-            {
-                watch();
-                firstTime = false;
-            }
-            // inputFile can also be the History.csv file... to return to project.csv file use ShareInputFile
-            // In fact it would be better if you copy the input file to a local file!!!
-            // And copy that file to an old_local file, like you did in pCOLAD for Grasshopper
-            // Let's do that in a new branch 0.2
-            // What about the History.csv file? Will that be in the dropBox? Yes automatically created there.
+            //this runs every time you hit Run in Dynamo.
+            sharedFile = _IfilePath;
+            localFile = _LfilePath;
+            //contruct the path for the oldLocalFile
+            string dir = Path.GetDirectoryName(_LfilePath);
+            string fileName = Path.GetFileName(_LfilePath);
+            oldLocalFile = dir + "\\old_" + fileName;
 
-            ShareInputFile = _IfilePath;
-            inputFileCopy = _LfilePath;
+            //check if sharedFile exist; otherwise make one with default headers.
+            Functions.FileExist(_IfilePath);
+            // the first time you run make a local copy of the shared csv file in DropBox;
+            // and a copy from the local file to old_local file for comparing changes
+            //in Grasshopper you copy the file from the DropBox every time...but no need, because OnChange.
+            if (firstRun)
+            {
+                //no need to check if localFile exists. In first run always overwrite with DropBox file
+                File.Copy(_IfilePath, _LfilePath, true);
+                //copy local file to oldLocalFile if the latter don't exist
+                if (!File.Exists(oldLocalFile))
+                {
+                    File.Copy(sharedFile, oldLocalFile, true);
+                }
+                // If History is On and you hit Run, you display the project csv file
+                // but the History button stays... So maybe also put next line in firstRun if statement?!!!
+                //csvFile = _IfilePath;
+                //create filesystemwatcher also only once
+                watch();
+                firstRun = false;
+            } 
             userName = _owner;
             pSHAREoutputs.Clear();
             bool OnepCOLLECT = false;
@@ -208,26 +231,27 @@ namespace MyDataCollector
             if (OnepCOLLECT)
             {
                 msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
-                dv.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
                     MessageBox.Show(dv, msg);
                 }));
             }
-            //The inputs of the pCOLLECTs must be added to the content of the csv file, changing the myDataTable property.
-            //Populate myDataTable with the csv file
-            openCSV();
-            // Union the pCOLLECTs to myDataTable
+            //The inputs of the pCOLLECTs must be added to the display of the csv file, changing the localDataTable property.
+            //Populate localDataTable with the csv file
+            openCSV(sharedFile);
+            makeOldDataTable();
+            // Union the pCOLLECTs to localDataTable
             // Check if not only 1 pCOLLECT is connected otherwise you get an error
             List<string> pSHAREoutputList = new List<string>();
             if (pSHAREoutputs.Count > 0)
             {
                 addNewPararemeters();
-                //now myDataTable contains the union of the csv file and the new parameters
+                //now localDataTable contains the union of the csv file and the new parameters
                 //so, you can use the columns "Parameter" and "New Value"
-                for (int i = 0; i < myDataTable.Rows.Count; i++)
+                for (int i = 0; i < localDataTable.Rows.Count; i++)
                 {
-                    pSHAREoutputList.Add(myDataTable.Rows[i]["Parameter"].ToString());
-                    pSHAREoutputList.Add(myDataTable.Rows[i]["New Value"].ToString());
+                    pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
+                    pSHAREoutputList.Add(localDataTable.Rows[i]["New Value"].ToString());
                 }
             }
             else
@@ -235,7 +259,7 @@ namespace MyDataCollector
                 pSHAREoutputList.Add("WARNING: output is not generated. Did you connect the input without a List.Create?");
             }
             //when you change a parameter you should have immediate update of the display when you hit run.
-            UpdateCSVControl(null, EventArgs.Empty);
+            UpdateCSVControl(null, EventArgs.Empty);//includes Compare()
             return pSHAREoutputList;
         }
         public static string pPARAMoutputs(string _Parameter, List<string> _pSHAREoutput)
@@ -254,13 +278,13 @@ namespace MyDataCollector
         private static void watch()
         {
             CSVwatcher = new FileSystemWatcher();
-            CSVwatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.inputFile);
+            CSVwatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.sharedFile);
             CSVwatcher.NotifyFilter = NotifyFilters.LastWrite;
-            CSVwatcher.Filter = Path.GetFileName(MyDataCollectorClass.inputFile);
+            CSVwatcher.Filter = Path.GetFileName(MyDataCollectorClass.sharedFile);
             CSVwatcher.Changed += new FileSystemEventHandler(OnChanged);
             CSVwatcher.EnableRaisingEvents = true;
             ImagesWatcher = new FileSystemWatcher();
-            ImagesWatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.inputFile) + "\\" + "Images" + "\\";
+            ImagesWatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.sharedFile) + "\\" + "Images" + "\\";
             ImagesWatcher.NotifyFilter = NotifyFilters.LastWrite;
             ImagesWatcher.Filter = "*.*";//can not filter several types 
             ImagesWatcher.IncludeSubdirectories = true;
@@ -280,7 +304,7 @@ namespace MyDataCollector
             CSVwatcher.EnableRaisingEvents = false;
             //show the message on top of Dynamo. Because it comes from a different thread
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
-            lastWriteTime = File.GetLastWriteTime(inputFile);
+            lastWriteTime = File.GetLastWriteTime(sharedFile);
 
             string msg = "Some changes occured in the shared information. I will start over... " +
             "Hit the Run button if you are not in Automatic mode.";
@@ -302,15 +326,19 @@ namespace MyDataCollector
                 //{
                 //Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                dv.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
+                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                  {
                      //MessageBox.Show(Application.Current.MainWindow, msg);
                      MessageBox.Show(dv, msg);
+                     //copy the sharedFile to the localFile
+                     File.Copy(sharedFile, localFile, true);
                      formPopulate = false;
-                     openCSV();
-                     addNewPararemeters();
+                     //since you have to hit Run next three lines will run there
+                     //openCSV(sharedFile);
+                     //addNewPararemeters();
+                     //makeOldDataTable();
                      //but hide the _CSVControl anyway to make clear something changed
-                     formPopulate = false;
+                     //next line also runs when you hit Run, but is a way to hide the _CSVControl
                      UpdateCSVControl(null, EventArgs.Empty);
                      ImagesWatcher.EnableRaisingEvents = true;
                      CSVwatcher.EnableRaisingEvents = true;

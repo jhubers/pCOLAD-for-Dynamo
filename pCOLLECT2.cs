@@ -9,6 +9,7 @@ using System;
 using System.Xml;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph;
+using System.Windows.Threading;
 
 namespace pCOLADnamespace
 {
@@ -456,8 +457,11 @@ namespace pCOLADnamespace
                         //check if it is not a default input
                         if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
                         {
+                            pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                            {
                             MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
                             return;
+                            }));
                         }
                         List<string> inportDataNames = new List<string>();
                         foreach (PortData item in InPortData)
@@ -472,7 +476,10 @@ namespace pCOLADnamespace
                         }
                         else
                         {
+                            pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                            {
                             MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
+                            }));
                         }
                     }
 
@@ -534,7 +541,10 @@ namespace pCOLADnamespace
                                     }
                                     else
                                     {
+                                        pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                                        {
                                         MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
+                                        }));
                                     }
 
                                 }
