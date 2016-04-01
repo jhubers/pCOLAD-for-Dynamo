@@ -814,7 +814,7 @@ namespace pCOLADnamespace
                     Compare();
                     ShowParams(OnOff);//closes the CSVControl and sets the On property to false
                     //RaisePropertyChanged("OnOff");
-                    //compares localDataTable with oldDataTable
+                    //CSVUpdateHandler compares localDataTable with oldDataTable
                     //updates the solution
                     //makes sure that runtype is manual
                     //switches pSHARE button to off the and closes the CSVcontrol
