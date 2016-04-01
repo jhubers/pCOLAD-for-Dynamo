@@ -49,6 +49,7 @@ namespace MyDataCollector
         public static DateTime lastWriteTime;
         public static string msg = "";
         public static DynamoView dv;
+        public static DynamoModel dm;
         public static bool firstRun = true;
 
         public static void makeOldDataTable()
@@ -61,7 +62,7 @@ namespace MyDataCollector
             {
                 oldCsvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
             }
-            oldDataTable = Functions.ListToTable(oldCsvList);
+            oldDataTable = Functions.ListToTable(oldCsvList,"not localFile");
         }
 
         public static void openCSV(string csvs)
@@ -79,7 +80,7 @@ namespace MyDataCollector
                 {
                     csvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
                 }
-                localDataTable = Functions.ListToTable(csvList);
+                localDataTable = Functions.ListToTable(csvList,csvs);
                 csvDataTable = localDataTable.Copy();
                 //UpdateCSVControl(null, EventArgs.Empty);                
             }
@@ -99,8 +100,27 @@ namespace MyDataCollector
             newParamTables.Add(localDataTable);
             foreach (List<string> ls in pSHAREoutputs)
             {
-                //with Automatic run the first ls has null in line two giving errors!!!
-                DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls);
+                //with Automatic run the first ls has null in line two, giving errors!!!
+                //In fact you should not overwrite Old Values!!! Or you should put in Old Value before, or after.
+                DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls, "not localFile");
+                //With DataTable.Merge you overwrite existing records that have the same primary key (Parameter)
+                //That is not what you want. Only the outputs of pSHARE. E.g. the Comments that you type in
+                //the display should not be overwritten with those in the output. Same goes for Obstruction. 
+                //So Merging is not a good idea, or put in the right data before. E.g. get rid of comments !!!
+                //in pCOLLECT. Only in display, like obstruction.
+                //But what about extra attributes? If they are not your own. Don't overwrite. But in newParamTable
+                //you only have your own parameters! So no problem with that.
+                foreach (DataRow dr in localDataTable.Rows)
+                {
+                    DataRow newDataRow = newParamTable.Rows.Find(dr["Parameter"]);
+                    if (newDataRow != null)
+                    {
+                        newDataRow["Comments"] = dr["Comments"];
+                        //there is no Column Obstruction and Old Value in newParamTable
+                        //newDataRow["Obstruction"] = dr["Obstruction"];
+                        //newDataRow["Old Value"] = dr["Old Value"];
+                    }
+                }
                 //since you removed owner from pCOLLECT add it here 
                 //maybe was wrong, because owner can change? Then simply disconnect pCOLLECT concerned!
                 newParamTable.Columns.Add("Owner", typeof(Item));
@@ -197,6 +217,7 @@ namespace MyDataCollector
             if (firstRun)
             {
                 //no need to check if localFile exists. In first run always overwrite with DropBox file
+                //But what if the user changes the paths?!!! You should keep track of that. Later.
                 File.Copy(_IfilePath, _LfilePath, true);
                 //copy local file to oldLocalFile if the latter don't exist
                 if (!File.Exists(oldLocalFile))
@@ -306,8 +327,7 @@ namespace MyDataCollector
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
             lastWriteTime = File.GetLastWriteTime(sharedFile);
 
-            string msg = "Some changes occured in the shared information. I will start over... " +
-            "Hit the Run button if you are not in Automatic mode.";
+            string msg = "Some changes occured in the shared information. I will start over... ";
             //if (AutoPlay)
             //{
             //    //stop watching because otherwise you get nummerous messages
@@ -339,9 +359,13 @@ namespace MyDataCollector
                      //makeOldDataTable();
                      //but hide the _CSVControl anyway to make clear something changed
                      //next line also runs when you hit Run, but is a way to hide the _CSVControl
-                     UpdateCSVControl(null, EventArgs.Empty);
+                     //UpdateCSVControl(null, EventArgs.Empty);
                      ImagesWatcher.EnableRaisingEvents = true;
                      CSVwatcher.EnableRaisingEvents = true;
+
+
+                     //!!!try this
+                     dm.ForceRun();
                  }));
                 //    }
                 //else
