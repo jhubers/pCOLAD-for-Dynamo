@@ -32,7 +32,7 @@ namespace MyDataCollector
             //do something with the returnList
             return returnList;
         }
-        public static DataTable ListToTable(List<string> Ls)
+        public static DataTable ListToTable(List<string> Ls, string csvS)
         {
             //this function uses the first line of the list as ; seperated headers
             //the next lines are the ; seperated values
@@ -131,9 +131,12 @@ namespace MyDataCollector
 
             }
             //set the primary key of the table so you can easily merge tables. The key is an array of columns
-            //but we use only the column with the Parameter name, which is the second displayed
-            //but remember that you hide the "Accepted" column.
-            returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
+            //but we use only the column with the Parameter name
+            //don't use primary key for History.csv file
+            if (!Path.GetFileName(csvS).Equals("History.csv"))
+            {
+                returnTable.PrimaryKey = new DataColumn[] { returnTable.Columns["Parameter"] };
+            }
             return returnTable;
         }
         public static DataTable MergeAll(IList<DataTable> tables, String primaryKeyColumn)
@@ -145,9 +148,6 @@ namespace MyDataCollector
                 throw new ArgumentException("Tables must not be empty", "tables");
             if (primaryKeyColumn != null)
                 foreach (DataTable t in tables)
-                    // the first table is null!!! Check reason maybe if (newParamTables.Count > 1) in stead of >2 when adding new parameters.
-
-
                     if (!t.Columns.Contains(primaryKeyColumn))
                         throw new ArgumentException("All tables must have the specified primarykey column " + primaryKeyColumn, "primaryKeyColumn");
 
@@ -279,15 +279,15 @@ namespace MyDataCollector
             {
                 MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                MessageBoxResult result = MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
-                switch (result)
-                {
-                    case MessageBoxResult.Yes:
-                        File.WriteAllText(filename, "Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
-                        return;
-                    case MessageBoxResult.No:
-                        MessageBox.Show(MyDataCollectorClass.dv, "Please connect the right file path and run the application again...", "pCOLAD");
-                        return;
+                    MessageBoxResult result = MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
+                    switch (result)
+                    {
+                        case MessageBoxResult.Yes:
+                            File.WriteAllText(filename, "Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                            return;
+                        case MessageBoxResult.No:
+                            MessageBox.Show(MyDataCollectorClass.dv, "Please connect the right file path and run the application again...", "pCOLAD");
+                            return;
                     }
                 }));
             }
@@ -314,14 +314,14 @@ namespace MyDataCollector
             {
                 MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Are you sure it exists?");
+                    MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Are you sure it exists?");
                 }));
             }
             catch (DirectoryNotFoundException)
             {
                 MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file. Are you sure the directory exists?");
+                    MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file. Are you sure the directory exists?");
                 }));
                 return csvList;
             }
@@ -329,7 +329,7 @@ namespace MyDataCollector
             {
                 MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
+                    MessageBox.Show(string.Format("We found a problem: {0}", e));//instance not set to a etc.
                 }));
                 return csvList;
             }

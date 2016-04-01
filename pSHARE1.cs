@@ -97,7 +97,7 @@ namespace pCOLADnamespace
         {
             dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
             {
-            MessageBox.Show(pSHARE.dv, e.ToString());
+                MessageBox.Show(pSHARE.dv, e.ToString());
             }));
         }
         public void CSVUpdateHandler(object o, EventArgs e)
@@ -506,6 +506,7 @@ namespace pCOLADnamespace
                 pSHARE.dvm = vm.DynamoViewModel;
                 //you need the DynamoModel to check the runtype
                 pSHARE.dm = dvm.Model;
+                MyDataCollectorClass.dm = pSHARE.dm;
                 //looking for a window to use as owner for messages and _CSVcontrol
                 pSHARE.dv = FindUpVisualTree<DynamoView>(nv);
                 MyDataCollectorClass.dv = pSHARE.dv;
@@ -576,7 +577,7 @@ namespace pCOLADnamespace
                         //MyDataCollectorClass.AutoPlay = true;
                         dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                         {
-                        MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
+                            MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
                         }));
                         hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
                     }
@@ -651,7 +652,7 @@ namespace pCOLADnamespace
                     //MyPropDataTable = MyDataCollectorClass.localDataTable;
                     dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
-                    MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
+                        MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
                     }));
                     //set the button to red again
                     RaisePropertyChanged("OnOff");
@@ -690,11 +691,14 @@ namespace pCOLADnamespace
             //this updates immediatally the display
             foreach (DataRow dr in myPropDataTable.Rows)
             {
-                //in fact should compare if difference with Old Value. Later!!!
-                if ((dr["New Value"] as MyDataCollector.Item).IsChanged &&
-                    (dr["Owner"] as MyDataCollector.Item).textValue == MyDataCollectorClass.userName)
+                DataRow odr = MyDataCollectorClass.oldDataTable.Rows.Find(dr["Parameter"]);
+                if (odr != null)
                 {
-                    dr["Old Value"] = dr["New Value"];
+                    if (!(dr["New Value"].Equals(odr["New Value"])) &&
+                (dr["Owner"] as MyDataCollector.Item).textValue == MyDataCollectorClass.userName)
+                    {
+                        dr["Old Value"] = dr["New Value"];
+                    }
                 }
             }
 
@@ -719,7 +723,7 @@ namespace pCOLADnamespace
             {
                 dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
+                    MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
                 }));
             }
             else
@@ -746,6 +750,8 @@ namespace pCOLADnamespace
                     // localFile will be copied when you hit Run
                     File.WriteAllText(MyDataCollectorClass.localFile, csv);
                     File.WriteAllText(MyDataCollectorClass.oldLocalFile, csv);
+                    //in order to have OpenCSV(file path) process the local file 
+                    MyDataCollectorClass.formPopulate = false;
                     //MyDataCollectorClass.makeOldDataTable();
 
                     ////but the date should be equal to that in sharedFile
@@ -841,6 +847,13 @@ namespace pCOLADnamespace
                     MyDataCollector.TempMessageXAML tma = new TempMessageXAML();
                     tma.DataContext = tm;
                     tma.Show();
+
+                    dm.ForceRun();
+                    //for Obstruction to show correctly you have to run twice. No idea why!!!
+                    //But Dynamo doesn't like this
+                    //dm.ForceRun();
+
+
                     ShowParams(OnOff);//opens the CSVControl and sets the On property to true
                     //ShowCSV();
                     //MessageBox.Show(pSHARE.dv,"CSV file successfully saved...","pCOLAD",MessageBoxButton.OK,MessageBoxImage.Information,MessageBoxResult.None);
@@ -850,8 +863,8 @@ namespace pCOLADnamespace
                 {
                     dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
-                    MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                        MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
+                        MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     }));
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
@@ -865,7 +878,7 @@ namespace pCOLADnamespace
             {
                 dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                MessageBox.Show(pSHARE.dv, "Please connect file path to pSHARE and run the solution ...");
+                    MessageBox.Show(pSHARE.dv, "Please connect file path to pSHARE and run the solution ...");
                 }));
             }
             else
@@ -877,7 +890,7 @@ namespace pCOLADnamespace
                     {
                         dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                         {
-                        MessageBox.Show(pSHARE.dv, "There is no History.csv file (yet). Please hit the Share button first ...");
+                            MessageBox.Show(pSHARE.dv, "There is no History.csv file (yet). Please hit the Share button first ...");
                         }));
                         //reset the buttons. Don't know how!!!
                         HistoryOn = false;
