@@ -17,6 +17,7 @@ using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Windows.Interactivity;
 
 namespace pCOLADnamespace
 {
@@ -285,11 +286,27 @@ namespace pCOLADnamespace
                             cellContent = Regex.Replace(cellContent, "/{2/}", "/").Trim('/');
                             dr["Obstruction"] = new Item(cellContent.Trim());
                         }
-                        RaisePropertyChanged("MyPropDataTable");
+                        //RaisePropertyChanged("MyPropDataTable");
                     }
                 }
+                ////update the CSVcontrol, but not if you run the first time. Then you already are running 
+                ////CSVUpdateHandler: Compare()
+                //if (!MyDataCollectorClass.firstRun)
+                //{
+                //    //CSVUpdateHandler(null, EventArgs.Empty);
+                //}
+                //check if field Obstruction is different from oldDataTable and if so Item.SetChanged
+                //Compare() does not go through ObjectToBackgroundConverter
+
+                //mischien als je ook een update van MyPropDataTable maakt? Ander bij new Item hier boven steeds Item.Checked toevoegen
+                //als verschil met localDataTable en oldDataTable
+                Compare();
             }
         }
+        //public bool Itemcompare(Item l, Item o)
+        //{
+        //    if (l.Equals(o)) { return true; } else { return false; }
+        //}
 
         /// <summary>
         /// the property pSHARE.OnOffButton is used to open or close the CSV display
@@ -331,6 +348,7 @@ namespace pCOLADnamespace
         /// The constructor for a NodeModel is used to create the input and output ports and specify the argument lacing.
         public pSHARE()
         {
+            //you get here as soon as you start your Dynamo file with a pSHARE node in it.
             MyDataCollectorClass.UpdateCSVControl += CSVUpdateHandler;
             MyDataCollectorClass.Message += MessageHandler;
             InPortData.Add(new PortData("N", "Input (a List.CreateList) of pCOLLECT output(s)"));
@@ -347,7 +365,7 @@ namespace pCOLADnamespace
             CheckAllCommand = new DelegateCommand(CheckAll, CanCheckAll);
             UnCheckAllCommand = new DelegateCommand(UnCheckAll, CanUnCheckAll);
             //CommentsCommand = new DelegateCommand(Comments, CanComments);
-            //newCommentsCommand = new DelegateCommand(newComments, CanNewComments);
+            //newCommentsCommand = new DelegateCommand(NewComments, CanNewComments);
             //NewValueCommand = new DelegateCommand(NewValue, CanNewValue);
             //newNewValueCommand = new DelegateCommand(NewNewValue, CanNewNewValue);
             //ImportanceCommand = new DelegateCommand(Importance, CanImportance);
@@ -367,15 +385,17 @@ namespace pCOLADnamespace
 
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
-            //Func<int, string> projection = x => "Value=" + x;
-            var x = new Func<int, string>(MyDataCollectorClass.projection);
-            int[] values = { 3, 7, 10 };
-            var strings = values.Select(MyDataCollectorClass.projection);
+            //you get here everytime that solution runs
+            //this was to figure out how Func works
+            ////Func<int, string> projection = x => "Value=" + x;
+            ////var x = new Func<int, string>(MyDataCollectorClass.projection);
+            ////int[] values = { 3, 7, 10 };
+            ////var strings = values.Select(MyDataCollectorClass.projection);
 
-            foreach (string s in strings)
-            {
-                Console.WriteLine(s);
-            }
+            ////foreach (string s in strings)
+            ////{
+            ////    Console.WriteLine(s);
+            ////}
 
             var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
@@ -383,6 +403,12 @@ namespace pCOLADnamespace
             //string testj = MyDataCollectorClass.sharedFile;
             //var t = new Func<List<string>, string, string, string, List<string>>(myStatic);
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
+            //get the localDataTable in MyPropDataTable which is bound to the CSVControl
+            //probably too soon to get the merged parameters in!!!
+            if (MyDataCollectorClass.localDataTable != null)
+            {
+                MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
+            }
             return new[]
             {
                 AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
@@ -642,6 +668,7 @@ namespace pCOLADnamespace
             if (On == false)
             {
                 //and show the *.csv file if the solution ran before
+                MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
                 if (MyPropDataTable != null)
                 {
                     On = true;
@@ -672,6 +699,17 @@ namespace pCOLADnamespace
             }
 
         }
+        //private bool CanNewComments(object obj)
+        //{
+        //    return true;
+        //}
+        //private void NewComments(object obj)
+        //{
+        //    //when the text in a comments field changed you get here
+        //    //can I find out which cell was changed? What is obj?
+        //    var x = obj;
+
+        //}
         private void Share(object obj)
         {
             //write localDataTable to the csv files if something changed
@@ -697,7 +735,7 @@ namespace pCOLADnamespace
                     if (!(dr["New Value"].Equals(odr["New Value"])) &&
                 (dr["Owner"] as MyDataCollector.Item).textValue == MyDataCollectorClass.userName)
                     {
-                        dr["Old Value"] = dr["New Value"];
+                        dr["Old Value"] = odr["New Value"];
                     }
                 }
             }
@@ -801,44 +839,55 @@ namespace pCOLADnamespace
                     {
                         File.AppendAllText(historyFile, Environment.NewLine + historyCSV);
                     }
-                    //in order to see the changes in the display of the parameters you must update 
-                    //the dependency property MyPropDataTable
-                    //or simply set isChanged of all items to false
-                    //no that doesn't go to the converter
-                    //ClearChanged();
-                    //myPropDataTable = MyDataCollectorClass.localDataTable;
-                    //closeCSVControl();
-                    //RaisePropertyChanged("MyPropDataTable");
-                    //foreach (DataRow dr in myPropDataTable.Rows)
-                    //{
-                    //    foreach (DataColumn dc in myPropDataTable.Columns)
-                    //    {
-                    //        (dr[dc.ColumnName] as MyDataCollector.Item).IsChanged = false;
-                    //    }
-                    //}
-                    MyDataCollectorClass.makeOldDataTable();
-                    Compare();
-                    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
-                    //RaisePropertyChanged("OnOff");
-                    //CSVUpdateHandler compares localDataTable with oldDataTable
-                    //updates the solution
-                    //makes sure that runtype is manual
-                    //switches pSHARE button to off the and closes the CSVcontrol
-                    //CSVUpdateHandler(null, EventArgs.Empty);
-
-                    ////reset myPropDataTable to localDataTable to get rid of the time stamp
-                    //myPropDataTable = MyDataCollectorClass.localDataTable;
-
-                    ////reset everything so next hit of OnOff button shows only new changes
-                    //MyDataCollectorClass.formPopulate = false;
-                    ////since formPopulate is false you will read the csv file. But if it was just created
-                    ////there are no items
-                    //MyDataCollectorClass.openCSV(MyDataCollectorClass.sharedFile);
-                    ////now MyDataCollectorClass.localDataTable is filled with the csv file (sharedFile)
-                    ////and MyDataCollectorClass.oldDataTable is filled with the oldLocalCopy
-                    //MyDataCollectorClass.addNewPararemeters();
-                    ////now MyDataCollectorClass.localDataTable contains also the output of pSHARE if different
+                    #region old
+                    ////in order to see the changes in the display of the parameters you must update 
+                    ////the dependency property MyPropDataTable
+                    ////or simply set isChanged of all items to false
+                    ////no that doesn't go to the converter
+                    ////ClearChanged();
+                    ////myPropDataTable = MyDataCollectorClass.localDataTable;
+                    ////closeCSVControl();
+                    ////RaisePropertyChanged("MyPropDataTable");
+                    ////foreach (DataRow dr in myPropDataTable.Rows)
+                    ////{
+                    ////    foreach (DataColumn dc in myPropDataTable.Columns)
+                    ////    {
+                    ////        (dr[dc.ColumnName] as MyDataCollector.Item).IsChanged = false;
+                    ////    }
+                    ////}
+                    //MyDataCollectorClass.makeOldDataTable();
                     //Compare();
+                    //ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                    //                  //RaisePropertyChanged("OnOff");
+                    //                  //CSVUpdateHandler compares localDataTable with oldDataTable
+                    //                  //updates the solution
+                    //                  //makes sure that runtype is manual
+                    //                  //switches pSHARE button to off the and closes the CSVcontrol
+                    //                  //CSVUpdateHandler(null, EventArgs.Empty);
+
+                    //////reset myPropDataTable to localDataTable to get rid of the time stamp
+                    ////myPropDataTable = MyDataCollectorClass.localDataTable;
+
+                    //////reset everything so next hit of OnOff button shows only new changes
+                    ////MyDataCollectorClass.formPopulate = false;
+                    //////since formPopulate is false you will read the csv file. But if it was just created
+                    //////there are no items
+                    ////MyDataCollectorClass.openCSV(MyDataCollectorClass.sharedFile);
+                    //////now MyDataCollectorClass.localDataTable is filled with the csv file (sharedFile)
+                    //////and MyDataCollectorClass.oldDataTable is filled with the oldLocalCopy
+                    ////MyDataCollectorClass.addNewPararemeters();
+                    //////now MyDataCollectorClass.localDataTable contains also the output of pSHARE if different
+                    ////Compare(); 
+                    #endregion
+                    //checked if this is necessary are they different? No they are the same.
+                    //myPropDataTable = MyDataCollectorClass.localDataTable.Copy();
+                    //if you compare with oldDataTable, when was that updated? Should be the same as myPropDataTable at this moment...
+                    //check if they are differnt!!!
+                    MyDataCollectorClass.oldDataTable = myPropDataTable.Copy();
+                    Compare();
+                    //close the CSVcontrol and recreate it so you get correct red backgrounds
+                    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                    ShowParams(OnOff);//creates a new CSVControl and sets the On property to true
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
@@ -848,13 +897,13 @@ namespace pCOLADnamespace
                     tma.DataContext = tm;
                     tma.Show();
 
-                    dm.ForceRun();
-                    //for Obstruction to show correctly you have to run twice. No idea why!!!
-                    //But Dynamo doesn't like this
                     //dm.ForceRun();
+                    ////for Obstruction to show correctly you have to run twice. No idea why!!!
+                    ////But Dynamo doesn't like this
+                    ////dm.ForceRun();
 
 
-                    ShowParams(OnOff);//opens the CSVControl and sets the On property to true
+                    //ShowParams(OnOff);//opens the CSVControl and sets the On property to true
                     //ShowCSV();
                     //MessageBox.Show(pSHARE.dv,"CSV file successfully saved...","pCOLAD",MessageBoxButton.OK,MessageBoxImage.Information,MessageBoxResult.None);
 
@@ -897,8 +946,7 @@ namespace pCOLADnamespace
                         //History(HistoryCommand);
                         return;
                     }
-                    MyDataCollectorClass.formPopulate = false;
-                    //first set localDataTable to the History file by changing the sharedFile property.
+                    MyDataCollectorClass.formPopulate = false;                    
                     MyDataCollectorClass.openCSV(HistoryFile);
                     //apperently MyPropDataTable is not the same as localDataTable...
                     this.MyPropDataTable = MyDataCollectorClass.localDataTable;
@@ -907,8 +955,8 @@ namespace pCOLADnamespace
                 else
                 {
                     //Show the csv file and add new parameters
-                    //Re-open csv is avoided because formPopulate is true
-                    MyDataCollectorClass.openCSV(MyDataCollectorClass.sharedFile);
+                    //Re-open csv is avoided because formPopulate is true, and maybe own parameters are changed
+                    MyDataCollectorClass.openCSV(MyDataCollectorClass.localFile);
                     MyDataCollectorClass.addNewPararemeters();
                     Compare();
                     this.MyPropDataTable = MyDataCollectorClass.localDataTable;
@@ -1004,12 +1052,19 @@ namespace pCOLADnamespace
                         //MyDataCollector.Item test2 = (oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item);
                         if (MyDataCollectorClass.oldDataTable.Columns[localDataColumn.ColumnName] != null)
                         {
-                            //use .Equelas instead of != because otherwise you get a reference and not a value comparison
+                            //use .Equels() instead of != because otherwise you get a reference and not a value comparison
                             if (!(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).textValue.Equals((oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).textValue))
                             {
                                 if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
                                 {
                                     (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                                }
+                            }
+                            else
+                            {
+                                if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
+                                {
+                                    (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetSame();
                                 }
                             }
                         }
@@ -1116,7 +1171,7 @@ namespace pCOLADnamespace
             //    }
             //    myPropDataTable = MyDataCollectorClass.localDataTable;
             #endregion            }
-            myPropDataTable = MyDataCollectorClass.localDataTable;
+            MyPropDataTable = MyDataCollectorClass.localDataTable;
         }
         #endregion
     }

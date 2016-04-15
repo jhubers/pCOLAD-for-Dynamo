@@ -270,19 +270,19 @@ namespace pCOLADnamespace
             //firstTime werkt niet!!! Want als je de dynamo file saved, doet hij niets!!!
             //if (firstTime)
             //{
-                base.SerializeCore(element, context);
-                var xmlDocument = element.OwnerDocument;
-                var subNode = xmlDocument.CreateElement("ExtraInputs");
-                foreach (var item in InPortData)
+            base.SerializeCore(element, context);
+            var xmlDocument = element.OwnerDocument;
+            var subNode = xmlDocument.CreateElement("ExtraInputs");
+            foreach (var item in InPortData)
+            {
+                if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
                 {
-                    if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
-                    {
-                        continue;
-                    }
-                    subNode.SetAttribute(item.NickName, item.ToolTipString);
+                    continue;
                 }
-                element.AppendChild(subNode);
-                //firstTime = false;
+                subNode.SetAttribute(item.NickName, item.ToolTipString);
+            }
+            element.AppendChild(subNode);
+            //firstTime = false;
             //}
         }
         protected override void DeserializeCore(XmlElement element, SaveContext context)

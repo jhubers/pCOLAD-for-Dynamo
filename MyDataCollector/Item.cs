@@ -25,6 +25,12 @@ namespace MyDataCollector
             get { return textValue; } 
             set
             {
+                ////can I find out which cell was changed? And if is a comment set background to red!!! 
+                //if (textValue != null && !textValue.Equals(value))
+                //{
+                //    //works but doesn't turn red immediately. Goes to RowIndex too...So could set a property there
+                //    this.SetChanged();                    
+                //}                         
                 textValue = value;
                 NotifyPropertyChanged("TextValue");
             }

@@ -16,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Interactivity;
+using System.Windows.Controls.Primitives;
 
 namespace pCOLADnamespace
 {
@@ -132,14 +134,15 @@ namespace pCOLADnamespace
                 string obstruction = dr["Obstruction"].ToString();
                 bool b;
                 //bool? b = (bool?)dr["Accepted"];
-                //check if field in column "Obstruction" is empty
-                if (obstruction == "")
+                //check if field in column "Obstruction" contains the userName
+                
+                if (obstruction.Contains(MyDataCollector.MyDataCollectorClass.userName))
                 {
-                    b = true;
+                    b = false;
                 }
                 else
                 {
-                    b = false;
+                    b = true;
                 }
                 cb.IsChecked = b;
             }
@@ -203,6 +206,28 @@ namespace pCOLADnamespace
                 invokeProv.Invoke(); 
             }
         }
+
+
+        private void CommentChanged(object sender, RoutedEventArgs e)
+        {
+            //this is triggerd by the LostFocus event in the datatemplate "commentCells"
+            //try to set the background of the TextBox to pink
+            DataTable dt = MyDataCollector.MyDataCollectorClass.oldDataTable;
+            TextBox tb= (TextBox)sender;
+            DataGridRow dgr = FindUpVisualTree<DataGridRow>(tb);
+            var i = dgr.GetIndex();
+            DataRow dr = dt.Rows[i];
+            MyDataCollector.Item it = dr["Comments"] as MyDataCollector.Item;
+            String s = it.textValue;
+            if (!tb.Text.Equals(s))
+            {
+                tb.Background = Brushes.Pink; 
+            }
+            else
+            {
+                tb.Background = Brushes.Transparent;
+            }
+        }
         //static public void BringToFront(Panel pParent, ContentPresenter pToMove)
         //{
         //    try
@@ -251,15 +276,100 @@ namespace pCOLADnamespace
         //        return FindVisualParent<T>(parentObject);
         //    }
         //}
-        //private static T FindUpVisualTree<T>(DependencyObject initial) where T : DependencyObject
-        //{
-        //    DependencyObject current = initial;
+        private static T FindUpVisualTree<T>(DependencyObject initial) where T : DependencyObject
+        {
+            DependencyObject current = initial;
 
-        //    while (current != null && current.GetType() != typeof(T))
-        //    {
-        //        current = VisualTreeHelper.GetParent(current);
-        //    }
-        //    return current as T;
-        //}
+            while (current != null && current.GetType() != typeof(T))
+            {
+                current = VisualTreeHelper.GetParent(current);
+            }
+            return current as T;
+        }
+
+        private void myCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+            DataGrid dg = FindUpVisualTree<DataGrid>(cb);
+            DataGridRow dgr = FindUpVisualTree<DataGridRow>(cb);
+            //get the value in the Obstruction column of DataGrid. Find the indexes.            
+            var dgri = dgr.GetIndex();
+            //throws null exception
+            //var dgci = dg.Columns.Single(c => c.Header.ToString() == "Obstruction").DisplayIndex;
+            int dgci=0;
+            foreach (DataGridColumn dgco in dg.Columns)
+            {
+                if (dgco.Header!=null && dgco.Header.Equals("Obstruction"))
+                {
+                    dgci = dg.Columns.IndexOf(dgco);
+                }
+            }
+            //get the cell
+            DataGridCell dgc = ExtensionHelpers.GetCell(dg, dgr, dgci);
+
+            //var actualItem = dgc.GetValue(MyDataCollector.MyDataCollectorClass.userName); 
+            DataTable odt = MyDataCollector.MyDataCollectorClass.oldDataTable;
+            DataTable ldt = MyDataCollector.MyDataCollectorClass.localDataTable;
+            DataRow odr = odt.Rows[dgri];
+            DataRow ndr = ldt.Rows[dgri];
+            MyDataCollector.Item oldItem = odr["Obstruction"] as MyDataCollector.Item;
+            MyDataCollector.Item newItem = ndr["Obstruction"] as MyDataCollector.Item;
+            if (!newItem.textValue.Equals(oldItem.textValue))
+            {
+                dgc.Background = Brushes.Pink;
+            }
+            else
+            {
+                dgc.Background = Brushes.Transparent;
+            }
+        }
+
+
+        private void CheckColor(object sender, MouseButtonEventArgs e)
+        {
+            //check if fields Obstruction are different in localDataTable and oldDataTable
+            //if so set the cell to red
+
+        }
+    }
+    static class ExtensionHelpers
+    {
+        public static T GetVisualChild<T>(Visual parent) where T : Visual
+        {
+            T child = default(T);
+            int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < numVisuals; i++)
+            {
+                Visual v = (Visual)VisualTreeHelper.GetChild(parent, i);
+                child = v as T;
+                if (child == null)
+                {
+                    child = GetVisualChild<T>(v);
+                }
+                if (child != null)
+                {
+                    break;
+                }
+            }
+            return child;
+        }
+        public static DataGridCell GetCell(this DataGrid grid, DataGridRow row, int column)
+        {
+            if (row != null)
+            {
+                DataGridCellsPresenter presenter = GetVisualChild<DataGridCellsPresenter>(row);
+
+                if (presenter == null)
+                {
+                    grid.ScrollIntoView(row, grid.Columns[column]);
+                    presenter = GetVisualChild<DataGridCellsPresenter>(row);
+                }
+
+                DataGridCell cell = (DataGridCell)presenter.ItemContainerGenerator.ContainerFromIndex(column);
+                return cell;
+            }
+            return null;
+        }
+
     }
 }

@@ -11,7 +11,7 @@ using System.Windows.Media;
 namespace pCOLADnamespace
 {
     [ValueConversion(typeof(object), typeof(SolidColorBrush))]
-    public class ObjectToForegroundConverter : IValueConverter
+    public class ObjectToBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -24,6 +24,11 @@ namespace pCOLADnamespace
             if (value.GetType()!=typeof(MyDataCollector.Item))
             {
                 //b = Brushes.Transparent;
+                //would it be possible to check if a comment has changed after typing in the xaml?
+                //check e.g. what is the targetType, the parameter, value is the text in the cell
+                // targetType is the Brush, parameter is null, maybe find the item with the text
+                // but then if some comments the same you get a problem. So use a different converter for the comments!
+                // e.g. check when user starts typing with content when leaving the cell
                 return b;
             }
             var item = (MyDataCollector.Item)value;

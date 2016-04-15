@@ -119,7 +119,7 @@
     <Compile Include="Image.cs" />
     <Compile Include="ImageTemplateSelector.cs" />
     <Compile Include="MyDataGridTemplateColumn.cs" />
-    <Compile Include="Converters\ObjectToForegroundConverter.cs" />
+    <Compile Include="Converters\ObjectToBackgroundConverter.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">
       <DependentUpon>pCOLLECTcontrol.xaml</DependentUpon>

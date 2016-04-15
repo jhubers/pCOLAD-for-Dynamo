@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"         
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="pCOLADnamespace.CSVControl" 
              xmlns:local="clr-namespace:pCOLADnamespace"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
@@ -22,7 +22,7 @@
         <local:BoolToVisibilityConverter x:Key="BoolToVisibleConverter"
                                FalseValue= "Visible"
                                TrueValue="Hidden" />
-        <local:ObjectToForegroundConverter x:Key="MyObjectToForegroundConverter"/>
+        <local:ObjectToBackgroundConverter x:Key="MyObjectToBackgroundConverter"/>
         <local:testConverter x:Key="myTestConverter"/>
         <local:DataRowToFullPathListConverter x:Key="myDataRowToListConverter"/>
         <local:ObjectToStrikeThroughConverter x:Key="myObjectToStrikeThroughConverter"/>
@@ -121,15 +121,33 @@
         <DataTemplate x:Key="changedCells">
             <TextBlock 
             Text="{Binding Mode=OneWay}" 
-            Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}, Mode=OneWay}"
+            Background="{Binding IsChanged, Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"
             />
         </DataTemplate>
+        <!--next line would set all commentCells to red if in the converter you check the value for string
+        it should only be if text changed in commentCells, but if you want to use TwoWay you need a path-->
+        <!--Background="{Binding TextValue, Converter={StaticResource MyObjectToBackgroundConverter}, Mode=TwoWay}"
+        before it was
+        Background="{Binding Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"
+        -->
         <DataTemplate x:Key="commentCells">
             <TextBox
             Text="{Binding TextValue, Mode=TwoWay}" 
-            Background="{Binding Converter={StaticResource MyObjectToForegroundConverter}, Mode=OneWay}"
+            Background="{Binding Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"
+            LostFocus="CommentChanged"
             />
         </DataTemplate>
+        <!--doesn't work-->
+        <!--<DataTemplate x:Key="commentCells">
+            <TextBox Text="{Binding TextValue, Mode=TwoWay}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <i:InvokeCommandAction Command="{Binding Path=newCommentsCommand}" PresentationTraceSources.TraceLevel= "High"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+        </DataTemplate>-->
+
         <DataTemplate x:Key="convertedImagePath">
             <ItemsControl ItemsSource="{Binding  Converter={StaticResource myDataRowToListConverter}}">
                 <ItemsControl.ItemTemplate>
@@ -143,19 +161,19 @@
         <!--<DataTemplate x:Key="changedComments" >
             <TextBlock 
             Text="{Binding [Comments],Mode=OneWay}" 
-            Background="{Binding [Comments],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
+            Background="{Binding [Comments],Converter={StaticResource MyObjectToBackgroundConverter},Mode=OneWay}"
             />
         </DataTemplate>
         <DataTemplate x:Key="changedNewValue" >
             <TextBlock 
             Text="{Binding [New Value],Mode=OneWay}" 
-            Background="{Binding [New Value],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
+            Background="{Binding [New Value],Converter={StaticResource MyObjectToBackgroundConverter},Mode=OneWay}"
             />
         </DataTemplate>
         <DataTemplate x:Key="changedImportance">
             <TextBlock
             Text="{Binding [Importance],Mode=OneWay}" 
-            Background="{Binding [Importance],Converter={StaticResource MyObjectToForegroundConverter},Mode=OneWay}"
+            Background="{Binding [Importance],Converter={StaticResource MyObjectToBackgroundConverter},Mode=OneWay}"
             />
         </DataTemplate>-->
         <DataTemplate x:Key="imagesOn">
@@ -199,12 +217,12 @@
 			CanUserSortColumns="False" CanUserReorderColumns="False" CanUserAddRows="False" Focusable="False"
 			CanUserDeleteRows="False" ItemsSource="{Binding MyPropDataTable, Mode=OneWay}"
 			CurrentCell="{Binding CellInfo, Mode=TwoWay}" x:FieldModifier="public" 
-			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" VerticalAlignment="Top">
+			SelectedIndex="{Binding RowIndex, Mode=TwoWay}" VerticalAlignment="Top" ItemTemplate="{DynamicResource commentCells}">
             <DataGrid.Columns >
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
-                            <CheckBox x:Name="myCheckBox" Loaded="myCheckBox_Loaded"
+                            <CheckBox x:Name="myCheckBox" Loaded="myCheckBox_Loaded" Click="myCheckBox_Click"
 								IsChecked="{Binding DataContext.isChecked, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -368,10 +386,10 @@
 				Margin="0,0,44,0"  Command="{Binding ShareCommand}"
                 Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}" HorizontalAlignment="Right"/>
             <Button Style="{StaticResource newTemplate}" x:Name="UnCheckAll" Grid.Column ="0" Content="UnCheckAll" VerticalAlignment="Bottom" 
-				Margin="55,0,5,0" Command="{Binding UnCheckAllCommand}"
+				Margin="55,0,5,0" Command="{Binding UnCheckAllCommand}" MouseUp="CheckColor"
                 Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
             <Button Style="{StaticResource newTemplate}" x:Name="CheckAll" Grid.Column ="0" Content="CheckAll" VerticalAlignment="Bottom" 
-				HorizontalAlignment="Left" Command="{Binding CheckAllCommand}"
+				HorizontalAlignment="Left" Command="{Binding CheckAllCommand}" MouseUp="CheckColor"
                 Visibility="{Binding ElementName=History, Path=IsChecked, Converter={StaticResource BoolToVisibleConverter}}"/>
 
             <!--When you show the History.CSV file hide all other buttons and hilite the History button.-->
