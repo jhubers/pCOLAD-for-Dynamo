@@ -104,8 +104,8 @@ namespace pCOLADnamespace
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             //compares localDataTable with oldDataTable
-            Compare();
-            MyPropDataTable = MyDataCollectorClass.localDataTable;
+            Compare(); //updating MyPropDataTable is now inside Compare()
+            //MyPropDataTable = MyDataCollectorClass.localDataTable;
             //RaisePropertyChanged("MyPropDataTable");//is done automatically if you set MyPropDataTable
             //update the solution
             this.OnNodeModified(forceExecute: true);
@@ -226,6 +226,7 @@ namespace pCOLADnamespace
                 {
                     foreach (DataRow dr in MyDataCollectorClass.localDataTable.Rows)
                     {
+                        //DataRow MyPropDr = MyPropDataTable.Rows.Find(dr["Parameter"]);
                         string cellContent = dr["Obstruction"].ToString();
                         if (cellContent.Contains(MyDataCollectorClass.userName))
                         {
@@ -233,7 +234,7 @@ namespace pCOLADnamespace
                             cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                             //remove double and end commas
                             cellContent = Regex.Replace(cellContent, "/{2/}", "/").Trim('/');
-                            dr["Obstruction"] = new Item(cellContent.Trim());
+                            checkOldDataTable(cellContent, dr);
                         }
                     }
                     RaisePropertyChanged("isChecked");
@@ -247,13 +248,15 @@ namespace pCOLADnamespace
                             string cellContent = dr["Obstruction"].ToString();
                             if (cellContent == "")
                             {
-                                dr["Obstruction"] = new Item(MyDataCollectorClass.userName);
+                                cellContent = MyDataCollectorClass.userName;
+                                checkOldDataTable(cellContent, dr);
                             }
                             else
                             {
                                 if (!cellContent.Contains(MyDataCollectorClass.userName))
                                 {
-                                    dr["Obstruction"] = new Item(cellContent + "/" + MyDataCollectorClass.userName);
+                                    cellContent += "/" + MyDataCollectorClass.userName;
+                                    checkOldDataTable(cellContent, dr);
                                 }
                             }
                         }
@@ -262,20 +265,19 @@ namespace pCOLADnamespace
                     else
                     {
                         _isChecked = value;
-                        //OnPropertyChanged("isChecked"); //this sets all checkboxes to checked...
                         DataRow dr = MyDataCollectorClass.localDataTable.Rows[_rowIndex];
-                        //also change the value in the hidden column "Accepted"
-                        //dr["Accepted"] = value;
                         string cellContent = dr["Obstruction"].ToString();
                         if (_cellInfo != null && !_isChecked) //add the userName
                         {
                             if (cellContent == "")
                             {
-                                dr["Obstruction"] = new Item(MyDataCollectorClass.userName);
+                                cellContent = MyDataCollectorClass.userName;
+                                checkOldDataTable(cellContent, dr);
                             }
                             else
                             {
-                                dr["Obstruction"] = new Item(cellContent + "/" + MyDataCollectorClass.userName);
+                                cellContent += "/" + MyDataCollectorClass.userName;
+                                checkOldDataTable(cellContent, dr);
                             }
                         }
                         else
@@ -284,29 +286,29 @@ namespace pCOLADnamespace
                             cellContent = cellContent.Replace(MyDataCollectorClass.userName, "");
                             //remove double and end commas
                             cellContent = Regex.Replace(cellContent, "/{2/}", "/").Trim('/');
-                            dr["Obstruction"] = new Item(cellContent.Trim());
+                            checkOldDataTable(cellContent, dr);
                         }
-                        //RaisePropertyChanged("MyPropDataTable");
                     }
                 }
-                ////update the CSVcontrol, but not if you run the first time. Then you already are running 
-                ////CSVUpdateHandler: Compare()
-                //if (!MyDataCollectorClass.firstRun)
-                //{
-                //    //CSVUpdateHandler(null, EventArgs.Empty);
-                //}
-                //check if field Obstruction is different from oldDataTable and if so Item.SetChanged
-                //Compare() does not go through ObjectToBackgroundConverter
-
-                //mischien als je ook een update van MyPropDataTable maakt? Ander bij new Item hier boven steeds Item.Checked toevoegen
-                //als verschil met localDataTable en oldDataTable
-                Compare();
             }
         }
-        //public bool Itemcompare(Item l, Item o)
-        //{
-        //    if (l.Equals(o)) { return true; } else { return false; }
-        //}
+        private void checkOldDataTable(string _cellContent, DataRow _dr)
+        {
+            Item it = new Item(_cellContent.Trim());
+            DataRow oldDr = MyDataCollectorClass.oldDataTable.Rows.Find(_dr["Parameter"]);
+            var set1 = new HashSet<string>(_cellContent.Split('/').Select(t => t.Trim()));
+            var set2 = new HashSet<string>(oldDr["Obstruction"].ToString().Split('/').Select(t => t.Trim()));
+            set1.Remove("");
+            set2.Remove("");
+            bool setsEqual = set1.SetEquals(set2);
+            if (!setsEqual)
+            {
+                it.SetChanged();
+            }
+            _dr["Obstruction"] = it;
+            DataRow MyPropDr = MyPropDataTable.Rows.Find(_dr["Parameter"]);
+            MyPropDr["Obstruction"] = it;
+        }
 
         /// <summary>
         /// the property pSHARE.OnOffButton is used to open or close the CSV display
@@ -946,10 +948,10 @@ namespace pCOLADnamespace
                         //History(HistoryCommand);
                         return;
                     }
-                    MyDataCollectorClass.formPopulate = false;                    
+                    MyDataCollectorClass.formPopulate = false;
                     MyDataCollectorClass.openCSV(HistoryFile);
                     //apperently MyPropDataTable is not the same as localDataTable...
-                    this.MyPropDataTable = MyDataCollectorClass.localDataTable;
+                    this.MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
                     HistoryOn = true;
                 }
                 else
@@ -958,8 +960,8 @@ namespace pCOLADnamespace
                     //Re-open csv is avoided because formPopulate is true, and maybe own parameters are changed
                     MyDataCollectorClass.openCSV(MyDataCollectorClass.localFile);
                     MyDataCollectorClass.addNewPararemeters();
-                    Compare();
-                    this.MyPropDataTable = MyDataCollectorClass.localDataTable;
+                    Compare();//updating MyPropDataTable is now inside Compare()
+                    //this.MyPropDataTable = MyDataCollectorClass.localDataTable;
                     HistoryOn = false;
                 }
             }
@@ -1011,6 +1013,7 @@ namespace pCOLADnamespace
 
         private void Compare()
         {
+            bool someChange = false;
             //compare csv and copy of csv here. Now only works after saving first time!!!
             //if a cell in localDataTable is different from a corresponing cell in oldDataTable, make it red
             //you get an error if the corresponding cell does not exist
@@ -1048,6 +1051,7 @@ namespace pCOLADnamespace
                         if (test1 == null)
                         {
                             localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
+                            someChange = true;
                         }
                         //MyDataCollector.Item test2 = (oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item);
                         if (MyDataCollectorClass.oldDataTable.Columns[localDataColumn.ColumnName] != null)
@@ -1058,15 +1062,16 @@ namespace pCOLADnamespace
                                 if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
                                 {
                                     (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                                    someChange = true;
                                 }
                             }
-                            else
-                            {
-                                if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
-                                {
-                                    (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetSame();
-                                }
-                            }
+                            //else
+                            //{
+                            //    if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
+                            //    {
+                            //        (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetSame();
+                            //    }
+                            //}
                         }
                         else
                         {
@@ -1075,6 +1080,7 @@ namespace pCOLADnamespace
                             if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) == null)
                             {
                                 localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
+                                someChange = true;
                             }
                             (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
                         }
@@ -1088,6 +1094,7 @@ namespace pCOLADnamespace
                         if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) == null)
                         {
                             localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
+                            someChange = true;
                         }
                         (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
                     }
@@ -1170,8 +1177,11 @@ namespace pCOLADnamespace
             //        }
             //    }
             //    myPropDataTable = MyDataCollectorClass.localDataTable;
-            #endregion            }
-            MyPropDataTable = MyDataCollectorClass.localDataTable;
+            #endregion
+            if (someChange)
+            {
+                MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
+            }
         }
         #endregion
     }

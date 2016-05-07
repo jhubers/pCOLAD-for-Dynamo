@@ -21,6 +21,17 @@ namespace pCOLADnamespace
                 //b = Brushes.Transparent;
                 return b;
             }
+            //Type t = value.GetType();
+            //if (value.GetType()==typeof(Boolean)) //the IsChanged property of Item is bound to DataTemplate x:Key="changedCells"
+            //    //but shouldn't you check if field Obstruction is different from oldDataTable!!!
+            //    //how can you get the row or the item
+            //{
+            //    if ((bool)value)
+            //    {
+            //        b = Brushes.Pink;
+            //    }
+            //    return b;
+            //}
             if (value.GetType()!=typeof(MyDataCollector.Item))
             {
                 //b = Brushes.Transparent;
@@ -37,7 +48,6 @@ namespace pCOLADnamespace
                 b = Brushes.Pink;
             }
             return b;
-
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

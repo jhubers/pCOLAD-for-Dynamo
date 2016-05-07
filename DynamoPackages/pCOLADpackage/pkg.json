@@ -1,0 +1,12 @@
+{"file_hash":null,
+"name":"pCOLAD",
+"version":"0.0.1",
+"description":"Online sharing of parameters.",
+"group":"",
+"keywords":["pCOLAD","share"],
+"dependencies":[],
+"license":"TUDelft",
+"contents":"",
+"engine_version":"0.9.0",
+"engine_metadata":"",
+"engine":"dynamo"}

@@ -1,0 +1,11 @@
+<Workspace Version="0.8.1.1823" X="0" Y="0" zoom="1" Name="Home" RunType="Automatic" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap />
+  <Elements>
+    <pCOLADnamespace.pCOLLECT guid="038169fe-b715-4691-b881-a4709735e854" type="pCOLADnamespace.pCOLLECT" nickname="pCOLLECT" x="178" y="185" isVisible="true" isUpstreamVisible="true" lacing="Disabled">
+      <ExtraInputs E2="Extra2" E1="Extra1" />
+    </pCOLADnamespace.pCOLLECT>
+  </Elements>
+  <Connectors />
+  <Notes />
+  <Annotations />
+</Workspace>

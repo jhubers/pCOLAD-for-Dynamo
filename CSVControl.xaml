@@ -119,9 +119,11 @@
             />
         </DataTemplate>
         <DataTemplate x:Key="changedCells">
+            <!--, ConverterParameter= {"can not bind to a dependency property}-->
+            <!--Background="{Binding IsChanged, Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"-->
             <TextBlock 
-            Text="{Binding Mode=OneWay}" 
-            Background="{Binding IsChanged, Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"
+            Text="{Binding TextValue, Mode=OneWay}" 
+            Background="{Binding Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"
             />
         </DataTemplate>
         <!--next line would set all commentCells to red if in the converter you check the value for string
@@ -222,7 +224,8 @@
                 <DataGridTemplateColumn >
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate >
-                            <CheckBox x:Name="myCheckBox" Loaded="myCheckBox_Loaded" Click="myCheckBox_Click"
+                            <!--Click="myCheckBox_Click"-->
+                            <CheckBox x:Name="myCheckBox" Loaded="myCheckBox_Loaded" 
 								IsChecked="{Binding DataContext.isChecked, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}}"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

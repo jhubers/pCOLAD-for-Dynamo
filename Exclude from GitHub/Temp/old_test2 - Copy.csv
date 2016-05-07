@@ -1,0 +1,6 @@
+Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author;Extra3
+;Comment1;Test1;Value1;;;Hans;Important1;utc 13/02/2016 13:06:00;Hans;
+;Comment2/ Changed / Added from D;Test2;Value2;;;Hans;Important2;;;
+;commentaar1;Parameter1;1;;;eigenaar;belangrijk1;;;
+;commentaar2;Parameter2;2;;;eigenaar;belangrijk2;;;
+;commentaar3;Parameter3;3;;;eigenaar;belangrijk3;;;extra3

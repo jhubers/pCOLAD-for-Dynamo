@@ -1,0 +1,14 @@
+﻿<Window x:Class="pCOLADnamespace.FullScreenImage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:local="clr-namespace:pCOLADnamespace"
+             SizeToContent="WidthAndHeight"
+             Title="FullScreenImage" >
+    <Grid>
+        <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Gray">
+            <Image Name="fullImage" >
+            </Image>
+        </local:ZoomBorder>
+    </Grid>
+</Window>

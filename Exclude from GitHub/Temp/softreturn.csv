@@ -1,0 +1,10 @@
+;Images;Parameter;New Value
+TRUE;;Parameter 1;1
+FALSE;image 1;Parameter 2;2
+TRUE;"image2
+image3";Parameter 3;3
+FALSE;;Parameter 4;4
+TRUE;image4;Parameter 5;5
+FALSE;"image5
+image6
+image7";Parameter 6;6

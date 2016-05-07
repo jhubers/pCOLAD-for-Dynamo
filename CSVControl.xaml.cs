@@ -287,42 +287,44 @@ namespace pCOLADnamespace
             return current as T;
         }
 
-        private void myCheckBox_Click(object sender, RoutedEventArgs e)
-        {
-            CheckBox cb = (CheckBox)sender;
-            DataGrid dg = FindUpVisualTree<DataGrid>(cb);
-            DataGridRow dgr = FindUpVisualTree<DataGridRow>(cb);
-            //get the value in the Obstruction column of DataGrid. Find the indexes.            
-            var dgri = dgr.GetIndex();
-            //throws null exception
-            //var dgci = dg.Columns.Single(c => c.Header.ToString() == "Obstruction").DisplayIndex;
-            int dgci=0;
-            foreach (DataGridColumn dgco in dg.Columns)
-            {
-                if (dgco.Header!=null && dgco.Header.Equals("Obstruction"))
-                {
-                    dgci = dg.Columns.IndexOf(dgco);
-                }
-            }
-            //get the cell
-            DataGridCell dgc = ExtensionHelpers.GetCell(dg, dgr, dgci);
+        #region oldCheckBox_Click event
+        //private void myCheckBox_Click(object sender, RoutedEventArgs e)
+        //{
+        //    CheckBox cb = (CheckBox)sender;
+        //    DataGrid dg = FindUpVisualTree<DataGrid>(cb);
+        //    DataGridRow dgr = FindUpVisualTree<DataGridRow>(cb);
+        //    //get the value in the Obstruction column of DataGrid. Find the indexes.            
+        //    var dgri = dgr.GetIndex();
+        //    //throws null exception
+        //    //var dgci = dg.Columns.Single(c => c.Header.ToString() == "Obstruction").DisplayIndex;
+        //    int dgci=0;
+        //    foreach (DataGridColumn dgco in dg.Columns)
+        //    {
+        //        if (dgco.Header!=null && dgco.Header.Equals("Obstruction"))
+        //        {
+        //            dgci = dg.Columns.IndexOf(dgco);
+        //        }
+        //    }
+        //    //get the cell
+        //    DataGridCell dgc = ExtensionHelpers.GetCell(dg, dgr, dgci);
 
-            //var actualItem = dgc.GetValue(MyDataCollector.MyDataCollectorClass.userName); 
-            DataTable odt = MyDataCollector.MyDataCollectorClass.oldDataTable;
-            DataTable ldt = MyDataCollector.MyDataCollectorClass.localDataTable;
-            DataRow odr = odt.Rows[dgri];
-            DataRow ndr = ldt.Rows[dgri];
-            MyDataCollector.Item oldItem = odr["Obstruction"] as MyDataCollector.Item;
-            MyDataCollector.Item newItem = ndr["Obstruction"] as MyDataCollector.Item;
-            if (!newItem.textValue.Equals(oldItem.textValue))
-            {
-                dgc.Background = Brushes.Pink;
-            }
-            else
-            {
-                dgc.Background = Brushes.Transparent;
-            }
-        }
+        //    //var actualItem = dgc.GetValue(MyDataCollector.MyDataCollectorClass.userName); 
+        //    DataTable odt = MyDataCollector.MyDataCollectorClass.oldDataTable;
+        //    DataTable ldt = MyDataCollector.MyDataCollectorClass.localDataTable;
+        //    DataRow odr = odt.Rows[dgri];
+        //    DataRow ndr = ldt.Rows[dgri];
+        //    MyDataCollector.Item oldItem = odr["Obstruction"] as MyDataCollector.Item;
+        //    MyDataCollector.Item newItem = ndr["Obstruction"] as MyDataCollector.Item;
+        //    if (!newItem.textValue.Equals(oldItem.textValue))
+        //    {
+        //        dgc.Background = Brushes.Pink;
+        //    }
+        //    else
+        //    {
+        //        dgc.Background = Brushes.Transparent;
+        //    }
+        //} 
+        #endregion
 
 
         private void CheckColor(object sender, MouseButtonEventArgs e)

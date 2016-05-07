@@ -1,0 +1,340 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Kent.Boogaart.KBCsv.Extensions</name>
+    </assembly>
+    <members>
+        <member name="T:Kent.Boogaart.KBCsv.Extensions.CsvReaderExtensions">
+            <summary>
+            Provides extensions against <see cref="T:Kent.Boogaart.KBCsv.CsvReader"/>.
+            </summary>
+            <example>
+            <para>
+            The following example uses <see cref="M:Kent.Boogaart.KBCsv.Extensions.CsvReaderExtensions.CopyTo(Kent.Boogaart.KBCsv.CsvReader,Kent.Boogaart.KBCsv.CsvWriter)"/> to translate CSV-formatted data into tab-delimited data:
+            </para>
+            <code source="..\Src\Kent.Boogaart.KBCsv.Examples.CSharp\Program.cs" region="CopyCSVFileToStringWriter" lang="cs"/>
+            <code source="..\Src\Kent.Boogaart.KBCsv.Examples.VB\Program.vb" region="CopyCSVFileToStringWriter" lang="vb"/>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.CsvReaderExtensions.CopyTo(Kent.Boogaart.KBCsv.CsvReader,Kent.Boogaart.KBCsv.CsvWriter)">
+            <summary>
+            Copies all remaining records in <paramref name="this"/> to <paramref name="destination"/>.
+            </summary>
+            <param name="this">
+            The data source.
+            </param>
+            <param name="destination">
+            The data destination.
+            </param>
+            <returns>
+            The number of records written to <paramref name="destination"/>.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.CsvReaderExtensions.CopyToAsync(Kent.Boogaart.KBCsv.CsvReader,Kent.Boogaart.KBCsv.CsvWriter)">
+            <summary>
+            Asynchronously copies all remaining records in <paramref name="this"/> to <paramref name="destination"/>.
+            </summary>
+            <param name="this">
+            The data source.
+            </param>
+            <param name="destination">
+            The data destination.
+            </param>
+            <returns>
+            The number of records written to <paramref name="destination"/>.
+            </returns>
+        </member>
+        <member name="T:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions">
+            <summary>
+            Provides CSV extensions to <see cref="T:System.Collections.Generic.IEnumerable`1"/>.
+            </summary>
+            <remarks>
+            <para>
+            The extension methods in this class allow an <see cref="T:System.Collections.Generic.IEnumerable`1"/> instance to be written to a <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </para>
+            </remarks>
+            <example>
+            <para>
+            The following example uses <see cref="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsv``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter)"/> to dump CSV describing all screens on the host system:
+            </para>
+            <code source="..\Src\Kent.Boogaart.KBCsv.Examples.CSharp\Program.cs" region="WriteScreenInformationToCSV" lang="cs"/>
+            <code source="..\Src\Kent.Boogaart.KBCsv.Examples.VB\Program.vb" region="WriteScreenInformationToCSV" lang="vb"/>
+            </example>
+            <example>
+            <para>
+            The following example uses <see cref="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsvAsync``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean,System.String[])"/> to asynchronously dump to CSV the ID, name, and working set of all processes running on the host system:
+            </para>
+            <code source="..\Src\Kent.Boogaart.KBCsv.Examples.CSharp\Program.cs" region="WriteSelectedProcessInformationCSVAsynchronously" lang="cs"/>
+            <code source="..\Src\Kent.Boogaart.KBCsv.Examples.VB\Program.vb" region="WriteSelectedProcessInformationCSVAsynchronously" lang="vb"/>
+            </example>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsv``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter)">
+            <summary>
+            Writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            All public properties of <typeparamref name="T"/> will be written to <paramref name="csvWriter"/>. A header record will also be written, comprised of the property names.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsv``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean)">
+            <summary>
+            Writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            All public properties of <typeparamref name="T"/> will be written to <paramref name="csvWriter"/>.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="writeHeaderRecord">
+            If <see langword="true"/>, a header record will first be written to <paramref name="csvWriter"/>, which is comprised of all property names.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsv``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean,System.String[])">
+            <summary>
+            Writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            Property values are obtained via reflection.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="writeHeaderRecord">
+            If <see langword="true"/>, a header record will first be written to <paramref name="csvWriter"/>, which is comprised of all specified property names.
+            </param>
+            <param name="propertyNames">
+            The names of public properties in <typeparamref name="T"/> that should be written to <paramref name="csvWriter"/>.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsv``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean,System.String[],System.Func{System.Object,System.String})">
+            <summary>
+            Writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            Property values are obtained via reflection.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="writeHeaderRecord">
+            If <see langword="true"/>, a header record will first be written to <paramref name="csvWriter"/>, which is comprised of all specified property names.
+            </param>
+            <param name="propertyNames">
+            The names of public properties in <typeparamref name="T"/> that should be written to <paramref name="csvWriter"/>.
+            </param>
+            <param name="objectToStringConverter">
+            Provides a means of converting items in <paramref name="this"/> to <see cref="T:System.String"/>s.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsv``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Collections.Generic.IEnumerable{System.String},System.Func{``0,System.Collections.Generic.IEnumerable{System.String}})">
+            <summary>
+            Writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            This overload provides maximum flexibility in how items are written CSV.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="header">
+            If non-<see langword="null"/>, this will be written to <paramref name="csvWriter"/> before any data records are written.
+            </param>
+            <param name="objectToRecordConverter">
+            Converts an item in <paramref name="this"/> to a CSV record.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsvAsync``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter)">
+            <summary>
+            Asynchronously writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            All public properties of <typeparamref name="T"/> will be written to <paramref name="csvWriter"/>. A header record will also be written, comprised of the property names.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsvAsync``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean)">
+            <summary>
+            Asynchronously writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            All public properties of <typeparamref name="T"/> will be written to <paramref name="csvWriter"/>.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="writeHeaderRecord">
+            If <see langword="true"/>, a header record will first be written to <paramref name="csvWriter"/>, which is comprised of all property names.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsvAsync``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean,System.String[])">
+            <summary>
+            Asynchronously writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            Property values are obtained via reflection.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="writeHeaderRecord">
+            If <see langword="true"/>, a header record will first be written to <paramref name="csvWriter"/>, which is comprised of all specified property names.
+            </param>
+            <param name="propertyNames">
+            The names of public properties in <typeparamref name="T"/> that should be written to <paramref name="csvWriter"/>.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsvAsync``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Boolean,System.String[],System.Func{System.Object,System.String})">
+            <summary>
+            Asynchronously writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            Property values are obtained via reflection.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="writeHeaderRecord">
+            If <see langword="true"/>, a header record will first be written to <paramref name="csvWriter"/>, which is comprised of all specified property names.
+            </param>
+            <param name="propertyNames">
+            The names of public properties in <typeparamref name="T"/> that should be written to <paramref name="csvWriter"/>.
+            </param>
+            <param name="objectToStringConverter">
+            Provides a means of converting items in <paramref name="this"/> to <see cref="T:System.String"/>s.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+        <member name="M:Kent.Boogaart.KBCsv.Extensions.EnumerableExtensions.WriteCsvAsync``1(System.Collections.Generic.IEnumerable{``0},Kent.Boogaart.KBCsv.CsvWriter,System.Collections.Generic.IEnumerable{System.String},System.Func{``0,System.Collections.Generic.IEnumerable{System.String}})">
+            <summary>
+            Asynchronously writes the items in <paramref name="this"/> to <paramref name="csvWriter"/>.
+            </summary>
+            <remarks>
+            <para>
+            This overload provides maximum flexibility in how items are written CSV.
+            </para>
+            </remarks>
+            <typeparam name="T">
+            The type of the items to be written to <paramref name="csvWriter"/>.
+            </typeparam>
+            <param name="this">
+            The items to write.
+            </param>
+            <param name="csvWriter">
+            The <see cref="T:Kent.Boogaart.KBCsv.CsvWriter"/>.
+            </param>
+            <param name="header">
+            If non-<see langword="null"/>, this will be written to <paramref name="csvWriter"/> before any data records are written.
+            </param>
+            <param name="objectToRecordConverter">
+            Converts an item in <paramref name="this"/> to a CSV record.
+            </param>
+            <returns>
+            The number of items written.
+            </returns>
+        </member>
+    </members>
+</doc>

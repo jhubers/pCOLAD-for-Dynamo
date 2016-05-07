@@ -1,0 +1,24 @@
+﻿<Window x:Class="AnimationTest.TestWindow" Title="Test Window" SizeToContent="WidthAndHeight"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" mc:Ignorable="d" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:Controls="clr-namespace:ImageButton.Controls" d:DesignHeight="500" d:DesignWidth="500"
+        Background="{DynamicResource WindowBackground}"
+        > 
+    <ScrollViewer
+      Height="500"
+      Width="500">
+    <StackPanel>     
+      <!-- Image button test -->
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleOne}"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleOne}" BorderVisibility="Visible"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleOne}" BorderVisibility="Visible" IsEnabled="False"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleOne}" Content="Test Button"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleOne}" Content="Test Button" BorderVisibility="Visible"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleOne}" Content="Test Button" IsEnabled="False"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleTwo}"/>
+      <Controls:ImageButton Style="{DynamicResource ButtonStyleThree}" />
+    </StackPanel>
+  </ScrollViewer>
+</Window>
