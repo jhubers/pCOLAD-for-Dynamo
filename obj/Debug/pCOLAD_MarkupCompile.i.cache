@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG
 
-6-1528838497
-
-24-331977100
+10-801538572
+181-2123956943
+35520442112
 781974757996
-CSVControl.xaml;Dialogue1.xaml;FullScreenImage.xaml;pCOLLECTcontrol.xaml;pPARAMcontrol.xaml;pSHAREcontrol.xaml;
+CSVControl.xaml;Dialogue1.xaml;Exclude from GitHub\imagebuttonwpf-825\ImageButton\App.xaml;Exclude from GitHub\imagebuttonwpf-825\ImageButton\TestWindow.xaml;Exclude from GitHub\imagebuttonwpf-825\ImageButton\Themes\ImageButton.xaml;Exclude from GitHub\imagebuttonwpf-825\ImageButton\Themes\Resources.xaml;FullScreenImage.xaml;pCOLLECTcontrol.xaml;pPARAMcontrol.xaml;pSHAREcontrol.xaml;
 
 False
 
