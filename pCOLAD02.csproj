@@ -184,7 +184,7 @@
     <ProjectReference Include="MyDataCollector\MyDataCollector.csproj">
       <Project>{497fc54c-6433-47f2-b92e-e500bc0df80e}</Project>
       <Name>MyDataCollector</Name>
-      <Private>True</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

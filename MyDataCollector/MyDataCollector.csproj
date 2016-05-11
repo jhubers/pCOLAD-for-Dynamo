@@ -133,14 +133,14 @@ REM echo f |xcopy /r /y “$(SolutionDir)\DynamoPackages\pCOLADpackage\*.*” �
       <Xmls Include="$(OutDir)*.xml" />
       <Configs Include="$(OutDir)*.config" />
     </ItemGroup>
-    <!--
     <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\dyf" />
     <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\extra" />
     <Copy SourceFiles="@(Dlls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
     <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
     <Copy SourceFiles="@(Xmls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
     <Copy SourceFiles="@(Configs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\0.9\packages\pCOLADpackage\%(RecursiveDir)" />
+    <!--
+    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\Dynamo Core\1.0\packages\pCOLADpackage\%(RecursiveDir)" />
     <Copy SourceFiles="@(Dlls)" DestinationFolder="C:\Program Files\Dynamo 0.9\nodes" />
 -->
   </Target>

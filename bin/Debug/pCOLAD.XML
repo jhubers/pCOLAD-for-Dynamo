@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>pCOLAD</name>
+    </assembly>
+    <members>
+        <member name="T:pCOLADnamespace.CSVControl">
+            <summary>
+            Interaction logic for CSVControl.xaml
+            </summary>
+            <summary>
+            CSVControl
+            </summary>
+        </member>
+        <member name="F:pCOLADnamespace.CSVControl.ClosingStarted">
+            <summary>
+            initialize the CSV control
+            </summary>
+        </member>
+        <member name="F:pCOLADnamespace.CSVControl.myXamlTable">
+            <summary>
+            myXamlTable Name Field
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.CSVControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.Dialogue1">
+            <summary>
+            Interaction logic for Dialogue1.xaml
+            </summary>
+            <summary>
+            Dialogue1
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.Dialogue1.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.FullScreenImage">
+            <summary>
+            Interaction logic for FullScreenImage.xaml
+            </summary>
+            <summary>
+            FullScreenImage
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.FullScreenImage.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:pCOLADnamespace.pCOLLECT" -->
+        <member name="M:pCOLADnamespace.pCOLLECT.#ctor">
+            <summary>
+            Don't know why this is here. Maybe it was needed to hide a DelegateCommand
+            </summary>
+            <param name="workspace"></param>
+        </member>
+        <member name="M:pCOLADnamespace.pCOLLECT.BuildOutputAst(System.Collections.Generic.List{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+            <summary>
+            If this method is not overriden, Dynamo will, by default
+            pass data through this node. But we wouldn't be here if
+            we just wanted to pass data through the node, so let's 
+            try using the data.
+            </summary>
+            <param name="inputAstNodes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:pCOLADnamespace.pCOLLECT.pCOLLECTNodeViewCustomization">
+            <summary>
+                View customizer for HelloDynamo Node Model.
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pCOLLECT.pCOLLECTNodeViewCustomization.CustomizeView(pCOLADnamespace.pCOLLECT,Dynamo.Controls.NodeView)">
+            <summary>
+            At run-time, this method is called during the node 
+            creation. Here you can create custom UI elements and
+            add them to the node view, but we recommend designing
+            your UI declaratively using xaml, and binding it to
+            properties on this node as the DataContext.
+            </summary>
+            <param name="model">The NodeModel representing the node's core logic.</param>
+            <param name="nodeView">The NodeView representing the node in the graph.</param>
+        </member>
+        <member name="M:pCOLADnamespace.pCOLLECT.pCOLLECTNodeViewCustomization.Dispose">
+            <summary>
+            Here you can do any cleanup you require if you've assigned callbacks for particular 
+            UI events on your node.
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.pCOLLECTcontrol">
+            <summary>
+            Interaction logic for pCOLLECT.xaml
+            </summary>
+            <summary>
+            pCOLLECTcontrol
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pCOLLECTcontrol.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:pCOLADnamespace.pPARAM" -->
+        <member name="M:pCOLADnamespace.pPARAM.#ctor">
+            <summary>
+            The constructor for a NodeModel is used to create
+            the input and output ports and specify the argument
+            lacing.
+            </summary>
+            <param name="workspace"></param>
+        </member>
+        <member name="M:pCOLADnamespace.pPARAM.BuildOutputAst(System.Collections.Generic.List{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+            <summary>
+            If this method is not overriden, Dynamo will, by default
+            pass data through this node. But we wouldn't be here if
+            we just wanted to pass data through the node, so let's 
+            try using the data.
+            </summary>
+            <param name="inputAstNodes"></param>
+            <returns></returns>
+        </member>
+        <member name="T:pCOLADnamespace.pPARAM.pPARAMNodeViewCustomization">
+            <summary>
+                View customizer for HelloDynamo Node Model.
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pPARAM.pPARAMNodeViewCustomization.CustomizeView(pCOLADnamespace.pPARAM,Dynamo.Controls.NodeView)">
+            <summary>
+            At run-time, this method is called during the node 
+            creation. Here you can create custom UI elements and
+            add them to the node view, but we recommend designing
+            your UI declaratively using xaml, and binding it to
+            properties on this node as the DataContext.
+            </summary>
+            <param name="model">The NodeModel representing the node's core logic.</param>
+            <param name="nodeView">The NodeView representing the node in the graph.</param>
+        </member>
+        <member name="M:pCOLADnamespace.pPARAM.pPARAMNodeViewCustomization.Dispose">
+            <summary>
+            Here you can do any cleanup you require if you've assigned callbacks for particular 
+            UI events on your node.
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.pPARAMcontrol">
+            <summary>
+            Interaction logic for pPARAM.xaml
+            </summary>
+            <summary>
+            pPARAMcontrol
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pPARAMcontrol.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.pSHAREcontrol">
+            <summary>
+            Interaction logic for pSHAREcontrol.xaml
+            </summary>
+            <summary>
+            pSHAREcontrol
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pSHAREcontrol.#ctor">
+            <summary>
+            Allows editing of the common *.csv file.
+            </summary>
+        </member>
+        <member name="F:pCOLADnamespace.pSHAREcontrol.myButton">
+            <summary>
+            myButton Name Field
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pSHAREcontrol.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.pSHARE">
+            pSHARE takes care of the communication of parameter changes through a shared *.csv file.
+        </member>
+        <member name="F:pCOLADnamespace.pSHARE.myPropDataTable">
+            <summary>
+            the property pSHARE.myPropDataTable is used as itemsSource for the datagrid
+            </summary>
+        </member>
+        <member name="P:pCOLADnamespace.pSHARE.CellInfo">
+            <summary>
+            property of pSHARE about which cell is selected
+            </summary>
+        </member>
+        <member name="P:pCOLADnamespace.pSHARE.isChecked">
+            <summary>
+            property of pSHARE telling if a row is checked and so a value obstructed
+            </summary>
+        </member>
+        <member name="P:pCOLADnamespace.pSHARE.OnOffButton">
+            <summary>
+            the property pSHARE.OnOffButton is used to open or close the CSV display
+            </summary>
+        </member>
+        <member name="P:pCOLADnamespace.pSHARE.OnOff">
+            DelegateCommand objects allow you to bind UI interaction to methods on your data context.
+        </member>
+        <member name="M:pCOLADnamespace.pSHARE.#ctor">
+            <summary>
+            Don't know why this is here. Maybe it was needed to hide a DelegateCommand
+            </summary>
+            <param name="workspace"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:pCOLADnamespace.pSHARE.BuildOutputAst(System.Collections.Generic.List{ProtoCore.AST.AssociativeAST.AssociativeNode})" -->
+        <member name="M:pCOLADnamespace.pSHARE.ShowCSV">
+            <summary>
+            shows the CSV display
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pSHARE.pSHARENodeViewCustomization.CustomizeView(pCOLADnamespace.pSHARE,Dynamo.Controls.NodeView)">
+            <summary>
+            At run-time, this method is called during the node 
+            creation. Here you can create custom UI elements and
+            add them to the node view, but we recommend designing
+            your UI declaratively using xaml, and binding it to
+            properties on this node as the DataContext.
+            </summary>
+            <param name="model">The NodeModel representing the node's core logic.</param>
+            <param name="nodeView">The NodeView representing the node in the graph.</param>
+        </member>
+        <member name="M:pCOLADnamespace.pSHARE.pSHARENodeViewCustomization.FindUpVisualTree``1(System.Windows.DependencyObject)">
+            <summary>
+            Here you can do any cleanup you require if you've assigned callbacks for particular 
+            UI events on your node.
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.pSHARE.recalc(Dynamo.Models.DynamoModel)">
+            <summary>
+            try to get Dynamo recalculate the solution when you hit On button
+            </summary>
+            <param name="actual"></param>
+        </member>
+        <member name="M:pCOLADnamespace.pSHARE.closeCSVControl">
+            <summary>
+            close the CSV display
+            </summary>
+        </member>
+        <member name="T:pCOLADnamespace.RelayCommand">
+            <summary>
+            A command whose sole purpose is to 
+            relay its functionality to other
+            objects by invoking delegates. The
+            default return value for the CanExecute
+            method is 'true'.
+            </summary>
+        </member>
+        <member name="M:pCOLADnamespace.RelayCommand.#ctor(System.Action{System.Object})">
+            <summary>
+            Creates a new command that can always execute.
+            </summary>
+            <param name="execute">The execution logic.</param>
+        </member>
+        <member name="M:pCOLADnamespace.RelayCommand.#ctor(System.Action{System.Object},System.Predicate{System.Object})">
+            <summary>
+            Creates a new command.
+            </summary>
+            <param name="execute">The execution logic.</param>
+            <param name="canExecute">The execution status logic.</param>
+        </member>
+        <member name="T:XamlGeneratedNamespace.GeneratedInternalTypeHelper">
+            <summary>
+            GeneratedInternalTypeHelper
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateInstance(System.Type,System.Globalization.CultureInfo)">
+            <summary>
+            CreateInstance
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.GetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            GetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object,System.Globalization.CultureInfo)">
+            <summary>
+            SetPropertyValue
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.CreateDelegate(System.Type,System.Object,System.String)">
+            <summary>
+            CreateDelegate
+            </summary>
+        </member>
+        <member name="M:XamlGeneratedNamespace.GeneratedInternalTypeHelper.AddEventHandler(System.Reflection.EventInfo,System.Object,System.Delegate)">
+            <summary>
+            AddEventHandler
+            </summary>
+        </member>
+    </members>
+</doc>
