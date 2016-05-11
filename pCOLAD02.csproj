@@ -113,17 +113,6 @@
     <Compile Include="Dialogue1.xaml.cs">
       <DependentUpon>Dialogue1.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Controls\ImageButton.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\App.g.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\App.g.i.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\GeneratedInternalTypeHelper.g.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\GeneratedInternalTypeHelper.g.i.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\TestWindow.g.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\TestWindow.g.i.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\Themes\Resources.g.cs" />
-    <Compile Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\Themes\Resources.g.i.cs" />
-    <Compile Include="Exclude from GitHub\pCOLLECT.cs" />
-    <Compile Include="Exclude from GitHub\pSHARE.cs" />
     <Compile Include="FullScreenImage.xaml.cs">
       <DependentUpon>FullScreenImage.xaml</DependentUpon>
     </Compile>
@@ -156,22 +145,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\TestWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Themes\ImageButton.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Themes\Resources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="FullScreenImage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -195,9 +168,6 @@
     <Folder Include="DynamoPackages\pCOLADpackage\bin\" />
     <Folder Include="DynamoPackages\pCOLADpackage\dyf\" />
     <Folder Include="DynamoPackages\pCOLADpackage\extra\" />
-    <Folder Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\TempPE\" />
-    <Folder Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Properties\" />
-    <Folder Include="Exclude from GitHub\Temp\Images\ParameterName2\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -208,97 +178,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="DynamoPackages\pCOLADpackage\pkg.json" />
-    <None Include="Exclude from GitHub\backup\test pCOLLECT2.dyn.0.backup" />
-    <None Include="Exclude from GitHub\backup\test pCOLLECT2.dyn.1.backup" />
-    <None Include="Exclude from GitHub\backup\test pCOLLECT2.dyn.2.backup" />
-    <None Include="Exclude from GitHub\backup\TestRevit1.dyn.0.backup" />
-    <None Include="Exclude from GitHub\backup\TestRevit1.dyn.1.backup" />
-    <None Include="Exclude from GitHub\backup\TestRevit1.dyn.2.backup" />
-    <None Include="Exclude from GitHub\backup\TestRevit1.dyn.3.backup" />
-    <None Include="Exclude from GitHub\backup\TestRevit1.dyn.4.backup" />
-    <None Include="Exclude from GitHub\Display cases.xlsx" />
-    <None Include="Exclude from GitHub\errors.docx" />
-    <None Include="Exclude from GitHub\FlowChart1.pptx" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\app.config" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\bin\Debug\ImageButton.exe.config" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\bin\Debug\ImageButton.vshost.exe.config" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\bin\Debug\ImageButton.vshost.exe.manifest" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\App.baml" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton.csprojResolveAssemblyReference.cache" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton_MarkupCompile.cache" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton_MarkupCompile.i.cache" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton_MarkupCompile.i.lref" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton_MarkupCompile.lref" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\TestWindow.baml" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\Themes\ImageButton.baml" />
-    <None Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\Themes\Resources.baml" />
-    <None Include="Exclude from GitHub\MyDataCollector References check.docx" />
-    <None Include="Exclude from GitHub\Next question.docx" />
-    <None Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\Kent.Boogaart.HelperTrinity.1.5.2.nupkg" />
-    <None Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\Kent.Boogaart.KBCsv.2.0.2.nupkg" />
-    <None Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net40\Kent.Boogaart.KBCsv.dll.config" />
-    <None Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\Kent.Boogaart.KBCsv.Extensions.2.0.2.nupkg" />
-    <None Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net40\Kent.Boogaart.KBCsv.Extensions.dll.config" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\net45\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\portable-net45+win8+wp8+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\portable-net45+win8+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\portable-net451+win81+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\portable-net451+win81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\portable-win81+wp81+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\sl4\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\sl5\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\win8\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\wp8\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\content\wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net45\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net45+win8+wp8+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net45+win8+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net451+win81+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net451+win81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-win81+wp81+wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\win8\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\wp8\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\wpa81\_._" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\License-Stable.rtf" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\Microsoft.Bcl.1.1.7.nupkg" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\License.rtf" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\Microsoft.Bcl.Async.1.0.16.nupkg" />
-    <None Include="Exclude from GitHub\packages\Microsoft.Bcl.Build.1.0.14.deleteme" />
-    <None Include="Exclude from GitHub\packages\repositories.config" />
-    <None Include="Exclude from GitHub\pCOLAD for Dynamo.docx" />
-    <None Include="Exclude from GitHub\pCOLAD for Dynamo_0.docx" />
-    <None Include="Exclude from GitHub\pCOLAD References check.docx" />
-    <None Include="Exclude from GitHub\short description pCOLAD for Dynamo.docx" />
-    <None Include="Exclude from GitHub\Temp\DebugGH.rvb" />
-    <None Include="Exclude from GitHub\Temp\DebugGH2.rvb" />
-    <None Include="Exclude from GitHub\Temp\History.csv" />
-    <None Include="Exclude from GitHub\Temp\History.csvy" />
-    <None Include="Exclude from GitHub\Temp\History1.csv" />
-    <None Include="Exclude from GitHub\Temp\icestadium.csv" />
-    <None Include="Exclude from GitHub\Temp\LocalHans.csv" />
-    <None Include="Exclude from GitHub\Temp\oldHistory.csv" />
-    <None Include="Exclude from GitHub\Temp\old_lll.csv" />
-    <None Include="Exclude from GitHub\Temp\old_LocalHans.csv" />
-    <None Include="Exclude from GitHub\Temp\old_test2 - Copy.csv" />
-    <None Include="Exclude from GitHub\Temp\pCAD test 4.gh" />
-    <None Include="Exclude from GitHub\Temp\softreturn.csv" />
-    <None Include="Exclude from GitHub\Temp\softreturn.xlsx" />
-    <None Include="Exclude from GitHub\Temp\softreturn2.csv" />
-    <None Include="Exclude from GitHub\Temp\softreturn2.xlsx" />
-    <None Include="Exclude from GitHub\Temp\test - Copy.csv" />
-    <None Include="Exclude from GitHub\Temp\test.csv" />
-    <None Include="Exclude from GitHub\Temp\test.gh" />
-    <None Include="Exclude from GitHub\Temp\test2 - Copy.csv" />
-    <None Include="Exclude from GitHub\Temp\test2 - Copy.csvy" />
-    <None Include="Exclude from GitHub\Temp\test2.csv" />
-    <None Include="Exclude from GitHub\Temp\test2.csvy" />
-    <None Include="Exclude from GitHub\Temp\test2.gh" />
-    <None Include="Exclude from GitHub\Temp\TestRevitpCOLAD1.rvt" />
-    <None Include="Exclude from GitHub\Temp\testSpiral1.gh" />
-    <None Include="Exclude from GitHub\Temp\watch image.dyn" />
-    <None Include="Exclude from GitHub\test pCOLLECT2.dyn" />
-    <None Include="Exclude from GitHub\TestRevit1.dyn" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -307,192 +186,6 @@
       <Name>MyDataCollector</Name>
       <Private>True</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\bin\Debug\ImageButton.exe" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\bin\Debug\ImageButton.pdb" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\bin\Debug\ImageButton.vshost.exe" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\ImageButton.csproj" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\ImageButton.csproj.vspscc" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\ImageButton.sln" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\ImageButton.vssscc" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton.csproj.FileListAbsolute.txt" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton.exe" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton.pdb" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Resources\Happy.png" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Resources\Normal.png" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Resources\Sad.png" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Resources\Surprize.png" />
-    <Content Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\Resources\Tounge.png" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\net35\Kent.Boogaart.HelperTrinity.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\net35\Kent.Boogaart.HelperTrinity.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\net40\Kent.Boogaart.HelperTrinity.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\net40\Kent.Boogaart.HelperTrinity.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\net45\Kent.Boogaart.HelperTrinity.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\net45\Kent.Boogaart.HelperTrinity.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\sl40\Kent.Boogaart.HelperTrinity.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\sl40\Kent.Boogaart.HelperTrinity.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\sl50\Kent.Boogaart.HelperTrinity.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.HelperTrinity.1.5.2\lib\sl50\Kent.Boogaart.HelperTrinity.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net35\Kent.Boogaart.KBCsv.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net35\Kent.Boogaart.KBCsv.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net40\Kent.Boogaart.KBCsv.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net40\Kent.Boogaart.KBCsv.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net45\Kent.Boogaart.KBCsv.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\net45\Kent.Boogaart.KBCsv.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\sl40\Kent.Boogaart.KBCsv.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\sl40\Kent.Boogaart.KBCsv.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\sl50\Kent.Boogaart.KBCsv.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.2.0.2\lib\sl50\Kent.Boogaart.KBCsv.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net35\Kent.Boogaart.KBCsv.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net35\Kent.Boogaart.KBCsv.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net40\Kent.Boogaart.KBCsv.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net40\Kent.Boogaart.KBCsv.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net45\Kent.Boogaart.KBCsv.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\net45\Kent.Boogaart.KBCsv.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\sl40\Kent.Boogaart.KBCsv.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\sl40\Kent.Boogaart.KBCsv.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\sl50\Kent.Boogaart.KBCsv.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Kent.Boogaart.KBCsv.Extensions.2.0.2\lib\sl50\Kent.Boogaart.KBCsv.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\net40\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp71+wpa81\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8+wp8+wpa81\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl4+win8\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+sl5+win8+wp8+wpa81\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8+wp8+wpa81\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\portable-net40+win8\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\ensureRedirect.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4-windowsphone71\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl4\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl5\System.IO.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl5\System.IO.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl5\System.Runtime.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl5\System.Runtime.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl5\System.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.1.1.7\lib\sl5\System.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net40\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net40\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net40\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net40\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net40+sl4+win8+wp71\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net40+sl4+win8+wp71\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net40+sl4+win8+wp71\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net40+sl4+win8+wp71\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8+wp8\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8+wp8\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8+wp8\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8+wp8\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\portable-net45+win8\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4-windowsphone71\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4-windowsphone71\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4-windowsphone71\Microsoft.Threading.Tasks.Extensions.Phone.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4-windowsphone71\Microsoft.Threading.Tasks.Extensions.Phone.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4-windowsphone71\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4-windowsphone71\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.Extensions.Silverlight.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.Extensions.Silverlight.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\sl4\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\win8\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\win8\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\win8\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\win8\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\wp8\Microsoft.Threading.Tasks.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\wp8\Microsoft.Threading.Tasks.Extensions.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\wp8\Microsoft.Threading.Tasks.Extensions.Phone.dll" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\wp8\Microsoft.Threading.Tasks.Extensions.Phone.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\wp8\Microsoft.Threading.Tasks.Extensions.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\lib\wp8\Microsoft.Threading.Tasks.xml" />
-    <Content Include="Exclude from GitHub\packages\Microsoft.Bcl.Async.1.0.16\ReleaseNotes.txt" />
-    <Content Include="Exclude from GitHub\pCOLAD.csproj" />
-    <Content Include="Exclude from GitHub\pCOLAD.csproj.user" />
-    <Content Include="Exclude from GitHub\pCOLAD01.csproj" />
-    <Content Include="Exclude from GitHub\pCOLAD1.csproj" />
-    <Content Include="Exclude from GitHub\Temp\B1\test0 - Copy %282%29.jpg" />
-    <Content Include="Exclude from GitHub\Temp\B1\test0 - Copy.jpg" />
-    <Content Include="Exclude from GitHub\Temp\B1\test0.jpg" />
-    <Content Include="Exclude from GitHub\Temp\B1\test1 - Copy %282%29.JPG" />
-    <Content Include="Exclude from GitHub\Temp\B1\test1 - Copy%283%29.jpg" />
-    <Content Include="Exclude from GitHub\Temp\B1\test1 - Copy.JPG" />
-    <Content Include="Exclude from GitHub\Temp\B1\test1.JPG" />
-    <Content Include="Exclude from GitHub\Temp\Images\ExtParam1\ExtImage1.jpg" />
-    <Content Include="Exclude from GitHub\Temp\Images\ExtParam1\ExtImage2.jpg" />
-    <Content Include="Exclude from GitHub\Temp\Images\Parameter2\test.jpg" />
-    <Content Include="Exclude from GitHub\Temp\Images\Parameter2\test0 - Copy %282%29.jpg" />
-    <Content Include="Exclude from GitHub\Temp\Images\Parameter2\test1 - Copy %282%29.JPG" />
-    <Content Include="Exclude from GitHub\Temp\Images\Parameter2\test1 - Copy%283%29.jpg" />
-    <Content Include="Exclude from GitHub\Temp\Images\Test1\test0 - Copy %282%29.jpg" />
-    <Content Include="Exclude from GitHub\Temp\Images\Test1\test1 - Copy %282%29.JPG" />
-    <Content Include="Exclude from GitHub\Temp\Images\test2.JPG" />
-    <Content Include="Exclude from GitHub\Temp\Parameter1.JPG" />
-    <Content Include="Exclude from GitHub\Temp\test.jpg" />
-    <Content Include="Exclude from GitHub\Temp\test2.JPG" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Exclude from GitHub\imagebuttonwpf-825\ImageButton\obj\Debug\ImageButton.g.resources" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
