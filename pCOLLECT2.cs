@@ -10,6 +10,8 @@ using System.Xml;
 using Dynamo.Graph.Nodes;
 using Dynamo.Graph;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace pCOLADnamespace
 {
@@ -38,18 +40,20 @@ namespace pCOLADnamespace
     // The description will display in the tooltip
     // and in the help window for the node.
     [NodeDescription("Collects parameters and their attributes for pSHARE.")]
-    //[InPortNamesAttribute("P", "V", "I", "C")]
-    //[InPortDescriptionsAttribute("Parameter", "New Value", "Importance", "Comments")]
-    //[InPortTypesAttribute("string", "string", "string", "string")]
-    //[OutPortNamesAttribute("N")]
-    //[OutPortDescriptionsAttribute("List of ;-seperated strings.")]
-    //[OutPortTypesAttribute("string")]
+    [InPortNamesAttribute("P", "V", "I", "C")]
+    [InPortDescriptionsAttribute("Parameter", "New Value", "Importance", "Comments")]
+    [InPortTypesAttribute("string", "string", "string", "string")]
+    [OutPortNamesAttribute("N")]
+    [OutPortDescriptionsAttribute("List of ;-seperated strings.")]
+    [OutPortTypesAttribute("string")]
 
     [IsDesignScriptCompatible]
-    public class pCOLLECT : NodeModel
+    public class pCOLLECT : NodeModel, ICloneable
     {
         private bool firstTime = true;
         private List<string> _outputListProp;
+        public ObservableCollection<PortModel> myInports { get; set; }
+        public List<AssociativeNode> pCOLLECTtempList { get; set; }
         public List<string> outputListProp
         {
             get { return _outputListProp; }
@@ -81,20 +85,22 @@ namespace pCOLADnamespace
             // we'll use the PortData.ToolTip as header in the csv.file
             // In fact you should derive the NickNames and ToolTips from the dyn.file
             // Because if new attributes are added it is a pain to add them everytime
-            InPortData.Add(new PortData("P", "Parameter"));
-            InPortData.Add(new PortData("V", "New Value"));
-            InPortData.Add(new PortData("I", "Importance"));
-            InPortData.Add(new PortData("C", "Comments"));
-            OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
+            ////InPortData.Add(new PortData("P", "Parameter"));
+            ////InPortData.Add(new PortData("V", "New Value"));
+            ////InPortData.Add(new PortData("I", "Importance"));
+            ////InPortData.Add(new PortData("C", "Comments"));
+            ////OutPortData.Add(new PortData("N", "List of ;-seperated strings."));            
 
             //InPortData.Add(new PortData("O", "Owner"));
             // Nodes can have an arbitrary number of inputs and outputs.
             // If you want more ports, just create more PortData objects.
             //OutPortData.Add(new PortData("some awesome", "A result."));
-
             // This call is required to ensure that your ports are
             // properly created.
             RegisterAllPorts();
+            //for some reason InPorts gets emptied after first run, so store it in new collection
+            List<PortModel> lpm = InPorts.ToList();
+            myInports = new ObservableCollection<PortModel>(lpm);
 
             // The arugment lacing is the way in which Dynamo handles
             // inputs of lists. If you don't want your node to
@@ -155,14 +161,22 @@ namespace pCOLADnamespace
 
             //build a new output List<AssociativeNode>consisting of fieldnames seperated by ';' and
             // on next inputAstNodes with ';' added
-            List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
+            //List<AssociativeNode> pCOLLECTtempList = new List<AssociativeNode>();
             // the headings should become flexible in future
             // also use the creation of output similar to pSHARE and pPARAM
             string inputNames = "";
-            foreach (var item in InPortData)
+
+            //InPorts is empty, second time when you try to add inport...
+            
+
+            foreach (PortModel pm in this.myInports)
             {
-                inputNames += item.ToolTipString + ";";
+                inputNames += pm.PortName + ";";
             }
+            ////foreach (var item in InPortData)
+            ////{
+            ////    inputNames += item.ToolTipString + ";";
+            ////}
             //foreach (Attribute item in InPortNamesAttribute.GetCustomAttributes(typeof(string),true))
             //{
             //    inputNames += item + ";";
@@ -171,6 +185,15 @@ namespace pCOLADnamespace
             //var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
             var headings = AstFactory.BuildStringNode(inputNames);
             var semiColon = AstFactory.BuildStringNode(";");
+            //inputAstNodes is empty second run...
+            if (inputAstNodes.Count ==0)
+            {
+                inputAstNodes = pCOLLECTtempList.ToList<AssociativeNode>();
+            }
+            else
+            {
+                pCOLLECTtempList = new List<AssociativeNode>();
+            }
             foreach (AssociativeNode InputItem in inputAstNodes)
             {
                 List<AssociativeNode> arguments = new List<AssociativeNode>();
@@ -264,6 +287,7 @@ namespace pCOLADnamespace
         //    return Value;
         //}        
 
+        #region tempSerializeCore
         protected override void SerializeCore(XmlElement element, SaveContext context)
         {
             //this runs every 15 seconds or so... that disturbs my filesystemwatcher
@@ -273,18 +297,28 @@ namespace pCOLADnamespace
             base.SerializeCore(element, context);
             var xmlDocument = element.OwnerDocument;
             var subNode = xmlDocument.CreateElement("ExtraInputs");
-            foreach (var item in InPortData)
+            foreach (PortModel pm in this.myInports)
             {
-                if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
+                if (pm.PortName == "P" | pm.PortName == "V" | pm.PortName == "I" | pm.PortName == "C")
                 {
                     continue;
                 }
-                subNode.SetAttribute(item.NickName, item.ToolTipString);
+                subNode.SetAttribute(pm.PortName, pm.ToolTipContent);
             }
+            //foreach (var item in InPortData)
+            //{
+            //    if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
+            //    {
+            //        continue;
+            //    }
+            //    subNode.SetAttribute(item.NickName, item.ToolTipString);
+            //}
             element.AppendChild(subNode);
             //firstTime = false;
             //}
         }
+
+        #endregion
         protected override void DeserializeCore(XmlElement element, SaveContext context)
         {
             base.DeserializeCore(element, context); //Base implementation must be called.
@@ -296,7 +330,8 @@ namespace pCOLADnamespace
                     continue;
                 foreach (XmlAttribute attr in subNode.Attributes)
                 {
-                    InPortData.Add(new PortData(attr.Name, attr.Value));
+                    this.myInports.Add(new PortModel(PortType.Input, this, new PortData(attr.Name, attr.Value)));
+                    ////InPortData.Add(new PortData(attr.Name, attr.Value));
                 }
                 RegisterAllPorts();
                 break;
@@ -459,26 +494,37 @@ namespace pCOLADnamespace
                         {
                             pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                             {
-                            MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
-                            return;
+                                MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
+                                return;
                             }));
                         }
-                        List<string> inportDataNames = new List<string>();
-                        foreach (PortData item in InPortData)
+                        //List<string> inportDataNames = new List<string>();
+                        ////foreach (PortData item in InPortData)
+                        ////{
+                        ////    inportDataNames.Add(item.NickName);
+                        ////}
+                        ////if (inportDataNames.Contains(a1))
+                        ////{
+                        ////    int index = inportDataNames.IndexOf(a1);
+                        ////    InPortData.RemoveAt(index);
+                        ////    RegisterAllPorts();
+                        ////}
+                        Boolean f = false;
+                        foreach (PortModel pm in this.myInports)
                         {
-                            inportDataNames.Add(item.NickName);
+                            if (pm.PortName == a1)
+                            {
+                                this.myInports.Remove(pm);
+                                RegisterAllPorts();
+                                f = true;
+                            }
                         }
-                        if (inportDataNames.Contains(a1))
-                        {
-                            int index = inportDataNames.IndexOf(a1);
-                            InPortData.RemoveAt(index);
-                            RegisterAllPorts();
-                        }
-                        else
+
+                        if (f)
                         {
                             pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                             {
-                            MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
+                                MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
                             }));
                         }
                     }
@@ -507,10 +553,14 @@ namespace pCOLADnamespace
                         a1 = D1.Answer.Text;
                         //check if the attribute indicator is unique
                         List<string> inportDataNames = new List<string>();
-                        foreach (PortData item in InPortData)
+                        foreach (PortModel pm in this.myInports)
                         {
-                            inportDataNames.Add(item.NickName);
+                            inportDataNames.Add(pm.PortName);
                         }
+                        ////foreach (PortData item in InPortData)
+                        ////{
+                        ////    inportDataNames.Add(item.NickName);
+                        ////}
                         if (!inportDataNames.Contains(a1))
                         {
                             Dialogue1 D2 = new Dialogue1();
@@ -530,20 +580,34 @@ namespace pCOLADnamespace
                                     a2 = D2.Answer.Text;
                                     //check if attribute name is unique
                                     List<string> inportDataToolTips = new List<string>();
-                                    foreach (PortData item2 in InPortData)
+                                    ////foreach (PortData item2 in InPortData)
+                                    ////{
+                                    ////    inportDataToolTips.Add(item2.ToolTipString);
+                                    ////}
+                                    ////if (!inportDataToolTips.Contains(a2))
+                                    ////{
+                                    ////    InPortData.Add(new PortData(a1, a2));
+                                    ////    RegisterAllPorts();
+                                    ////}
+                                    foreach (PortModel pm in this.myInports)
                                     {
-                                        inportDataToolTips.Add(item2.ToolTipString);
+                                        inportDataToolTips.Add(pm.ToolTipContent);
                                     }
                                     if (!inportDataToolTips.Contains(a2))
                                     {
-                                        InPortData.Add(new PortData(a1, a2));
+                                        this.myInports.Add(new PortModel(PortType.Input, this, new PortData(a1, a2)));
+                                        List<PortModel> lmpm = myInports.ToList();
+                                        InPorts = new ObservableCollection<PortModel>(lmpm);
                                         RegisterAllPorts();
+                                        //RegisterAllParts empties InPorts...
+                                        InPorts = new ObservableCollection<PortModel>(lmpm);
                                     }
+
                                     else
                                     {
                                         pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                                         {
-                                        MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
+                                            MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
                                         }));
                                     }
 
@@ -552,6 +616,7 @@ namespace pCOLADnamespace
                         }
                         else
                         {
+                            //if you use pCOLLECT without pSHARE you get an error ofcourse. Derive dv from pCOLLECT!!! Also above.
                             MessageBox.Show(pSHARE.dv, "This attribute indicator already exist. Please try again...");
 
                         }
@@ -559,6 +624,11 @@ namespace pCOLADnamespace
                 };
 
 
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
         //private bool CanShowMessage(object obj)
         //{
