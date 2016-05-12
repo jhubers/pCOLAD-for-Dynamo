@@ -2,8 +2,6 @@ D:\Data\Research\Dynamo\pCOLAD for Dynamo\bin\Debug\pCOLAD.dll.config
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\bin\Debug\pCOLAD.XML
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\bin\Debug\pCOLAD.dll
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\bin\Debug\pCOLAD.pdb
-D:\Data\Research\Dynamo\pCOLAD for Dynamo\bin\Debug\MyDataCollector.dll
-D:\Data\Research\Dynamo\pCOLAD for Dynamo\bin\Debug\MyDataCollector.pdb
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLAD02.csprojResolveAssemblyReference.cache
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\Dialogue1.baml
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLLECTcontrol.baml
