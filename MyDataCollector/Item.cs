@@ -65,6 +65,12 @@ namespace MyDataCollector
             IsChanged = true;
             NotifyPropertyChanged("IsChanged");
         }
+        public bool IsMyChanged { get; set; }
+        public void SetMyChanged()
+        {
+            IsMyChanged = true;
+            NotifyPropertyChanged("IsChanged");
+        }
         public bool IsDeleted{ get; set; }
         public void SetDeleted()
         {
@@ -75,6 +81,7 @@ namespace MyDataCollector
         public void SetSame()
         {
             IsChanged = false;
+            IsMyChanged = false;
             NotifyPropertyChanged("IsChanged");
         }
         public override string ToString()

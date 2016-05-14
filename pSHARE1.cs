@@ -48,6 +48,7 @@ namespace pCOLADnamespace
         private string oldCSV = "";
         private bool On = false;
         public static bool historyOn;
+        public static SolidColorBrush changeColour = Brushes.Pink;
         public bool HistoryOn
         {
             get { return historyOn; }
@@ -296,6 +297,11 @@ namespace pCOLADnamespace
         {
             Item it = new Item(_cellContent.Trim());
             DataRow oldDr = MyDataCollectorClass.oldDataTable.Rows.Find(_dr["Parameter"]);
+            //when you start oldDataTable has no rows
+            if (oldDr == null)
+            {
+                oldDr = MyDataCollectorClass.oldDataTable.NewRow();
+            }
             var set1 = new HashSet<string>(_cellContent.Split('/').Select(t => t.Trim()));
             var set2 = new HashSet<string>(oldDr["Obstruction"].ToString().Split('/').Select(t => t.Trim()));
             set1.Remove("");
@@ -303,7 +309,7 @@ namespace pCOLADnamespace
             bool setsEqual = set1.SetEquals(set2);
             if (!setsEqual)
             {
-                it.SetChanged();
+                it.SetMyChanged();
             }
             _dr["Obstruction"] = it;
             DataRow MyPropDr = MyPropDataTable.Rows.Find(_dr["Parameter"]);
@@ -717,18 +723,12 @@ namespace pCOLADnamespace
             //write localDataTable to the csv files if something changed
             Boolean newHistoryFile = false;
             //myPropDataTable = MyDataCollectorClass.localDataTable;
+            //When sharing myPropDataTable should be the same as MyDataCollectorClass.localDataTable
+            //But comparing two datatables is time consuming (the == or Equals are always reference comparing)
+            //So just make sure they are the same by copying. Copy() makes an independent copy.
+            myPropDataTable = MyDataCollectorClass.localDataTable.Copy();
 
-            //the New Value should be copied to Old Value if changed and should be in the oldLocalCopy,
-            //in Grasshopper Old Value changes asa you change a value, if you change it again
-            //the Old Value is not the one that was shared before...
-            //The only way to find out is to compare here if New Value in myPropDataTable 
-            //is different from the one in oldLocalCopy and if so copy that one to Old Value
-            //MyDataCollectorClass.oldDataTable holds the data from the oldLocalCopy
-            //but was changed in the Compare() method to get equal number of rows and columns... Not anymore.
-            //But MyDataCollectorClass.copyCSVlist didn't change
-            //DataTable oldTable = Functions.ListToTable(MyDataCollectorClass.copyCsvList);
             //now check if New Values are different and if so change the Old Values
-            //this updates immediatally the display
             foreach (DataRow dr in myPropDataTable.Rows)
             {
                 DataRow odr = MyDataCollectorClass.oldDataTable.Rows.Find(dr["Parameter"]);
@@ -741,7 +741,6 @@ namespace pCOLADnamespace
                     }
                 }
             }
-
             //but now New Value and Old Value are always the same in csv!!!
             //in pCOLAD for Grasshopper you simply copy the sharedFile to the oldLocalCopy...
             //but there the Old Value gets updated every time you change the New Value.
@@ -884,12 +883,18 @@ namespace pCOLADnamespace
                     //checked if this is necessary are they different? No they are the same.
                     //myPropDataTable = MyDataCollectorClass.localDataTable.Copy();
                     //if you compare with oldDataTable, when was that updated? Should be the same as myPropDataTable at this moment...
-                    //check if they are differnt!!!
-                    MyDataCollectorClass.oldDataTable = myPropDataTable.Copy();
-                    Compare();
+                    //check if they are differnt!!! They are: the date is different.
+                    if (!MyDataCollectorClass.oldDataTable.Equals(myPropDataTable))
+                    {
+                        MyDataCollectorClass.oldDataTable = myPropDataTable.Copy();
+                    }
+                    //after a share no colours
+                    ClearChanged();
+                    MyPropDataTable = myPropDataTable.Copy();
+                    //ClearChangedMyPropDataTable();
                     //close the CSVcontrol and recreate it so you get correct red backgrounds
-                    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
-                    ShowParams(OnOff);//creates a new CSVControl and sets the On property to true
+                    ////ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+                    ////ShowParams(OnOff);//creates a new CSVControl and sets the On property to true
                     oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
@@ -994,21 +999,10 @@ namespace pCOLADnamespace
                 {
                     if ((localDataRow[localDataColumn] as MyDataCollector.Item) != null)
                     {
-                        (localDataRow[localDataColumn] as MyDataCollector.Item).IsChanged = false;
+                        (localDataRow[localDataColumn] as MyDataCollector.Item).SetSame();
                     }
                 }
             }
-            //foreach (DataRow localDataRow in myPropDataTable.Rows)
-            //{
-            //    foreach (DataColumn localDataColumn in myPropDataTable.Columns)
-            //    {
-            //        if ((localDataRow[localDataColumn] as MyDataCollector.Item) != null)
-            //        {
-            //            (localDataRow[localDataColumn] as MyDataCollector.Item).IsChanged = false;
-            //        }
-            //    }
-            //}
-
         }
 
         private void Compare()
@@ -1036,7 +1030,6 @@ namespace pCOLADnamespace
             #region newCompare
             // first reset all items
             ClearChanged();
-
             foreach (DataRow localDataRow in MyDataCollectorClass.localDataTable.Rows)
             {
                 DataRow oldDataRow = MyDataCollectorClass.oldDataTable.Rows.Find(localDataRow["Parameter"]);
@@ -1044,6 +1037,13 @@ namespace pCOLADnamespace
                 {
                     foreach (DataColumn localDataColumn in MyDataCollectorClass.localDataTable.Columns)
                     {
+                        //Old Value never turn red because it only changes after hitting the Share Button, or
+                        //if somebody else changes a New Value and hit the Share Button, but then New Value is red.
+                        //In fact it would be good to have different colour if you change your self...
+                        if (localDataColumn.ColumnName == "Old Value")
+                        {
+                            continue;
+                        }
                         //Item in localDataColumn can be null WHY? if there is no oldLocalFile yet??
                         //then you can not compare it, but won't you get an error when sharing?
                         //So add an empty Item
@@ -1056,12 +1056,19 @@ namespace pCOLADnamespace
                         //MyDataCollector.Item test2 = (oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item);
                         if (MyDataCollectorClass.oldDataTable.Columns[localDataColumn.ColumnName] != null)
                         {
-                            //use .Equels() instead of != because otherwise you get a reference and not a value comparison
+                            //use .Equals() instead of != because otherwise you get a reference and not a value comparison
                             if (!(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).textValue.Equals((oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).textValue))
                             {
                                 if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
                                 {
-                                    (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                                    //If you changed the value in New Value, then put the old New Value in Old Value
+                                    //No, keep the Old Value as in the old csv file, so if you change back it is not red.
+                                    //if (localDataColumn.ColumnName == "New Value")
+                                    //{
+                                    //    (localDataRow["Old Value"] as MyDataCollector.Item).textValue = String.Copy((oldDataRow["New Value"] as MyDataCollector.Item).textValue);
+                                    //}
+                                    //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                                    SetColour(localDataRow, localDataColumn.ColumnName);
                                     someChange = true;
                                 }
                             }
@@ -1082,7 +1089,8 @@ namespace pCOLADnamespace
                                 localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
                                 someChange = true;
                             }
-                            (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                            //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                            SetColour(localDataRow, localDataColumn.ColumnName);
                         }
                     }
                 }
@@ -1096,10 +1104,12 @@ namespace pCOLADnamespace
                             localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
                             someChange = true;
                         }
-                        (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                        //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
+                        SetColour(localDataRow, localDataColumn.ColumnName);
                     }
                 }
             }
+
             #endregion
             #region oldCompare
             //if (MyDataCollectorClass.sharedFile != null) // && !MyDataCollectorClass.inputFile.Contains("History"))
@@ -1181,6 +1191,33 @@ namespace pCOLADnamespace
             if (someChange)
             {
                 MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
+            }
+        }
+        private void SetColour(DataRow dr, String dcn)
+        {
+            //if this row contains my own parameter data then set the background to green
+            //except if the cell is obstruction (you don't obstruct your own value - just change it)
+            if (dr["Owner"].ToString().Equals(MyDataCollectorClass.userName))
+            {
+                if (dcn.Equals("Obstruction"))
+                {
+                    (dr[dcn] as MyDataCollector.Item).SetChanged();
+                }
+                else
+                {
+                    (dr[dcn] as MyDataCollector.Item).SetMyChanged();
+                }
+            }
+            else
+            {
+                if (dcn.Equals("Obstruction"))
+                {
+                    (dr[dcn] as MyDataCollector.Item).SetMyChanged();
+                }
+                else
+                {
+                    (dr[dcn] as MyDataCollector.Item).SetChanged();
+                }
             }
         }
         #endregion

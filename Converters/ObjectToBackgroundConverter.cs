@@ -42,10 +42,15 @@ namespace pCOLADnamespace
                 // e.g. check when user starts typing with content when leaving the cell
                 return b;
             }
+
             var item = (MyDataCollector.Item)value;
             if (item.IsChanged)
             {
                 b = Brushes.Pink;
+            }
+            if (item.IsMyChanged)
+            {
+                b = Brushes.LightGreen;
             }
             return b;
         }

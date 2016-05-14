@@ -350,6 +350,8 @@ namespace MyDataCollector
                  {
                      //MessageBox.Show(Application.Current.MainWindow, msg);
                      MessageBox.Show(dv, msg);
+                     //Change the background colour to red
+
                      //copy the sharedFile to the localFile
                      File.Copy(sharedFile, localFile, true);
                      formPopulate = false;
