@@ -122,6 +122,8 @@ namespace pCOLADnamespace
             //        break;
             //}
         }
+
+        public int drIndex = -1;
         private void myCheckBox_Loaded(object sender, RoutedEventArgs e)
         {
             //if you select the checkbox the username should appear in the column Obstruction.
@@ -132,10 +134,17 @@ namespace pCOLADnamespace
                 DataRowView drv = (DataRowView)cb.DataContext;
                 DataRow dr = drv.Row;
                 string obstruction = dr["Obstruction"].ToString();
+                //when you load the checkbox without clicking, you need to provide the RowIndex to pSHARE
+                //otherwise the Obstruction is always in Row 0. Reset for next round.
+                if (drIndex>=dr.Table.Rows.Count-1)
+                {
+                    drIndex = -1;
+                }
+                drIndex += 1;
                 bool b;
                 //bool? b = (bool?)dr["Accepted"];
                 //check if field in column "Obstruction" contains the userName
-                
+
                 if (obstruction.Contains(MyDataCollector.MyDataCollectorClass.userName))
                 {
                     b = false;
@@ -144,6 +153,7 @@ namespace pCOLADnamespace
                 {
                     b = true;
                 }
+
                 cb.IsChecked = b;
             }
         }
@@ -203,7 +213,7 @@ namespace pCOLADnamespace
                 // run the CancelCommand by simulating click on Cancel button
                 ButtonAutomationPeer peer = new ButtonAutomationPeer(Cancel);
                 IInvokeProvider invokeProv = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
-                invokeProv.Invoke(); 
+                invokeProv.Invoke();
             }
         }
 
@@ -213,7 +223,7 @@ namespace pCOLADnamespace
             //this is triggerd by the LostFocus event in the datatemplate "commentCells"
             //try to set the background of the TextBox to pink
             DataTable dt = MyDataCollector.MyDataCollectorClass.oldDataTable;
-            TextBox tb= (TextBox)sender;
+            TextBox tb = (TextBox)sender;
             DataGridRow dgr = FindUpVisualTree<DataGridRow>(tb);
             var i = dgr.GetIndex();
             DataRow dr = dt.Rows[i];
@@ -221,7 +231,7 @@ namespace pCOLADnamespace
             String s = it.textValue;
             if (!tb.Text.Equals(s))
             {
-                tb.Background = Brushes.Pink; 
+                tb.Background = Brushes.Pink;
             }
             else
             {

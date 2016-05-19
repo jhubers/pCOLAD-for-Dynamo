@@ -129,10 +129,10 @@ namespace pCOLADnamespace
             set
             {
                 _rowIndex = value;
-                if (_rowIndex < 0)
-                {
-                    _rowIndex = 0;
-                }
+                //if (_rowIndex < 0)
+                //{
+                //    _rowIndex = 0;
+                //}
                 RaisePropertyChanged("RowIndex");
                 // MessageBox.Show(string.Format("Row: {0}", _rowIndex.ToString()));
             }
@@ -266,6 +266,11 @@ namespace pCOLADnamespace
                     else
                     {
                         _isChecked = value;
+                        if (_rowIndex.Equals(-1))
+                        {
+                            return;
+                            //_rowIndex = _CSVControl.drIndex;
+                        }
                         DataRow dr = MyDataCollectorClass.localDataTable.Rows[_rowIndex];
                         string cellContent = dr["Obstruction"].ToString();
                         if (_cellInfo != null && !_isChecked) //add the userName
@@ -1197,6 +1202,10 @@ namespace pCOLADnamespace
         {
             //if this row contains my own parameter data then set the background to green
             //except if the cell is obstruction (you don't obstruct your own value - just change it)
+            if (dcn.ToString().Equals("Date")|dcn.ToString().Equals("Author"))
+            {
+                return;
+            }
             if (dr["Owner"].ToString().Equals(MyDataCollectorClass.userName))
             {
                 if (dcn.Equals("Obstruction"))
