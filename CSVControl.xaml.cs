@@ -123,7 +123,7 @@ namespace pCOLADnamespace
             //}
         }
 
-        public int drIndex = -1;
+        //public int drIndex = -1;
         private void myCheckBox_Loaded(object sender, RoutedEventArgs e)
         {
             //if you select the checkbox the username should appear in the column Obstruction.
@@ -136,11 +136,12 @@ namespace pCOLADnamespace
                 string obstruction = dr["Obstruction"].ToString();
                 //when you load the checkbox without clicking, you need to provide the RowIndex to pSHARE
                 //otherwise the Obstruction is always in Row 0. Reset for next round.
-                if (drIndex>=dr.Table.Rows.Count-1)
-                {
-                    drIndex = -1;
-                }
-                drIndex += 1;
+                //Is this still necessary?No.
+                //if (drIndex>=dr.Table.Rows.Count-1)
+                //{
+                //    drIndex = -1;
+                //}
+                //drIndex += 1;
                 bool b;
                 //bool? b = (bool?)dr["Accepted"];
                 //check if field in column "Obstruction" contains the userName

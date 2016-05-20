@@ -19,12 +19,12 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Dynamo.Controls;
 
+
 namespace MyDataCollector
 {
     [IsVisibleInDynamoLibrary(false)]
     public static class MyDataCollectorClass
     {
-
         // later replace with an input
         public static string sharedFile; //the project csv file in DropBox        
         public static FileSystemWatcher CSVwatcher;
@@ -51,6 +51,7 @@ namespace MyDataCollector
         public static DynamoView dv;
         public static DynamoModel dm;
         public static bool firstRun = true;
+        public static bool extShare = false;
 
         public static void makeOldDataTable()
         {
@@ -210,7 +211,8 @@ namespace MyDataCollector
             oldLocalFile = dir + "\\old_" + fileName;
 
             //check if sharedFile exist; otherwise make one with default headers.
-            Functions.FileExist(_IfilePath);
+            if(!_IfilePath.Equals("")){ Functions.FileExist(_IfilePath); }
+            if (!_LfilePath.Equals("")) { Functions.FileExist(_LfilePath); }
             // the first time you run make a local copy of the shared csv file in DropBox;
             // and a copy from the local file to old_local file for comparing changes
             //in Grasshopper you copy the file from the DropBox every time...but no need, because OnChange.
@@ -229,6 +231,8 @@ namespace MyDataCollector
                 //csvFile = _IfilePath;
                 //create filesystemwatcher also only once
                 watch();
+                openCSV(sharedFile);
+                makeOldDataTable();
                 firstRun = false;
             } 
             userName = _owner;
@@ -259,8 +263,12 @@ namespace MyDataCollector
             }
             //The inputs of the pCOLLECTs must be added to the display of the csv file, changing the localDataTable property.
             //Populate localDataTable with the csv file
-            openCSV(sharedFile);
-            makeOldDataTable();
+            if (extShare)
+            {
+                openCSV(sharedFile);
+                makeOldDataTable();
+                extShare = false;
+            }            
             // Union the pCOLLECTs to localDataTable
             // Check if not only 1 pCOLLECT is connected otherwise you get an error
             List<string> pSHAREoutputList = new List<string>();
@@ -315,8 +323,8 @@ namespace MyDataCollector
             ImagesWatcher.Deleted += OnChanged;
             ImagesWatcher.EnableRaisingEvents = true;
         }
-        [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
-        public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        //[DllImport("user32.dll", EntryPoint = "FindWindowEx")]
+        //public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
@@ -326,7 +334,6 @@ namespace MyDataCollector
             //show the message on top of Dynamo. Because it comes from a different thread
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
             lastWriteTime = File.GetLastWriteTime(sharedFile);
-
             string msg = "Some changes occured in the shared information. I will start over... ";
             //if (AutoPlay)
             //{
@@ -364,8 +371,7 @@ namespace MyDataCollector
                      //UpdateCSVControl(null, EventArgs.Empty);
                      ImagesWatcher.EnableRaisingEvents = true;
                      CSVwatcher.EnableRaisingEvents = true;
-
-
+                     extShare = true;
                      //!!!try this
                      dm.ForceRun();
                  }));
@@ -404,6 +410,10 @@ namespace MyDataCollector
                 //}
                 //}
                 lastRead = lastWriteTime;
+            }
+            else
+            {
+                extShare = false;
             }
             // close the _CSVControl
 
