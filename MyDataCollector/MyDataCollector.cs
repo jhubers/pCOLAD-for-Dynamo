@@ -41,8 +41,8 @@ namespace MyDataCollector
         public static DataTable csvDataTable;
         public static DataTable oldDataTable;
         public static event EventHandler UpdateCSVControl = delegate { };
-        public static event EventHandler Message = delegate { };
-        private static DataTable mergedDataTable;
+        public static event EventHandler<TextArgs> Message = delegate { };
+        //private static DataTable mergedDataTable;
         public static bool AutoPlay;
         public static string testValue;
         public static DateTime lastRead = DateTime.MinValue;
@@ -90,7 +90,6 @@ namespace MyDataCollector
                 //the display is there already, no need to load csv files just use the stored version
                 localDataTable = csvDataTable.Copy();
             }
-
         }
         public static void addNewPararemeters()
         {
@@ -116,7 +115,20 @@ namespace MyDataCollector
                     DataRow newDataRow = newParamTable.Rows.Find(dr["Parameter"]);
                     if (newDataRow != null)
                     {
-                        newDataRow["Comments"] = dr["Comments"];
+                        //Add the new comment to the existing if it is not there yet.
+                        if (!dr["Comments"].ToString().Contains(newDataRow["Comments"].ToString()))
+                        //if (!newDataRow["Comments"].Equals(dr["Comments"]))
+                        {
+                            newDataRow.BeginEdit();
+                            newDataRow["Comments"] = new Item(dr["Comments"].ToString() + "/" + newDataRow["Comments"].ToString());
+                            newDataRow.EndEdit();
+                        }
+                        else
+                        {
+                            newDataRow["Comments"] = dr["Comments"];
+                        }
+                        //override the comments in pSHAREoutput with that from localDataTable
+                        //newDataRow["Comments"] = dr["Comments"];
                         //there is no Column Obstruction and Old Value in newParamTable
                         //newDataRow["Obstruction"] = dr["Obstruction"];
                         //newDataRow["Old Value"] = dr["Old Value"];
@@ -160,11 +172,11 @@ namespace MyDataCollector
                 DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
                 localDataTable = TblUnion;
                 //make a copy of localDataTable so you can return to it if changes are undone
-                if (!formPopulate) // && !sharedFile.Contains("History"))
-                {
-                    mergedDataTable = localDataTable.Copy();
-                    formPopulate = true;
-                }
+                //if (!formPopulate) // && !sharedFile.Contains("History"))
+                //{
+                //    mergedDataTable = localDataTable.Copy();
+                formPopulate = true;
+                //}
             }
             //add a property ImageList to Item with image paths from the folder with the
             //name of the parameter in the Images folder in the DropBox
@@ -192,7 +204,6 @@ namespace MyDataCollector
                 ni.ImageFileNameList = fileNames;
                 ni.ImageList = lmi;
                 localDataTable.Rows[i]["Images"] = ni;
-
             }
         }
 
@@ -202,6 +213,14 @@ namespace MyDataCollector
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
+            //check if owner input is connected
+            if (_owner == null)
+            {
+                Message(null, new TextArgs("Please connect the owner name to pSHARE..."));
+                List<string> m = new List<string>();
+                m.Add("Please connect the owner name to pSHARE...");
+                return m;
+            }
             //this runs every time you hit Run in Dynamo.
             sharedFile = _IfilePath;
             localFile = _LfilePath;
@@ -267,7 +286,6 @@ namespace MyDataCollector
             {
                 openCSV(sharedFile);
                 makeOldDataTable();
-                extShare = false;
             }            
             // Union the pCOLLECTs to localDataTable
             // Check if not only 1 pCOLLECT is connected otherwise you get an error
@@ -515,5 +533,26 @@ namespace MyDataCollector
     //        return true;
     //    }
     //}
+    public class TextArgs : EventArgs
+    {
+        #region Fields
+        private string szMessage;
+        #endregion Fields
+
+        #region Constructors
+        public TextArgs(string TextMessage)
+        {
+            szMessage = TextMessage;
+        }
+        #endregion Constructors
+
+        #region Properties
+        public string Message
+        {
+            get { return szMessage; }
+            set { szMessage = value; }
+        }
+        #endregion Properties
+    }
 }
 

@@ -95,11 +95,11 @@ namespace pCOLADnamespace
         public static NodeView nv;
         public static DynamoView dv;
 
-        public void MessageHandler(object o, EventArgs e)
+        public void MessageHandler(object o, TextArgs e)
         {
             dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
             {
-                MessageBox.Show(pSHARE.dv, e.ToString());
+                MessageBox.Show(pSHARE.dv, e.Message);
             }));
         }
         public void CSVUpdateHandler(object o, EventArgs e)
@@ -317,8 +317,8 @@ namespace pCOLADnamespace
                 it.SetMyChanged();
             }
             _dr["Obstruction"] = it;
-            DataRow MyPropDr = MyPropDataTable.Rows.Find(_dr["Parameter"]);
-            MyPropDr["Obstruction"] = it;
+            DataRow myPropDr = myPropDataTable.Rows.Find(_dr["Parameter"]);
+            myPropDr["Obstruction"] = it;
         }
 
         /// <summary>
@@ -418,10 +418,10 @@ namespace pCOLADnamespace
             var funcNode = AstFactory.BuildFunctionCall(t, inputAstNodes);
             //get the localDataTable in MyPropDataTable which is bound to the CSVControl
             //probably too soon to get the merged parameters in!!!
-            if (MyDataCollectorClass.localDataTable != null)
-            {
-                MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
-            }
+            //if (MyDataCollectorClass.localDataTable != null)
+            //{
+            //    MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
+            //}
             return new[]
             {
                 AstFactory.BuildAssignment(GetAstIdentifierForOutputIndex(0), funcNode)
@@ -681,9 +681,9 @@ namespace pCOLADnamespace
             if (On == false)
             {
                 //and show the *.csv file if the solution ran before
-                MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
-                if (MyPropDataTable != null)
+                if (MyDataCollectorClass.localDataTable != null)
                 {
+                    MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
                     On = true;
                     ShowCSV();
                 }
@@ -762,15 +762,25 @@ namespace pCOLADnamespace
             //    }
             //}
             string csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
-            //but if you put the date in myPropDataTable after this, oldCSV will always be different from csv            
-            if (oldCSV.Equals(csv))
+            //but if you put the date in myPropDataTable after this, oldCSV will always be different from csv
+            //so make comparison without the date. Maybe easier with tables. Check if this is not a new start.
+            bool theSame = false;
+            if (MyDataCollectorClass.oldDataTable.Rows.Count > 0)
             {
-                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                DataTable newTable = myPropDataTable.Copy();
+                DataTable oldTable = MyDataCollectorClass.oldDataTable.Copy();
+                newTable.Rows[0]["Date"] = new MyDataCollector.Item("check");
+                oldTable.Rows[0]["Date"] = new MyDataCollector.Item("check");
+                if (AreTablesTheSame(newTable, oldTable))
                 {
-                    MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
-                }));
+                    theSame = true;
+                    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    {
+                        MessageBox.Show(pSHARE.dv, "Nothing changed with last share ...");
+                    }));
+                }
             }
-            else
+            if(!theSame)
             {
                 try
                 {
@@ -900,7 +910,8 @@ namespace pCOLADnamespace
                     //close the CSVcontrol and recreate it so you get correct red backgrounds
                     ////ShowParams(OnOff);//closes the CSVControl and sets the On property to false
                     ////ShowParams(OnOff);//creates a new CSVControl and sets the On property to true
-                    oldCSV = csv;
+                    oldCSV = String.Copy(csv);
+                    ///oldCSV = csv;
                     MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
                     TempMessage tm = new TempMessage();
@@ -931,6 +942,22 @@ namespace pCOLADnamespace
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
 
             }
+        }
+        public static bool AreTablesTheSame(DataTable tbl1, DataTable tbl2)
+        {
+            if (tbl1.Rows.Count != tbl2.Rows.Count || tbl1.Columns.Count != tbl2.Columns.Count)
+                return false;
+
+
+            for (int i = 0; i < tbl1.Rows.Count; i++)
+            {
+                for (int c = 0; c < tbl1.Columns.Count; c++)
+                {
+                    if (!Equals(tbl1.Rows[i][c], tbl2.Rows[i][c]))
+                        return false;
+                }
+            }
+            return true;
         }
         private void History(object obj)
         {
@@ -970,8 +997,9 @@ namespace pCOLADnamespace
                     //Re-open csv is avoided because formPopulate is true, and maybe own parameters are changed
                     MyDataCollectorClass.openCSV(MyDataCollectorClass.localFile);
                     MyDataCollectorClass.addNewPararemeters();
-                    Compare();//updating MyPropDataTable is now inside Compare()
-                    //this.MyPropDataTable = MyDataCollectorClass.localDataTable;
+                    Compare();//updating MyPropDataTable is now inside Compare() but depending on somechange
+                    MyPropDataTable = MyDataCollectorClass.localDataTable;
+                    //CSVUpdateHandler(null, EventArgs.Empty);//contains Compare()
                     HistoryOn = false;
                 }
             }
@@ -1107,11 +1135,11 @@ namespace pCOLADnamespace
                         if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) == null)
                         {
                             localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
-                            someChange = true;
                         }
                         //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
                         SetColour(localDataRow, localDataColumn.ColumnName);
                     }
+                    someChange = true;
                 }
             }
 
@@ -1193,16 +1221,18 @@ namespace pCOLADnamespace
             //    }
             //    myPropDataTable = MyDataCollectorClass.localDataTable;
             #endregion
-            if (someChange)
-            {
-                MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
-            }
+            //if (someChange)
+            //{
+            MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
+            //in order to avoid reloading the csv files next time if it was not me that made the changes
+            MyDataCollectorClass.extShare = false;
+            //}
         }
         private void SetColour(DataRow dr, String dcn)
         {
             //if this row contains my own parameter data then set the background to green
             //except if the cell is obstruction (you don't obstruct your own value - just change it)
-            if (dcn.ToString().Equals("Date")|dcn.ToString().Equals("Author"))
+            if (dcn.ToString().Equals("Date") | dcn.ToString().Equals("Author"))
             {
                 return;
             }

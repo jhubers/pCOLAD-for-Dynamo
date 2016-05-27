@@ -81,12 +81,13 @@ namespace pCOLADnamespace
             // we'll use the PortData.ToolTip as header in the csv.file
             // In fact you should derive the NickNames and ToolTips from the dyn.file
             // Because if new attributes are added it is a pain to add them everytime
+            PortData comment = new PortData("C", "Comments");
             InPortData.Add(new PortData("P", "Parameter"));
             InPortData.Add(new PortData("V", "New Value"));
             InPortData.Add(new PortData("I", "Importance"));
-            InPortData.Add(new PortData("C", "Comments"));
+            InPortData.Add(comment);
             OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
-
+            
             //InPortData.Add(new PortData("O", "Owner"));
             // Nodes can have an arbitrary number of inputs and outputs.
             // If you want more ports, just create more PortData objects.
@@ -159,7 +160,8 @@ namespace pCOLADnamespace
             // the headings should become flexible in future
             // also use the creation of output similar to pSHARE and pPARAM
             string inputNames = "";
-            foreach (var item in InPortData)
+            
+            foreach (PortData item in InPortData)
             {
                 inputNames += item.ToolTipString + ";";
             }

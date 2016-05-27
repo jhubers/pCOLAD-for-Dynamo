@@ -222,7 +222,8 @@ namespace pCOLADnamespace
         private void CommentChanged(object sender, RoutedEventArgs e)
         {
             //this is triggerd by the LostFocus event in the datatemplate "commentCells"
-            //try to set the background of the TextBox to pink
+            //try to set the background of the TextBox to LightGreen
+            
             DataTable dt = MyDataCollector.MyDataCollectorClass.oldDataTable;
             TextBox tb = (TextBox)sender;
             DataGridRow dgr = FindUpVisualTree<DataGridRow>(tb);
@@ -232,7 +233,7 @@ namespace pCOLADnamespace
             String s = it.textValue;
             if (!tb.Text.Equals(s))
             {
-                tb.Background = Brushes.Pink;
+                tb.Background = Brushes.LightGreen;
             }
             else
             {
@@ -343,6 +344,13 @@ namespace pCOLADnamespace
             //check if fields Obstruction are different in localDataTable and oldDataTable
             //if so set the cell to red
 
+        }
+
+        private void pCOLADwindow_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            //You need a way to make a comment cell loose focus when you click
+            //somewhere else. 
+            pCOLADwindow.Share.Focus();
         }
     }
     static class ExtensionHelpers

@@ -4,14 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"         
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="pCOLADnamespace.CSVControl" 
+             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" 
+             x:Name="pCOLADwindow" 
+             x:Class="pCOLADnamespace.CSVControl" 
              xmlns:local="clr-namespace:pCOLADnamespace"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              mc:Ignorable="d" 
              SizeToContent="WidthAndHeight" 
              MaxHeight="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
-             Top="{DynamicResource {x:Static SystemParameters.VirtualScreenTopKey}}"
-             Title="pCOLAD" Closing="Window_Closing" 
+             Top="{DynamicResource {x:Static SystemParameters.VirtualScreenTopKey}}"    
+             Title="pCOLAD" Closing="Window_Closing" Focusable="True" MouseDown="pCOLADwindow_MouseDown"
     
              >
     <Window.Resources>
