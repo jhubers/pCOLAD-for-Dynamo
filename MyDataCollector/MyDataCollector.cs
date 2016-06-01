@@ -213,11 +213,19 @@ namespace MyDataCollector
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
+            //check if the paths are *.csv files
+            List<string> m = new List<string>();
+            if (!_IfilePath.EndsWith(".csv") | !_LfilePath.EndsWith(".csv"))
+            {
+                Message(null, new TextArgs("Please make sure the file paths end with '.csv'"));
+                m.Add("Please make sure the file paths end with '.csv'");
+                return m;
+
+            }
             //check if owner input is connected
             if (_owner == null)
             {
                 Message(null, new TextArgs("Please connect the owner name to pSHARE..."));
-                List<string> m = new List<string>();
                 m.Add("Please connect the owner name to pSHARE...");
                 return m;
             }

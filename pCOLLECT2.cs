@@ -172,17 +172,35 @@ namespace pCOLADnamespace
             inputNames = inputNames.Remove(inputNames.Length - 1);
             //var headings = AstFactory.BuildStringNode("Parameter;Value;Importance;Comments;Owner");
             var headings = AstFactory.BuildStringNode(inputNames);
+            var empty = AstFactory.BuildStringNode("");
+            var nul = AstFactory.BuildNullNode();
             var semiColon = AstFactory.BuildStringNode(";");
             foreach (AssociativeNode InputItem in inputAstNodes)
             {
                 List<AssociativeNode> arguments = new List<AssociativeNode>();
+                if (!InputItem.Equals(nul))
+                {
                 arguments.Add(InputItem);
                 arguments.Add(semiColon);
+                }
+                else
+                {
+                    arguments.Add(empty);
+                    arguments.Add(semiColon);
+                }
                 var funcNode = AstFactory.BuildFunctionCall("%add", arguments);
                 //don't add ';' to the last one
                 if (inputAstNodes.IndexOf(InputItem) == inputAstNodes.Count - 1)
                 {
-                    pCOLLECTtempList.Add(InputItem);
+                    if (!InputItem.Equals(nul))
+                    {
+                        pCOLLECTtempList.Add(InputItem);
+
+                    }
+                    else
+                    {
+                        pCOLLECTtempList.Add(empty);
+                    }
                 }
                 else
                 {

@@ -771,6 +771,8 @@ namespace pCOLADnamespace
                 DataTable oldTable = MyDataCollectorClass.oldDataTable.Copy();
                 newTable.Rows[0]["Date"] = new MyDataCollector.Item("check");
                 oldTable.Rows[0]["Date"] = new MyDataCollector.Item("check");
+                newTable.Rows[0]["Author"] = new MyDataCollector.Item("check");
+                oldTable.Rows[0]["Author"] = new MyDataCollector.Item("check");
                 if (AreTablesTheSame(newTable, oldTable))
                 {
                     theSame = true;

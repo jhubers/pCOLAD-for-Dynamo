@@ -228,6 +228,16 @@ namespace pCOLADnamespace
             TextBox tb = (TextBox)sender;
             DataGridRow dgr = FindUpVisualTree<DataGridRow>(tb);
             var i = dgr.GetIndex();
+            if (i<0)
+            {
+                //MessageBox.Show("Something wrong. The index of the row you try to change the comment is < 0...");
+                return;
+            }
+            if (dt.Rows.Count == 0)
+            {
+                tb.Background = Brushes.LightGreen;
+                return;
+            }
             DataRow dr = dt.Rows[i];
             MyDataCollector.Item it = dr["Comments"] as MyDataCollector.Item;
             String s = it.textValue;
