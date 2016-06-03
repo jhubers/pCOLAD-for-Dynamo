@@ -211,6 +211,48 @@ namespace MyDataCollector
         {
             return "Value = " + i.ToString();
         }
+        public static List<string> pCOLLECTinputs4(string _headers, string _P, string _V, string _I, string _C)
+        {
+            List<string> m = new List<string>();
+            m.Add(_headers);
+            m.Add(_P + ";" + _V + ";" + _I + ";" + _C);
+            return m;
+        }
+        public static List<string> pCOLLECTinputs5(string _headers, string _P, string _V, string _I, string _C, string _E1)
+        {
+            List<string> m = new List<string>();
+            m.Add(_headers);
+            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1);
+            return m;
+        }
+        public static List<string> pCOLLECTinputs6(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2)
+        {
+            List<string> m = new List<string>();
+            m.Add(_headers);
+            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2);
+            return m;
+        }
+        public static List<string> pCOLLECTinputs7(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2, string _E3)
+        {
+            List<string> m = new List<string>();
+            m.Add(_headers);
+            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3);
+            return m;
+        }
+        public static List<string> pCOLLECTinputs8(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2, string _E3, string _E4)
+        {
+            List<string> m = new List<string>();
+            m.Add(_headers);
+            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4);
+            return m;
+        }
+        public static List<string> pCOLLECTinputs9(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2, string _E3, string _E4, string _E5)
+        {
+            List<string> m = new List<string>();
+            m.Add(_headers);
+            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
+            return m;
+        }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
             //check if the paths are *.csv files
@@ -476,18 +518,18 @@ namespace MyDataCollector
         //}
         #endregion
         #region NewFunc
-        public static string pCOLLECToutputs(params string[] ss)
-        {
-            //pCOLLECT should output a list of ;-separated strings in the format:
-            //Parameter;New Value;Importance;Comments;Owner;Extra Attribute Name;Extra Attribute Name; ...etc
-            string pCOLLECToutput = "";
-            foreach (string s in ss)
-            {
-                pCOLLECToutput += s;
-                pCOLLECToutput += ";";
-            }
-            return pCOLLECToutput;
-        }
+        //public static string pCOLLECToutputs(params string[] ss)
+        //{
+        //    //pCOLLECT should output a list of ;-separated strings in the format:
+        //    //Parameter;New Value;Importance;Comments;Owner;Extra Attribute Name;Extra Attribute Name; ...etc
+        //    string pCOLLECToutput = "";
+        //    foreach (string s in ss)
+        //    {
+        //        pCOLLECToutput += s;
+        //        pCOLLECToutput += ";";
+        //    }
+        //    return pCOLLECToutput;
+        //}
 
         #endregion
     }

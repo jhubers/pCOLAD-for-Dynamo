@@ -60,7 +60,7 @@
             </summary>
             <param name="workspace"></param>
         </member>
-        <member name="M:pCOLADnamespace.pCOLLECT.BuildOutputAst(System.Collections.Generic.List{ProtoCore.AST.AssociativeAST.AssociativeNode})">
+        <member name="M:pCOLADnamespace.pCOLLECT.SerializeCore(System.Xml.XmlElement,Dynamo.Graph.SaveContext)">
             <summary>
             If this method is not overriden, Dynamo will, by default
             pass data through this node. But we wouldn't be here if
