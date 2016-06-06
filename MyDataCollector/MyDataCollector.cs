@@ -347,8 +347,16 @@ namespace MyDataCollector
                 //so, you can use the columns "Parameter" and "New Value"
                 for (int i = 0; i < localDataTable.Rows.Count; i++)
                 {
-                    pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
-                    pSHAREoutputList.Add(localDataTable.Rows[i]["New Value"].ToString());
+                    if (localDataTable.Rows[i]["Obstruction"].ToString() != "")
+                    {
+                        pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
+                        pSHAREoutputList.Add("Obstructed...");
+                    }
+                    else
+                    {
+                        pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
+                        pSHAREoutputList.Add(localDataTable.Rows[i]["New Value"].ToString());
+                    }
                 }
             }
             else
