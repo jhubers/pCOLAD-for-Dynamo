@@ -39,9 +39,9 @@ namespace pCOLADnamespace
     // The description will display in the tooltip
     // and in the help window for the node.
     [NodeDescription("Collects parameters and their attributes for pSHARE.")]
-    //[InPortNamesAttribute("P", "V", "I", "C")]
-    //[InPortDescriptionsAttribute("Parameter", "New Value", "Importance", "Comments")]
-    //[InPortTypesAttribute("string", "string", "string", "string")]
+    //[InPortNamesAttribute("P", "V", "I")]
+    //[InPortDescriptionsAttribute("Parameter", "New Value", "Importance")]
+    //[InPortTypesAttribute("string", "string", "string")]
     //[OutPortNamesAttribute("N")]
     //[OutPortDescriptionsAttribute("List of ;-seperated strings.")]
     //[OutPortTypesAttribute("string")]
@@ -83,11 +83,11 @@ namespace pCOLADnamespace
             // we'll use the PortData.ToolTip as header in the csv.file
             // In fact you should derive the NickNames and ToolTips from the dyn.file
             // Because if new attributes are added it is a pain to add them everytime
-            PortData comment = new PortData("C", "Comments");
+            //PortData comment = new PortData("C", "Comments");
             InPortData.Add(new PortData("P", "Parameter"));
             InPortData.Add(new PortData("V", "New Value"));
             InPortData.Add(new PortData("I", "Importance"));
-            InPortData.Add(comment);
+            //InPortData.Add(comment);
             OutPortData.Add(new PortData("N", "List of ;-seperated strings."));
 
             //InPortData.Add(new PortData("O", "Owner"));
@@ -297,7 +297,8 @@ namespace pCOLADnamespace
             var subNode = xmlDocument.CreateElement("ExtraInputs");
             foreach (var item in InPortData)
             {
-                if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
+                //if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
+                if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I")
                 {
                     continue;
                 }
@@ -325,7 +326,7 @@ namespace pCOLADnamespace
             }
         }
 
-        #region New BuildOutputAst (not working yet!!!)
+        #region New BuildOutputAst
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             //List<string> pCOLLECTinputsList = new List<string>();
@@ -336,7 +337,7 @@ namespace pCOLADnamespace
 
             //string[] pCOLLECTinputs = pCOLLECTinputsList.ToArray();
             //var exprList = AstFactory.BuildExprList(inputAstNodes);
-            string inputNames = "";
+            string inputNames = "Comments;";
             foreach (PortData item in InPortData)
             {
                 inputNames += item.ToolTipString + ";";
@@ -344,13 +345,16 @@ namespace pCOLADnamespace
             inputNames = inputNames.Remove(inputNames.Length - 1);
             List<AssociativeNode> pCOLLECTanlist = new List<AssociativeNode>();
             var headings = AstFactory.BuildStringNode(inputNames);
+            //because you removed Comments input from pCOLLECT add an empty node here.
+            var comments = AstFactory.BuildStringNode("");
             pCOLLECTanlist.Add(headings);
+            pCOLLECTanlist.Add(comments);
             pCOLLECTanlist.AddRange(inputAstNodes);
-            switch (InPorts.Count)
+            switch (pCOLLECTanlist.Count-1)
             {
                 case 4:
                     var t4 = new Func<string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs4);
-            funcNode = AstFactory.BuildFunctionCall(t4, pCOLLECTanlist);
+                    funcNode = AstFactory.BuildFunctionCall(t4, pCOLLECTanlist);
                     break;
                 case 5:
                     var t5 = new Func<string, string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs5);
