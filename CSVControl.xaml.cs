@@ -66,6 +66,7 @@ namespace pCOLADnamespace
                     //commentCol.CellStyle = (Style)FindResource("AvoidCellSelection");
                     e.Column = commentCol;
                     e.Column.Header = e.PropertyName;
+                    e.Column.HeaderTemplate = (DataTemplate)FindResource("commentHeader");
                     //e.Column.Width = 100;
                     break;
 

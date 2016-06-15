@@ -982,7 +982,7 @@ namespace pCOLADnamespace
                         {
                             MessageBox.Show(pSHARE.dv, "There is no History.csv file (yet). Please hit the Share button first ...");
                         }));
-                        //reset the buttons. Don't know how!!!
+                        //reset the buttons.
                         HistoryOn = false;
                         //History(HistoryCommand);
                         return;

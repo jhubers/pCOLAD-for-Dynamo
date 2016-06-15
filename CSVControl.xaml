@@ -141,6 +141,12 @@
             LostFocus="CommentChanged"
             />
         </DataTemplate>
+        <DataTemplate x:Key="commentHeader">
+            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Image Source= "/pCOLAD;component/Resources/Writing.bmp"/>
+                <TextBlock Text="Comments" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0,0,0"/>
+            </StackPanel>
+        </DataTemplate>
         <!--doesn't work-->
         <!--<DataTemplate x:Key="commentCells">
             <TextBox Text="{Binding TextValue, Mode=TwoWay}">

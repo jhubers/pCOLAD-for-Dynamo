@@ -255,6 +255,8 @@ namespace MyDataCollector
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
         {
+            //construct the file paths
+
             //check if the paths are *.csv files
             List<string> m = new List<string>();
             if (!_IfilePath.EndsWith(".csv") | !_LfilePath.EndsWith(".csv"))
@@ -347,8 +349,16 @@ namespace MyDataCollector
                 //so, you can use the columns "Parameter" and "New Value"
                 for (int i = 0; i < localDataTable.Rows.Count; i++)
                 {
+                    if (localDataTable.Rows[i]["Obstruction"].ToString() != "")
+                    {
+                        pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
+                        pSHAREoutputList.Add("Obstructed...");
+                    }
+                    else
+                    {
                     pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
                     pSHAREoutputList.Add(localDataTable.Rows[i]["New Value"].ToString());
+                    }
                 }
             }
             else
