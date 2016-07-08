@@ -253,10 +253,11 @@ namespace MyDataCollector
             m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
             return m;
         }
-        public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _IfilePath, string _LfilePath, string _owner)
+        public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _ProjName, string _IdirPath, string _LdirPath, string _owner)
         {
             //construct the file paths
-
+            string _IfilePath = _IdirPath + "\\" + _ProjName + ".csv";
+            string _LfilePath = _LdirPath + "\\" + _owner + "_" + _ProjName + ".csv";
             //check if the paths are *.csv files
             List<string> m = new List<string>();
             if (!_IfilePath.EndsWith(".csv") | !_LfilePath.EndsWith(".csv"))

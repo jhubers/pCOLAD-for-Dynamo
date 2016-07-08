@@ -365,8 +365,9 @@ namespace pCOLADnamespace
             MyDataCollectorClass.UpdateCSVControl += CSVUpdateHandler;
             MyDataCollectorClass.Message += MessageHandler;
             InPortData.Add(new PortData("N", "Input (a List.CreateList) of pCOLLECT output(s)"));
-            InPortData.Add(new PortData("I", "Input a FilePath for the shared csv files."));
-            InPortData.Add(new PortData("L", "Input a FilePath for the local copy of the csv file."));
+            InPortData.Add(new PortData("PN", "Input a project name (Code Bolck)"));
+            InPortData.Add(new PortData("I", "Input a Directory Path for the shared csv files."));
+            InPortData.Add(new PortData("L", "Input a Directory Path for the local copy of the csv file."));
             InPortData.Add(new PortData("U", "Input a the user namen (Code Block)."));
             OutPortData.Add(new PortData("O", "Output of parameter name and value on next line; two by two."));
             RegisterAllPorts();
@@ -410,7 +411,7 @@ namespace pCOLADnamespace
             ////    Console.WriteLine(s);
             ////}
 
-            var t = new Func<List<List<string>>, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
+            var t = new Func<List<List<string>>, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
             //after running the solution.
             //string testj = MyDataCollectorClass.sharedFile;
