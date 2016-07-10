@@ -1,23 +1,14 @@
-﻿using Dynamo.Controls;
-using Dynamo.ViewModels;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Interactivity;
 using System.Windows.Controls.Primitives;
+using System.IO;
 
 namespace pCOLADnamespace
 {
@@ -158,14 +149,6 @@ namespace pCOLADnamespace
 
                 cb.IsChecked = b;
             }
-        }
-        private void Image_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            var im = (System.Windows.Controls.Image)sender;
-            //if (e.ClickCount == 2)
-            FullScreenImage myFullScreenImage = new FullScreenImage();
-            myFullScreenImage.fullImage.Source = im.Source;
-            myFullScreenImage.Show();
         }
         private void imageBorder_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -360,8 +343,30 @@ namespace pCOLADnamespace
         private void pCOLADwindow_MouseDown(object sender, MouseButtonEventArgs e)
         {
             //You need a way to make a comment cell loose focus when you click
-            //somewhere else. 
+            //somewhere else. E.g. the Share button.
             pCOLADwindow.Share.Focus();
+        }
+
+        private void myImage_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var im = (System.Windows.Controls.Image)sender;
+            //if (e.ClickCount == 2)
+            //string appFolderPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().CodeBase);//gave crash in Grasshopper
+            BitmapImage bi = new BitmapImage();
+            bi = (BitmapImage)im.Source;
+            string imagePath = ((FileStream)bi.StreamSource).Name;
+            pSHARE.selectedImagePath = imagePath;
+            pSHARE.searchFolder = Path.GetDirectoryName(imagePath);
+        }
+
+        private void myImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var im = (System.Windows.Controls.Image)sender;
+            //if (e.ClickCount == 2)
+            FullScreenImage myFullScreenImage = new FullScreenImage();
+            myFullScreenImage.fullImage.Source = im.Source;
+            myFullScreenImage.Show();
+
         }
     }
     static class ExtensionHelpers

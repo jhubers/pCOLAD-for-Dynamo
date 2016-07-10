@@ -14,8 +14,9 @@ namespace pCOLADnamespace
         public bool Canceled { get; set; }
         private void OK1_Click(object sender, RoutedEventArgs e)
         {
-            Canceled = false;
-            Close();
+            //Canceled = false;
+            //Close();
+            this.DialogResult = true;
         }
 
         private void Cancel1_Click(object sender, RoutedEventArgs e)

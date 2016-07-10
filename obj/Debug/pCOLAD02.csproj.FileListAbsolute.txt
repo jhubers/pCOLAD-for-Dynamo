@@ -21,3 +21,5 @@ D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\FullScreenImage.baml
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLAD.g.resources
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLAD.dll
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLAD.pdb
+D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLADnamespace.Properties.Resources.resources
+D:\Data\Research\Dynamo\pCOLAD for Dynamo\obj\Debug\pCOLAD02.csproj.GenerateResource.Cache

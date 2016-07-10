@@ -120,6 +120,7 @@
     <Compile Include="ImageTemplateSelector.cs" />
     <Compile Include="MyDataGridTemplateColumn.cs" />
     <Compile Include="Converters\ObjectToBackgroundConverter.cs" />
+    <Compile Include="Converters\PathToCachedImageConverter.cs" />
     <Compile Include="pCOLLECT2.cs" />
     <Compile Include="pCOLLECTcontrol.xaml.cs">
       <DependentUpon>pCOLLECTcontrol.xaml</DependentUpon>
@@ -127,6 +128,11 @@
     <Compile Include="pPARAM.cs" />
     <Compile Include="pPARAMcontrol.xaml.cs">
       <DependentUpon>pPARAMcontrol.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="pSHAREcontrol.xaml.cs">
       <DependentUpon>pSHAREcontrol.xaml</DependentUpon>
@@ -168,7 +174,6 @@
     <Folder Include="DynamoPackages\pCOLADpackage\bin\" />
     <Folder Include="DynamoPackages\pCOLADpackage\dyf\" />
     <Folder Include="DynamoPackages\pCOLADpackage\extra\" />
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="OnOff_Images\Neutral.png" />
@@ -189,6 +194,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Writing.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\pCOLADdummy.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -29,6 +29,7 @@
         <local:DataRowToFullPathListConverter x:Key="myDataRowToListConverter"/>
         <local:ObjectToStrikeThroughConverter x:Key="myObjectToStrikeThroughConverter"/>
         <local:ImageTemplateSelector x:Key="myImageTemplateSelector"/>
+        <local:PathToCachedImageConverter x:Key="myPathToCachedImageConverter"/>
 
         <!--<local:BindingProxy x:Key="proxy" Data="{Binding}" />-->
         <Style x:Key="ButtonFocusVisual">
@@ -195,8 +196,17 @@
                                                 MouseLeave="imageBorder_MouseLeave"
                                                 MouseEnter="imageBorder_MouseEnter" Height="16">
                             <!-- try RenderOptions.BitmapScalingMode="LowQuality" if it is too slow -->
-                            <Image x:Name="myImage" Source="{Binding MyImagePath}"
-                                               MouseUp="Image_MouseUp"  HorizontalAlignment="Center">
+                            <Image x:Name="myImage" Source="{Binding MyImagePath, Converter={StaticResource myPathToCachedImageConverter}}"
+                                               MouseLeftButtonUp="myImage_MouseLeftButtonUp" MouseRightButtonUp="myImage_MouseRightButtonUp" HorizontalAlignment="Center"
+                                Tag="{Binding ElementName=pCOLADwindow, Path=DataContext}" >
+                                <Image.ContextMenu>
+                                    <ContextMenu x:Name="myContextMenu" DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem Header="Copy..." Command="{Binding menuActionCopy}"/>
+                                        <MenuItem Header="Add from clipboard..." Command="{Binding menuActionAddFromClipBoard}"/>
+                                        <MenuItem Header="Delete..." Command="{Binding menuActionDelete}" />
+                                    </ContextMenu>
+                                </Image.ContextMenu>
+
                             </Image>
                         </Border>
                     </DataTemplate>
