@@ -1404,14 +1404,16 @@ namespace pCOLADnamespace
             //but if from the start there is no searchfolder, then files is empty
             if (files.Contains(fp))//it doesn't if user chose Cancel all the time
             {
-                for (int p = 0; p < ImageList.Count; p++)
+                for (int p = i0.ImageList.Count -1; p >=0 ; p--)
                 //why? To find the right image with selectyedImagePath.
                 //Why not show a file selector, so you can delete several files at once and use common shortcuts
                 //to permanently delete or put in recycle bin? Because in History you would like to be able to find
                 //the files and most of the time you only want to delete 1 file. It should be just one click.
                 {
-                    if (ImageList[p].MyImagePath.Equals(fp))
+                    if (i0.ImageList[p].MyImagePath.Equals(fp))
                     {
+                        //for some reason the ImageList order reverses later, so get the right MyImage here
+                        //MyImage toBeDeleted = ImageList[p];
                         //find this Item in PropDataTable
                         int ri = 0;
                         for (int i = 0; i < MyPropDataTable.Rows.Count; i++)
@@ -1419,7 +1421,7 @@ namespace pCOLADnamespace
                             if (MyPropDataTable.Rows[i][0] == i0)
                             {
                                 ri = i;
-                                continue;
+                                break;
                             }
                         }
                         //File.Delete(fp);//this peremanently deletes the file 
@@ -1431,6 +1433,7 @@ namespace pCOLADnamespace
                         string movedFp = fp.Replace("Images", "Deleted Images");
                         //int n = 1;
                         while (File.Exists(movedFp))
+                        #region addNumberToFile
                         {
                             //just add '(nr)' to filepath. No need to bather the user with dialogues. Also useful for History
                             string delDir = Path.GetDirectoryName(movedFp) + "\\";
@@ -1461,7 +1464,8 @@ namespace pCOLADnamespace
                             {
                                 movedFp = delDir + fn + "(1)" + ext;
                             }
-                        }
+                        } 
+                        #endregion
                         //if this was the last file in the folder, you have to put pCOLADdummy.bmp back in
                         if (files.Count == 1)
                         {
@@ -1471,12 +1475,9 @@ namespace pCOLADnamespace
                         else
                         {
                             //change the imageList property of this Item
-                            // SOMHOW THE IMAGELIST INVERTS!!!
-
-
-
-
+                            // SOMEHOW THE IMAGELIST INVERTS!!!
                             i0.ImageList.RemoveAt(p);
+                            //i0.ImageList.Remove(toBeDeleted);
                         }
                         //change the PropDataTable so it updates in the xaml control
                         MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier                            
