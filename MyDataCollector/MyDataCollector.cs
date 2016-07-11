@@ -191,6 +191,12 @@ namespace MyDataCollector
                 //next function returns a list of strings with only the path names of files
                 //with extension in filters
                 List<string> files = Functions.GetFilesFrom(imageFolderPath, filters, false);
+                if (files.Count==0)
+                {
+                    //put a pCOLADdummy.bmp button like image in the ImageList
+                    MyImage dummy = Functions.dummyFunction();
+                    lmi.Add(dummy);
+                }
                 List<string> fileNames = new List<string>();
                 foreach (string st in files)
                 {

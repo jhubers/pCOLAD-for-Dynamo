@@ -8,3 +8,5 @@ D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\MyDataCollec
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\TempMessageXaml.g.cs
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\TempMessageXaml.baml
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\MyDataCollector.Properties.Resources.resources
+D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\MyDataCollector.csproj.GenerateResource.Cache

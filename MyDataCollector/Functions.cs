@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
@@ -388,5 +390,18 @@ namespace MyDataCollector
             }
             return filesFound;
         }
+        public static MyImage dummyFunction()
+        {
+            //in case of Grasshopper next line appFolderPath = C:\Users\jhubers\AppData\Roaming\Grasshopper\Libraries
+            string appFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string path = appFolderPath + "\\pCOLADdummy.bmp";
+            if (!File.Exists(path))
+            {
+                Bitmap b = MyDataCollector.Properties.Resources.pCOLADdummy;
+                b.Save(path);
+            }
+            return new MyImage(path);
+        }
+
     }
 }

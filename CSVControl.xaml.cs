@@ -207,12 +207,12 @@ namespace pCOLADnamespace
         {
             //this is triggerd by the LostFocus event in the datatemplate "commentCells"
             //try to set the background of the TextBox to LightGreen
-            
+
             DataTable dt = MyDataCollector.MyDataCollectorClass.oldDataTable;
             TextBox tb = (TextBox)sender;
             DataGridRow dgr = FindUpVisualTree<DataGridRow>(tb);
             var i = dgr.GetIndex();
-            if (i<0)
+            if (i < 0)
             {
                 //MessageBox.Show("Something wrong. The index of the row you try to change the comment is < 0...");
                 return;
@@ -355,8 +355,18 @@ namespace pCOLADnamespace
             BitmapImage bi = new BitmapImage();
             bi = (BitmapImage)im.Source;
             string imagePath = ((FileStream)bi.StreamSource).Name;
-            pSHARE.selectedImagePath = imagePath;
-            pSHARE.searchFolder = Path.GetDirectoryName(imagePath);
+            //if the pCOLADdummy.bmp button like image is selected you get the wrong path
+            string fileName = Path.GetFileName(imagePath);
+            if (!fileName.Equals("pCOLADdummy.bmp"))
+            {
+                pSHARE.selectedImagePath = imagePath;
+                pSHARE.searchFolder = Path.GetDirectoryName(imagePath);
+            }
+            else
+            {
+                pSHARE.selectedImagePath = "";
+                pSHARE.searchFolder = "empty";
+            }
         }
 
         private void myImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

@@ -505,46 +505,82 @@ namespace pCOLADnamespace
             string a1 = "";
             D1.Topmost = true;
             D1.Question.Content = "Please give the one or two charactors of the input you want to remove...";
-            D1.Show();
+            //D1.Show();
             D1.Answer.Focus();
             D1.Answer.SelectAll();
+            var result = D1.ShowDialog();
             //wait for the answer and store it or cancel
-            D1.Closing += (sender, e) =>
+            if ((bool)result)
+            {
+                a1 = D1.Answer.Text;
+            }
+            if (a1 != "")
+            {
+                //check if it is not a default input
+                if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
                 {
-                    var d = sender as Dialogue1;
-                    if (d.Canceled == false)
+                    pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
-                        a1 = D1.Answer.Text;
-                        //check if it is not a default input
-                        if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
-                        {
-                            pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                            {
-                                MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
-                                return;
-                            }));
-                        }
-                        List<string> inportDataNames = new List<string>();
-                        foreach (PortData item in InPortData)
-                        {
-                            inportDataNames.Add(item.NickName);
-                        }
-                        if (inportDataNames.Contains(a1))
-                        {
-                            int index = inportDataNames.IndexOf(a1);
-                            InPortData.RemoveAt(index);
-                            RegisterAllPorts();
-                        }
-                        else
-                        {
-                            pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                            {
-                                MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
-                            }));
-                        }
-                    }
+                        MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
+                        return;
+                    }));
+                }
+                List<string> inportDataNames = new List<string>();
+                foreach (PortData item in InPortData)
+                {
+                    inportDataNames.Add(item.NickName);
+                }
+                if (inportDataNames.Contains(a1))
+                {
+                    int index = inportDataNames.IndexOf(a1);
+                    InPortData.RemoveAt(index);
+                    RegisterAllPorts();
+                }
+                else
+                {
+                    pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    {
+                        MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
+                    }));
+                }
+            }
+            //wait for the answer and store it or cancel
+            //D1.Closing += (sender, e) =>
+            //    {
+            //        var d = sender as Dialogue1;
+            //        if (d.Canceled == false)
+            //        {
+            //            a1 = D1.Answer.Text;
+            //            //check if it is not a default input
+            //            if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
+            //            {
+            //                pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+            //                {
+            //                    MessageBox.Show(pSHARE.dv, "Can't delete default inputs...");
+            //                    return;
+            //                }));
+            //            }
+            //            List<string> inportDataNames = new List<string>();
+            //            foreach (PortData item in InPortData)
+            //            {
+            //                inportDataNames.Add(item.NickName);
+            //            }
+            //            if (inportDataNames.Contains(a1))
+            //            {
+            //                int index = inportDataNames.IndexOf(a1);
+            //                InPortData.RemoveAt(index);
+            //                RegisterAllPorts();
+            //            }
+            //            else
+            //            {
+            //                pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+            //                {
+            //                    MessageBox.Show(pSHARE.dv, "That input does not exist. Please try again...");
+            //                }));
+            //            }
+            //        }
 
-                };
+            //    };
         }
         private void AddInput(object obj)
         {
@@ -562,67 +598,152 @@ namespace pCOLADnamespace
             //the input indicator is what appears on the pCOLLECT input as node
             //inorder to make it appear next time you run Dynamo, it must be stored somewhere
             D1.Question.Content = "Please give one or two charactors as input indicator for this attribute...";
-            D1.Show();
+            //D1.Show();
             D1.Answer.Focus();
             D1.Answer.SelectAll();
+            var result = D1.ShowDialog();
             //wait for the answer and store it or cancel
-            D1.Closing += (sender, e) =>
-                {
-                    var d = sender as Dialogue1;
-                    if (d.Canceled == false)
-                    {
-                        a1 = D1.Answer.Text;
-                        //check if the attribute indicator is unique
-                        List<string> inportDataNames = new List<string>();
-                        foreach (PortData item in InPortData)
-                        {
-                            inportDataNames.Add(item.NickName);
-                        }
-                        if (!inportDataNames.Contains(a1))
-                        {
-                            Dialogue1 D2 = new Dialogue1();
-                            D2.Owner = pSHARE.dv;
-                            string a2 = "";
-                            D2.Topmost = true;
-                            D2.Question.Content = "Please give the name for this attribute...";
-                            //wait for the answer and store it or cancel
-                            D2.Show();
-                            D2.Answer.Focus();
-                            D2.Answer.SelectAll();
-                            D2.Closing += (sender2, e2) =>
-                            {
-                                var d2 = sender2 as Dialogue1;
-                                if (d2.Canceled == false)
-                                {
-                                    a2 = D2.Answer.Text;
-                                    //check if attribute name is unique
-                                    List<string> inportDataToolTips = new List<string>();
-                                    foreach (PortData item2 in InPortData)
-                                    {
-                                        inportDataToolTips.Add(item2.ToolTipString);
-                                    }
-                                    if (!inportDataToolTips.Contains(a2))
-                                    {
-                                        InPortData.Add(new PortData(a1, a2));
-                                        RegisterAllPorts();
-                                    }
-                                    else
-                                    {
-                                        pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                                        {
-                                            MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
-                                        }));
-                                    }
+            if ((bool)result)
+            {
+                a1 = D1.Answer.Text;
+            }
+            if (a1 != "")
+            {
 
-                                }
-                            };
+                //check if the attribute indicator is unique
+                List<string> inportDataNames = new List<string>();
+                foreach (PortData item in InPortData)
+                {
+                    inportDataNames.Add(item.NickName);
+                }
+                if (!inportDataNames.Contains(a1))
+                {
+                    Dialogue1 D2 = new Dialogue1();
+                    D2.Owner = pSHARE.dv;
+                    string a2 = "";
+                    D2.Topmost = true;
+                    D2.Question.Content = "Please give the name for this attribute...";
+                    //wait for the answer and store it or cancel
+                    //D2.Show();
+                    D2.Answer.Focus();
+                    D2.Answer.SelectAll();
+                    var result2 = D2.ShowDialog();
+                    //wait for the answer and store it or cancel
+                    if ((bool)result2)
+                    {
+                        a2 = D2.Answer.Text;
+                    }
+                    if (a2 != "")
+                    {
+                        //check if attribute name is unique
+                        List<string> inportDataToolTips = new List<string>();
+                        foreach (PortData item2 in InPortData)
+                        {
+                            inportDataToolTips.Add(item2.ToolTipString);
+                        }
+                        if (!inportDataToolTips.Contains(a2))
+                        {
+                            InPortData.Add(new PortData(a1, a2));
+                            RegisterAllPorts();
                         }
                         else
                         {
-                            MessageBox.Show(pSHARE.dv, "This attribute indicator already exist. Please try again...");
+                            pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                            {
+                                MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
+                            }));
                         }
                     }
-                };
+                    //    D2.Closing += (sender2, e2) =>
+                    //{
+                    //    var d2 = sender2 as Dialogue1;
+                    //    if (d2.Canceled == false)
+                    //    {
+                    //        a2 = D2.Answer.Text;
+                    //        //check if attribute name is unique
+                    //        List<string> inportDataToolTips = new List<string>();
+                    //        foreach (PortData item2 in InPortData)
+                    //        {
+                    //            inportDataToolTips.Add(item2.ToolTipString);
+                    //        }
+                    //        if (!inportDataToolTips.Contains(a2))
+                    //        {
+                    //            InPortData.Add(new PortData(a1, a2));
+                    //            RegisterAllPorts();
+                    //        }
+                    //        else
+                    //        {
+                    //            pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    //            {
+                    //                MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
+                    //            }));
+                    //        }
+
+                    //    }
+                    //};
+                }
+                else
+                {
+                    MessageBox.Show(pSHARE.dv, "This attribute indicator already exist. Please try again...");
+                }
+            }
+                //D1.Closing += (sender, e) =>
+                //{
+                //    var d = sender as Dialogue1;
+                //    if (d.Canceled == false)
+                //    {
+                //        a1 = D1.Answer.Text;
+                //        //check if the attribute indicator is unique
+                //        List<string> inportDataNames = new List<string>();
+                //        foreach (PortData item in InPortData)
+                //        {
+                //            inportDataNames.Add(item.NickName);
+                //        }
+                //        if (!inportDataNames.Contains(a1))
+                //        {
+                //            Dialogue1 D2 = new Dialogue1();
+                //            D2.Owner = pSHARE.dv;
+                //            string a2 = "";
+                //            D2.Topmost = true;
+                //            D2.Question.Content = "Please give the name for this attribute...";
+                //            //wait for the answer and store it or cancel
+                //            D2.Show();
+                //            D2.Answer.Focus();
+                //            D2.Answer.SelectAll();
+                //            D2.Closing += (sender2, e2) =>
+                //            {
+                //                var d2 = sender2 as Dialogue1;
+                //                if (d2.Canceled == false)
+                //                {
+                //                    a2 = D2.Answer.Text;
+                //                    //check if attribute name is unique
+                //                    List<string> inportDataToolTips = new List<string>();
+                //                    foreach (PortData item2 in InPortData)
+                //                    {
+                //                        inportDataToolTips.Add(item2.ToolTipString);
+                //                    }
+                //                    if (!inportDataToolTips.Contains(a2))
+                //                    {
+                //                        InPortData.Add(new PortData(a1, a2));
+                //                        RegisterAllPorts();
+                //                    }
+                //                    else
+                //                    {
+                //                        pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                //                        {
+                //                            MessageBox.Show(pSHARE.dv, "This attribute already exist. Please try again...");
+                //                        }));
+                //                    }
+
+                //                }
+                //            };
+                //        }
+                //        else
+                //        {
+                //            MessageBox.Show(pSHARE.dv, "This attribute indicator already exist. Please try again...");
+                //        }
+                //    }
+                //};
 
 
         }

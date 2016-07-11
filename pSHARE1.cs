@@ -1052,18 +1052,6 @@ namespace pCOLADnamespace
                 }
             }
         }
-        public MyImage dummyFunction()
-        {
-            //in case of Grasshopper next line appFolderPath = C:\Users\jhubers\AppData\Roaming\Grasshopper\Libraries
-            string appFolderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string path = appFolderPath + "\\pCOLADdummy.bmp";
-            if (!File.Exists(path))
-            {
-                Bitmap b = pCOLADnamespace.Properties.Resources.pCOLADdummy;
-                b.Save(path);
-            }
-            return new MyImage(path);
-        }
 
         private void _menuActionCopy(object obj)
         {
@@ -1074,7 +1062,7 @@ namespace pCOLADnamespace
             List<MyImage> ImageList = new List<MyImage>();
             DataRow r0 = MyPropDataTable.Rows[RowIndex];
             Item i0 = (Item)r0["Images"];
-            MyImage dummy = dummyFunction();
+            MyImage dummy = Functions.dummyFunction();
 
             List<string> sourcePaths;
             OpenFileDialog fd = new OpenFileDialog();
@@ -1218,7 +1206,7 @@ namespace pCOLADnamespace
                 }
             }
             //if there is a dummy in the first row, remove it.
-            if (i0.ImageList[0] == dummy)
+            if (i0.ImageList[0].myImageFileName == dummy.myImageFileName)
             {
                 i0.ImageList.RemoveAt(0);
             }
@@ -1234,8 +1222,11 @@ namespace pCOLADnamespace
             string[] filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp" };
             List<MyImage> ImageList = new List<MyImage>();
             DataRow r0 = MyPropDataTable.Rows[RowIndex];
+            string parName = r0["Parameter"].ToString();
+            string dir = Path.GetDirectoryName(MyDataCollectorClass.sharedFile);
+            searchFolder = dir + "\\Images\\" + parName;
             Item i0 = (Item)r0["Images"];
-            MyImage dummy = dummyFunction();
+            MyImage dummy = Functions.dummyFunction();
 
             if (searchFolder.Equals("empty"))
             {
@@ -1284,7 +1275,11 @@ namespace pCOLADnamespace
                     if (fp == "")
                     {
                         //searchFolder = "empty";//this is risky in pCOLAD it should be set to the default
-                        searchFolder = Path.GetDirectoryName(selectedImagePath);
+                        //unless it is the pCOLADdummy.bmp button like image. In fact you want the Parameter name etc.
+                        //string parName = r0["Parameter"].ToString();
+                        //string dir = Path.GetDirectoryName(MyDataCollectorClass.sharedFile);
+                        searchFolder = dir + "\\Images\\" + parName;
+                        //searchFolder = Path.GetDirectoryName(selectedImagePath);
                         return;
                     }
                     //if the overwriting a file is chosen, you get an IO error because the file is in use in the display
@@ -1336,7 +1331,7 @@ namespace pCOLADnamespace
                         {
                             i0.ImageList.Add(new MyImage(fp));
                             //if there is a dummy in the first row, remove it.
-                            if (i0.ImageList[0] == dummy)
+                            if (i0.ImageList[0].myImageFileName == dummy.myImageFileName)
                             {
                                 i0.ImageList.RemoveAt(0);
                             }
@@ -1367,7 +1362,7 @@ namespace pCOLADnamespace
             List<MyImage> ImageList = new List<MyImage>();
             DataRow r0 = MyPropDataTable.Rows[RowIndex];
             Item i0 = (Item)r0["Images"];
-            MyImage dummy = dummyFunction();
+            MyImage dummy = Functions.dummyFunction();
 
             string fp = selectedImagePath;//is set in code behind
             if (searchFolder.Equals("empty"))//then fp is the buttonlike immage. Abort.
@@ -1412,8 +1407,6 @@ namespace pCOLADnamespace
                 {
                     if (i0.ImageList[p].MyImagePath.Equals(fp))
                     {
-                        //for some reason the ImageList order reverses later, so get the right MyImage here
-                        //MyImage toBeDeleted = ImageList[p];
                         //find this Item in PropDataTable
                         int ri = 0;
                         for (int i = 0; i < MyPropDataTable.Rows.Count; i++)
@@ -1469,15 +1462,13 @@ namespace pCOLADnamespace
                         //if this was the last file in the folder, you have to put pCOLADdummy.bmp back in
                         if (files.Count == 1)
                         {
-                            dummy = dummyFunction();
+                            dummy = Functions.dummyFunction();
                             i0.ImageList[0] = dummy;
                         }
                         else
                         {
                             //change the imageList property of this Item
-                            // SOMEHOW THE IMAGELIST INVERTS!!!
                             i0.ImageList.RemoveAt(p);
-                            //i0.ImageList.Remove(toBeDeleted);
                         }
                         //change the PropDataTable so it updates in the xaml control
                         MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier                            
