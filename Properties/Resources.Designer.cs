@@ -59,15 +59,5 @@ namespace pCOLADnamespace.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap pCOLADdummy {
-            get {
-                object obj = ResourceManager.GetObject("pCOLADdummy", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

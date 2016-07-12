@@ -175,11 +175,6 @@
               resource lookups using this strongly typed resource class.
             </summary>
         </member>
-        <member name="P:pCOLADnamespace.Properties.Resources.pCOLADdummy">
-            <summary>
-              Looks up a localized resource of type System.Drawing.Bitmap.
-            </summary>
-        </member>
         <member name="T:pCOLADnamespace.pSHAREcontrol">
             <summary>
             Interaction logic for pSHAREcontrol.xaml
