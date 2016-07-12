@@ -353,27 +353,27 @@ namespace pCOLADnamespace
             switch (pCOLLECTanlist.Count-1)
             {
                 case 4:
-                    var t4 = new Func<string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs4);
+                    var t4 = new Func<string, string, string, object, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs4);
                     funcNode = AstFactory.BuildFunctionCall(t4, pCOLLECTanlist);
                     break;
                 case 5:
-                    var t5 = new Func<string, string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs5);
+                    var t5 = new Func<string, string, string, object, string, object, List<string>>(MyDataCollectorClass.pCOLLECTinputs5);
                     funcNode = AstFactory.BuildFunctionCall(t5, pCOLLECTanlist);
                     break;
                 case 6:
-                    var t6 = new Func<string, string, string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs6);
+                    var t6 = new Func<string, string, string, object, string, object, object, List<string>>(MyDataCollectorClass.pCOLLECTinputs6);
                     funcNode = AstFactory.BuildFunctionCall(t6, pCOLLECTanlist);
                     break;
                 case 7:
-                    var t7 = new Func<string, string, string, string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs7);
+                    var t7 = new Func<string, string, string, object, string, object, object, object, List<string>>(MyDataCollectorClass.pCOLLECTinputs7);
                     funcNode = AstFactory.BuildFunctionCall(t7, pCOLLECTanlist);
                     break;
                 case 8:
-                    var t8 = new Func<string, string, string, string, string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs8);
+                    var t8 = new Func<string, string, string, object, string, object, object, object, object, List<string>>(MyDataCollectorClass.pCOLLECTinputs8);
                     funcNode = AstFactory.BuildFunctionCall(t8, pCOLLECTanlist);
                     break;
                 case 9:
-                    var t9 = new Func<string, string, string, string, string, string, string, string, string, string, List<string>>(MyDataCollectorClass.pCOLLECTinputs9);
+                    var t9 = new Func<string, string, string, object, string, object, object, object, object, object, List<string>>(MyDataCollectorClass.pCOLLECTinputs9);
                     funcNode = AstFactory.BuildFunctionCall(t9, pCOLLECTanlist);
                     break;
             }

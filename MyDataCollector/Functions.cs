@@ -402,6 +402,16 @@ namespace MyDataCollector
             }
             return new MyImage(path);
         }
-
+        public static string ConvertToString(object obj)
+        {
+            if (obj !=null)
+            {
+                return obj.ToString();
+            }
+            else
+            {
+                return "";
+            }
+        }
     }
 }

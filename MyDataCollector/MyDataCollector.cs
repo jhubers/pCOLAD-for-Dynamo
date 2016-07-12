@@ -217,46 +217,67 @@ namespace MyDataCollector
         {
             return "Value = " + i.ToString();
         }
-        public static List<string> pCOLLECTinputs4(string _headers, string _P, string _V, string _I, string _C)
+        public static List<string> pCOLLECTinputs4(string _headers, string _C, string _P, object _Vo, string _I)
         {
+            string _V = Functions.ConvertToString(_Vo);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_P + ";" + _V + ";" + _I + ";" + _C);
+            m.Add(_C + ";"+_P + ";" + _V + ";" + _I);
             return m;
         }
-        public static List<string> pCOLLECTinputs5(string _headers, string _P, string _V, string _I, string _C, string _E1)
+        public static List<string> pCOLLECTinputs5(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1)
         {
+            string _V = Functions.ConvertToString(_Vo);
+            string _E1 = Functions.ConvertToString(_Eo1);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1);
+            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1);
             return m;
         }
-        public static List<string> pCOLLECTinputs6(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2)
+        public static List<string> pCOLLECTinputs6(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2)
         {
+            string _V = Functions.ConvertToString(_Vo);
+            string _E1 = Functions.ConvertToString(_Eo1);
+            string _E2 = Functions.ConvertToString(_Eo2);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2);
+            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2);
             return m;
         }
-        public static List<string> pCOLLECTinputs7(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2, string _E3)
+        public static List<string> pCOLLECTinputs7(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2, object _Eo3)
         {
+            string _V = Functions.ConvertToString(_Vo);
+            string _E1 = Functions.ConvertToString(_Eo1);
+            string _E2 = Functions.ConvertToString(_Eo2);
+            string _E3 = Functions.ConvertToString(_Eo3);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3);
+            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3);
             return m;
         }
-        public static List<string> pCOLLECTinputs8(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2, string _E3, string _E4)
+        public static List<string> pCOLLECTinputs8(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2, object _Eo3, object _Eo4)
         {
+            string _V = Functions.ConvertToString(_Vo);
+            string _E1 = Functions.ConvertToString(_Eo1);
+            string _E2 = Functions.ConvertToString(_Eo2);
+            string _E3 = Functions.ConvertToString(_Eo3);
+            string _E4 = Functions.ConvertToString(_Eo4);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4);
+            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4);
             return m;
         }
-        public static List<string> pCOLLECTinputs9(string _headers, string _P, string _V, string _I, string _C, string _E1, string _E2, string _E3, string _E4, string _E5)
+        public static List<string> pCOLLECTinputs9(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2, object _Eo3, object _Eo4, object _Eo5)
         {
+            string _V = Functions.ConvertToString(_Vo);
+            string _E1 = Functions.ConvertToString(_Eo1);
+            string _E2 = Functions.ConvertToString(_Eo2);
+            string _E3 = Functions.ConvertToString(_Eo3);
+            string _E4 = Functions.ConvertToString(_Eo4);
+            string _E5 = Functions.ConvertToString(_Eo5);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_P + ";" + _V + ";" + _I + ";" + _C + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
+            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
             return m;
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _ProjName, string _IdirPath, string _LdirPath, string _owner)

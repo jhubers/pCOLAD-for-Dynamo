@@ -1063,6 +1063,9 @@ namespace pCOLADnamespace
             DataRow r0 = MyPropDataTable.Rows[RowIndex];
             Item i0 = (Item)r0["Images"];
             MyImage dummy = Functions.dummyFunction();
+            string parName = r0["Parameter"].ToString();
+            string dir = Path.GetDirectoryName(MyDataCollectorClass.sharedFile);
+            searchFolder = dir + "\\Images\\" + parName;
 
             List<string> sourcePaths;
             OpenFileDialog fd = new OpenFileDialog();
