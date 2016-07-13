@@ -63,12 +63,14 @@ namespace MyDataCollector
         public void SetChanged()
         {
             IsChanged = true;
+            IsMyChanged = false;
             NotifyPropertyChanged("IsChanged");
         }
         public bool IsMyChanged { get; set; }
         public void SetMyChanged()
         {
             IsMyChanged = true;
+            IsChanged = false;
             NotifyPropertyChanged("IsChanged");
         }
         public bool IsDeleted{ get; set; }

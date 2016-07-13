@@ -513,7 +513,7 @@ namespace pCOLADnamespace
                     //}
                     //TestList = myTestList;
                     //compare the csv file with the copy
-                    Compare();
+                    Compare();//updating MyPropDataTable is now inside Compare()
                     //niet nodig?
                     //this.MyPropDataTable = MyDataCollectorClass.localDataTable;
                     //bind the datatable to the xaml datagrid
@@ -1561,7 +1561,8 @@ namespace pCOLADnamespace
                                     //    (localDataRow["Old Value"] as MyDataCollector.Item).textValue = String.Copy((oldDataRow["New Value"] as MyDataCollector.Item).textValue);
                                     //}
                                     //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
-                                    SetColour(localDataRow, localDataColumn.ColumnName);
+                                    bool WasMyChange = (oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).IsMyChanged;
+                                    SetColour(localDataRow, localDataColumn.ColumnName, WasMyChange);
                                     someChange = true;
                                 }
                             }
@@ -1583,7 +1584,7 @@ namespace pCOLADnamespace
                                 someChange = true;
                             }
                             //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
-                            SetColour(localDataRow, localDataColumn.ColumnName);
+                            SetColour(localDataRow, localDataColumn.ColumnName, false);
                         }
                     }
                 }
@@ -1597,7 +1598,7 @@ namespace pCOLADnamespace
                             localDataRow[localDataColumn.ColumnName] = new MyDataCollector.Item("");
                         }
                         //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
-                        SetColour(localDataRow, localDataColumn.ColumnName);
+                        SetColour(localDataRow, localDataColumn.ColumnName, false);
                     }
                     someChange = true;
                 }
@@ -1688,10 +1689,20 @@ namespace pCOLADnamespace
             MyDataCollectorClass.extShare = false;
             //}
         }
-        private void SetColour(DataRow dr, String dcn)
+        private void SetColour(DataRow dr, String dcn, bool WasMyChange)
         {
             //if this row contains my own parameter data then set the background to green
-            //except if the cell is obstruction (you don't obstruct your own value - just change it)
+            //except if the cell is Obstruction (you don't obstruct your own value - just change it)
+            //except the cell Comments, because comments to my parameters can be made by others!!!(later)
+            if (MyDataCollectorClass.extShare & dcn.ToString().Equals("Comments") & WasMyChange)
+                //but this only works once. And it sets all differences with olDataTable to red.
+                //In fact you should set the SetChanged and SetMyChanged everytime you change an Item
+            {
+
+                (dr[dcn] as MyDataCollector.Item).SetChanged();
+                return;
+                //MyDataCollectorClass.extShare = false; //no otherwise next rows will nog be red
+            }
             if (dcn.ToString().Equals("Date") | dcn.ToString().Equals("Author"))
             {
                 return;
