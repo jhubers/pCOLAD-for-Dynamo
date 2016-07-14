@@ -20,6 +20,7 @@ namespace MyDataCollector
             }
         }
         public string textValue;
+        public string oldTextValue;
         public string TextValue 
         {
             get { return textValue; } 
@@ -30,7 +31,8 @@ namespace MyDataCollector
                 //{
                 //    //works but doesn't turn red immediately. Goes to RowIndex too...So could set a property there
                 //    this.SetChanged();                    
-                //}                         
+                //}
+                oldTextValue = textValue;                         
                 textValue = value;
                 NotifyPropertyChanged("TextValue");
             }

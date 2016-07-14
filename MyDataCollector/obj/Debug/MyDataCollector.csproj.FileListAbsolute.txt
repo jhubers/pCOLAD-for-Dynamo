@@ -10,3 +10,4 @@ D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\TempMessageX
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\GeneratedInternalTypeHelper.g.cs
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\MyDataCollector.Properties.Resources.resources
 D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\MyDataCollector.csproj.GenerateResource.Cache
+D:\Data\Research\Dynamo\pCOLAD for Dynamo\MyDataCollector\obj\Debug\MyDataCollector.csprojResolveAssemblyReference.cache

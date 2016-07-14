@@ -102,7 +102,6 @@ namespace MyDataCollector
                             }
                             else
                             {
-                                //waarom is alleen New Value rood?
                                 row[x] = new Item(word);
                             }
                         }

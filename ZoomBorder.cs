@@ -97,7 +97,7 @@ namespace pCOLADnamespace
         }
         private void child_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Middle | e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Left)
             {
                 if (child != null)
                 {
@@ -111,7 +111,7 @@ namespace pCOLADnamespace
         }
         private void child_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Middle | e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Left)
             {
                 if (child != null)
                 {

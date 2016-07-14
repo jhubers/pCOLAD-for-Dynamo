@@ -208,7 +208,8 @@ namespace pCOLADnamespace
             //this is triggerd by the LostFocus event in the datatemplate "commentCells"
             //try to set the background of the TextBox to LightGreen
 
-            DataTable dt = MyDataCollector.MyDataCollectorClass.oldDataTable;
+            DataTable oDT = MyDataCollector.MyDataCollectorClass.oldDataTable;
+            DataTable lDT = MyDataCollector.MyDataCollectorClass.localDataTable;
             TextBox tb = (TextBox)sender;
             DataGridRow dgr = FindUpVisualTree<DataGridRow>(tb);
             var i = dgr.GetIndex();
@@ -217,21 +218,33 @@ namespace pCOLADnamespace
                 //MessageBox.Show("Something wrong. The index of the row you try to change the comment is < 0...");
                 return;
             }
-            if (dt.Rows.Count == 0)
+            if (oDT.Rows.Count < i + 1)
             {
                 tb.Background = Brushes.LightGreen;
                 return;
             }
-            DataRow dr = dt.Rows[i];
-            MyDataCollector.Item it = dr["Comments"] as MyDataCollector.Item;
-            String s = it.textValue;
+            DataRow oDR = oDT.Rows[i];
+            DataRow lDR = lDT.Rows[i];
+            MyDataCollector.Item oIt = oDR["Comments"] as MyDataCollector.Item;
+            MyDataCollector.Item lIt = lDR["Comments"] as MyDataCollector.Item;
+            //if this comment was red, next time you want to compare to this value, 
+            //not the one stored in oldDataTable. So change it there in that case.
+            //But this runs only after the change, so localDataTable is already updated.
+            //Where can I store the value before the update? It is a binding.
+            if (lIt.IsChanged)
+            {
+                oIt.textValue = lIt.oldTextValue;
+            }
+            String s = oIt.textValue;
             if (!tb.Text.Equals(s))
             {
                 tb.Background = Brushes.LightGreen;
+                lIt.SetMyChanged();
             }
             else
             {
                 tb.Background = Brushes.Transparent;
+                lIt.SetSame();
             }
         }
         //static public void BringToFront(Panel pParent, ContentPresenter pToMove)

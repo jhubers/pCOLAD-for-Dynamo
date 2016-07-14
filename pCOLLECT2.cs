@@ -298,7 +298,7 @@ namespace pCOLADnamespace
             foreach (var item in InPortData)
             {
                 //if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I" | item.NickName == "C")
-                if (item.NickName == "P" | item.NickName == "V" | item.NickName == "I")
+                if (item.NickName == "P" || item.NickName == "V" || item.NickName == "I")
                 {
                     continue;
                 }
@@ -517,7 +517,7 @@ namespace pCOLADnamespace
             if (a1 != "")
             {
                 //check if it is not a default input
-                if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
+                if (a1 == "P" || a1 == "V" || a1 == "I" || a1 == "C")
                 {
                     pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
@@ -552,7 +552,7 @@ namespace pCOLADnamespace
             //        {
             //            a1 = D1.Answer.Text;
             //            //check if it is not a default input
-            //            if (a1 == "P" | a1 == "V" | a1 == "I" | a1 == "C")
+            //            if (a1 == "P" || a1 == "V" || a1 == "I" || a1 == "C")
             //            {
             //                pSHARE.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
             //                {

@@ -586,7 +586,7 @@ namespace pCOLADnamespace
             //}
             //public DynamoModelHandler closeCSVcontrolFrom_dm(DynamoModel dm)
             //{
-            //    if (parent != null | parent._CSVControl != null)
+            //    if (parent != null || parent._CSVControl != null)
             //    {
             //        parent._CSVControl.Close();
             //    }
@@ -715,6 +715,7 @@ namespace pCOLADnamespace
                     MyPropDataTable = MyDataCollectorClass.localDataTable.Copy();
                     On = true;
                     ShowCSV();
+                    MyDataCollectorClass.firstRun = false;
                 }
                 else
                 {
@@ -1439,7 +1440,7 @@ namespace pCOLADnamespace
 
                             int end = fn.LastIndexOf(")");
                             int begin = fn.LastIndexOf("(");
-                            if (end != -1 & begin != -1)
+                            if (end != -1 && begin != -1)
                             {
                                 string number = fn.Substring(begin + 1, end - begin - 1);
                                 int n;
@@ -1522,7 +1523,7 @@ namespace pCOLADnamespace
 
             #region newCompare
             // first reset all items
-            ClearChanged();
+            //ClearChanged();
             foreach (DataRow localDataRow in MyDataCollectorClass.localDataTable.Rows)
             {
                 DataRow oldDataRow = MyDataCollectorClass.oldDataTable.Rows.Find(localDataRow["Parameter"]);
@@ -1561,18 +1562,18 @@ namespace pCOLADnamespace
                                     //    (localDataRow["Old Value"] as MyDataCollector.Item).textValue = String.Copy((oldDataRow["New Value"] as MyDataCollector.Item).textValue);
                                     //}
                                     //(localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetChanged();
-                                    bool WasMyChange = (oldDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).IsMyChanged;
-                                    SetColour(localDataRow, localDataColumn.ColumnName, WasMyChange);
+                                    bool WasMyChanged = (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).IsMyChanged;
+                                    SetColour(localDataRow, localDataColumn.ColumnName, WasMyChanged);
                                     someChange = true;
                                 }
                             }
-                            //else
-                            //{
-                            //    if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
-                            //    {
-                            //        (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetSame();
-                            //    }
-                            //}
+                            else
+                            {
+                                if ((localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item) != null)
+                                {
+                                    (localDataRow[localDataColumn.ColumnName] as MyDataCollector.Item).SetSame();
+                                }
+                            }
                         }
                         else
                         {
@@ -1689,21 +1690,18 @@ namespace pCOLADnamespace
             MyDataCollectorClass.extShare = false;
             //}
         }
-        private void SetColour(DataRow dr, String dcn, bool WasMyChange)
+        private void SetColour(DataRow dr, String dcn, bool WasMyChanged)
         {
             //if this row contains my own parameter data then set the background to green
             //except if the cell is Obstruction (you don't obstruct your own value - just change it)
             //except the cell Comments, because comments to my parameters can be made by others!!!(later)
-            if (MyDataCollectorClass.extShare & dcn.ToString().Equals("Comments") & WasMyChange)
-                //but this only works once. And it sets all differences with olDataTable to red.
-                //In fact you should set the SetChanged and SetMyChanged everytime you change an Item
+            if ((MyDataCollectorClass.extShare || MyDataCollectorClass.firstRun ||!WasMyChanged) && dcn.ToString().Equals("Comments"))
             {
-
                 (dr[dcn] as MyDataCollector.Item).SetChanged();
                 return;
                 //MyDataCollectorClass.extShare = false; //no otherwise next rows will nog be red
             }
-            if (dcn.ToString().Equals("Date") | dcn.ToString().Equals("Author"))
+            if (dcn.ToString().Equals("Date") || dcn.ToString().Equals("Author"))
             {
                 return;
             }

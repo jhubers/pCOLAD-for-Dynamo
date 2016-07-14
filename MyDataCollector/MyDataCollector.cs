@@ -63,7 +63,7 @@ namespace MyDataCollector
             {
                 oldCsvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
             }
-            oldDataTable = Functions.ListToTable(oldCsvList,"not localFile");
+            oldDataTable = Functions.ListToTable(oldCsvList, "not localFile");
         }
 
         public static void openCSV(string csvs)
@@ -81,7 +81,7 @@ namespace MyDataCollector
                 {
                     csvList.Add("Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
                 }
-                localDataTable = Functions.ListToTable(csvList,csvs);
+                localDataTable = Functions.ListToTable(csvList, csvs);
                 csvDataTable = localDataTable.Copy();
                 //UpdateCSVControl(null, EventArgs.Empty);                
             }
@@ -110,11 +110,13 @@ namespace MyDataCollector
                 //in pCOLLECT. Only in display, like obstruction.
                 //But what about extra attributes? If they are not your own. Don't overwrite. But in newParamTable
                 //you only have your own parameters! So no problem with that.
+
                 foreach (DataRow dr in localDataTable.Rows)
                 {
                     DataRow newDataRow = newParamTable.Rows.Find(dr["Parameter"]);
                     if (newDataRow != null)
                     {
+                        //Comments are not cumulative anymore. So newDataRow["Comments"].ToString() is always "".
                         //Add the new comment to the existing if it is not there yet.
                         if (!dr["Comments"].ToString().Contains(newDataRow["Comments"].ToString()))
                         //if (!newDataRow["Comments"].Equals(dr["Comments"]))
@@ -154,7 +156,7 @@ namespace MyDataCollector
                         {
                             dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                             {
-                            MessageBox.Show(dv, "Parameter " + t2 + " already exists. Please use another parameter name...");
+                                MessageBox.Show(dv, "Parameter " + t2 + " already exists. Please use another parameter name...");
                             }));
                             //replace the Parameter by ERROR
                             newParamTable.Rows[i]["Parameter"] = new Item("---ERROR---");
@@ -191,7 +193,7 @@ namespace MyDataCollector
                 //next function returns a list of strings with only the path names of files
                 //with extension in filters
                 List<string> files = Functions.GetFilesFrom(imageFolderPath, filters, false);
-                if (files.Count==0)
+                if (files.Count == 0)
                 {
                     //put a pCOLADdummy.bmp button like image in the ImageList
                     MyImage dummy = Functions.dummyFunction();
@@ -211,6 +213,13 @@ namespace MyDataCollector
                 ni.ImageList = lmi;
                 localDataTable.Rows[i]["Images"] = ni;
             }
+            //add rows to oldDataTable with empty Comments cell so you can set the IsMyChanged property in code behind
+            //while (localDataTable.Rows.Count > oldDataTable.Rows.Count)
+            //{
+            //    DataRow nR = oldDataTable.NewRow();
+            //    nR["Comments"] = new Item("");
+            //    oldDataTable.Rows.Add(nR);
+            //}
         }
 
         public static string projection(int i)
@@ -222,7 +231,7 @@ namespace MyDataCollector
             string _V = Functions.ConvertToString(_Vo);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_C + ";"+_P + ";" + _V + ";" + _I);
+            m.Add(_C + ";" + _P + ";" + _V + ";" + _I);
             return m;
         }
         public static List<string> pCOLLECTinputs5(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1)
@@ -231,7 +240,7 @@ namespace MyDataCollector
             string _E1 = Functions.ConvertToString(_Eo1);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1);
+            m.Add(_C + ";" + _P + ";" + _V + ";" + _I + ";" + _E1);
             return m;
         }
         public static List<string> pCOLLECTinputs6(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2)
@@ -241,7 +250,7 @@ namespace MyDataCollector
             string _E2 = Functions.ConvertToString(_Eo2);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2);
+            m.Add(_C + ";" + _P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2);
             return m;
         }
         public static List<string> pCOLLECTinputs7(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2, object _Eo3)
@@ -252,7 +261,7 @@ namespace MyDataCollector
             string _E3 = Functions.ConvertToString(_Eo3);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3);
+            m.Add(_C + ";" + _P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3);
             return m;
         }
         public static List<string> pCOLLECTinputs8(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2, object _Eo3, object _Eo4)
@@ -264,7 +273,7 @@ namespace MyDataCollector
             string _E4 = Functions.ConvertToString(_Eo4);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4);
+            m.Add(_C + ";" + _P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4);
             return m;
         }
         public static List<string> pCOLLECTinputs9(string _headers, string _C, string _P, object _Vo, string _I, object _Eo1, object _Eo2, object _Eo3, object _Eo4, object _Eo5)
@@ -277,7 +286,7 @@ namespace MyDataCollector
             string _E5 = Functions.ConvertToString(_Eo5);
             List<string> m = new List<string>();
             m.Add(_headers);
-            m.Add(_C + ";"+_P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
+            m.Add(_C + ";" + _P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
             return m;
         }
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _ProjName, string _IdirPath, string _LdirPath, string _owner)
@@ -287,7 +296,7 @@ namespace MyDataCollector
             string _LfilePath = _LdirPath + "\\" + _owner + "_" + _ProjName + ".csv";
             //check if the paths are *.csv files
             List<string> m = new List<string>();
-            if (!_IfilePath.EndsWith(".csv") | !_LfilePath.EndsWith(".csv"))
+            if (!_IfilePath.EndsWith(".csv") || !_LfilePath.EndsWith(".csv"))
             {
                 Message(null, new TextArgs("Please make sure the file paths end with '.csv'"));
                 m.Add("Please make sure the file paths end with '.csv'");
@@ -310,7 +319,7 @@ namespace MyDataCollector
             oldLocalFile = dir + "\\old_" + fileName;
 
             //check if sharedFile exist; otherwise make one with default headers.
-            if(!_IfilePath.Equals("")){ Functions.FileExist(_IfilePath); }
+            if (!_IfilePath.Equals("")) { Functions.FileExist(_IfilePath); }
             if (!_LfilePath.Equals("")) { Functions.FileExist(_LfilePath); }
             // the first time you run make a local copy of the shared csv file in DropBox;
             // and a copy from the local file to old_local file for comparing changes
@@ -332,8 +341,7 @@ namespace MyDataCollector
                 watch();
                 openCSV(sharedFile);
                 makeOldDataTable();
-                firstRun = false;
-            } 
+            }
             userName = _owner;
             pSHAREoutputs.Clear();
             bool OnepCOLLECT = false;
@@ -365,8 +373,8 @@ namespace MyDataCollector
             if (extShare)
             {
                 openCSV(sharedFile);
-                makeOldDataTable();
-            }            
+                //makeOldDataTable();//makes no sense it was not changed by external share
+            }
             // Union the pCOLLECTs to localDataTable
             // Check if not only 1 pCOLLECT is connected otherwise you get an error
             List<string> pSHAREoutputList = new List<string>();
@@ -384,8 +392,8 @@ namespace MyDataCollector
                     }
                     else
                     {
-                    pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
-                    pSHAREoutputList.Add(localDataTable.Rows[i]["New Value"].ToString());
+                        pSHAREoutputList.Add(localDataTable.Rows[i]["Parameter"].ToString());
+                        pSHAREoutputList.Add(localDataTable.Rows[i]["New Value"].ToString());
                     }
                 }
             }
@@ -395,6 +403,15 @@ namespace MyDataCollector
             }
             //when you change a parameter you should have immediate update of the display when you hit run.
             UpdateCSVControl(null, EventArgs.Empty);//includes Compare()
+            //if (extShare)
+            //{
+            //    //update the comments in oldDataTable and old file so if you change them back they become green
+            //    for (int i = 0; i < oldDataTable.Rows.Count; i++)
+            //    {
+            //        oldDataTable.Rows[i]["Comments"] = localDataTable.Rows[i]["Comments"];
+            //    }
+            //}
+            //firstRun = false;//set it after showing CSV display for the first time, so you can check Comments
             return pSHAREoutputList;
         }
         public static string pPARAMoutputs(string _Parameter, List<string> _pSHAREoutput)
