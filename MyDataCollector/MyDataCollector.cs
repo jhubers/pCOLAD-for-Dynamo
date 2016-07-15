@@ -18,13 +18,14 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Dynamo.Controls;
-
+using System.Threading;
+using Dynamo.Graph.Nodes.CustomNodes;
 
 namespace MyDataCollector
 {
     [IsVisibleInDynamoLibrary(false)]
     public static class MyDataCollectorClass
-    {
+    {              
         // later replace with an input
         public static string sharedFile; //the project csv file in DropBox        
         public static FileSystemWatcher CSVwatcher;
@@ -226,6 +227,14 @@ namespace MyDataCollector
         {
             return "Value = " + i.ToString();
         }
+        //public static List<string> pCOLLECTemptyInput(Function _headers, string _C, string _P, string _Vo, string _I)
+        //{
+        //    //string _V = Functions.ConvertToString(_Vo);
+        //    //List<string> m = new List<string>();
+        //    //m.Add(_headers);
+        //    //m.Add(_C + ";" + _P + ";" + _V + ";" + _I);
+        //    //return m;
+        //}
         public static List<string> pCOLLECTinputs4(string _headers, string _C, string _P, object _Vo, string _I)
         {
             string _V = Functions.ConvertToString(_Vo);
@@ -289,6 +298,13 @@ namespace MyDataCollector
             m.Add(_C + ";" + _P + ";" + _V + ";" + _I + ";" + _E1 + ";" + _E2 + ";" + _E3 + ";" + _E4 + ";" + _E5);
             return m;
         }
+        //public static List<string> pSHAREemptyInput(object f, string s0, string s1, string s2, string s3)
+        //{
+        //    List<string> m = new List<string>();
+        //    Message(null, new TextArgs("Please do not connect empty lists..."));
+        //    m.Add("Please make sure the file paths end with '.csv'");
+        //    return m;
+        //}
         public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _ProjName, string _IdirPath, string _LdirPath, string _owner)
         {
             //construct the file paths
@@ -301,7 +317,6 @@ namespace MyDataCollector
                 Message(null, new TextArgs("Please make sure the file paths end with '.csv'"));
                 m.Add("Please make sure the file paths end with '.csv'");
                 return m;
-
             }
             //check if owner input is connected
             if (_owner == null)
@@ -344,25 +359,31 @@ namespace MyDataCollector
             }
             userName = _owner;
             pSHAREoutputs.Clear();
-            bool OnepCOLLECT = false;
+            bool error = false;
             foreach (List<string> item in _Ninputs)
             {
                 //If you connect only 1 pCOLLECT directly to pSHARE you get an error while merging datatables
                 //Strange enough _Niputs then is not a List<List<string>>, but a List<string>. And
                 //this doesn't give an error... But item is then the first line of pCOLLECT output (the headers).
                 //So in that case show a warning that you always should put a List.Create node in between.
+                if (item.Count ==0)
+                {
+                    //user connected an empty list
+                    msg = "Did you connect an empty list...?";
+                    error = true;
+                }
                 if (item.Count == 1)
                 {
-                    OnepCOLLECT = true;
+                    msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
+                    error = true;
                 }
                 else
                 {
                     pSHAREoutputs.Add(item);
                 }
             }
-            if (OnepCOLLECT)
+            if (error)
             {
-                msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
                 dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
                     MessageBox.Show(dv, msg);
@@ -399,7 +420,7 @@ namespace MyDataCollector
             }
             else
             {
-                pSHAREoutputList.Add("WARNING: output is not generated. Did you connect the input without a List.Create?");
+                pSHAREoutputList.Add("WARNING: output is not generated. Did you connect the input without a List.Create? Or with empty list?");
             }
             //when you change a parameter you should have immediate update of the display when you hit run.
             UpdateCSVControl(null, EventArgs.Empty);//includes Compare()
@@ -417,6 +438,12 @@ namespace MyDataCollector
         public static string pPARAMoutputs(string _Parameter, List<string> _pSHAREoutput)
         {
             string pPARAMoutput = "";
+            if (_pSHAREoutput == null)
+            {
+                //Message(null, new TextArgs("Please do not connect empty lists to pSHARE..."));
+                pPARAMoutput = "No valid pSHARE output connected...";
+                return pPARAMoutput;
+            }
             for (int i = 0; i < _pSHAREoutput.Count; i++)
             {
                 if (_pSHAREoutput[i] == _Parameter)

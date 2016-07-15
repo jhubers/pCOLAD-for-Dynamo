@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -405,7 +406,16 @@ namespace MyDataCollector
         {
             if (obj !=null)
             {
-                return obj.ToString();
+                System.Globalization.CultureInfo customCultureInfo = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+                customCultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+                Type thisType = obj.GetType();
+                Type doubleType = Type.GetType("System.Double");
+                if (thisType.Equals(doubleType))
+                {
+                    Double d = (Double)obj;
+                    return d.ToString(customCultureInfo);
+                }
+                return String.Format(customCultureInfo, "{0}", obj.ToString());
             }
             else
             {

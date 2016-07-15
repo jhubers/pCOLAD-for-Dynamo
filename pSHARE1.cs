@@ -17,12 +17,10 @@ using Dynamo.Graph.Nodes;
 using Dynamo.Graph.Workspaces;
 using System.Windows.Media;
 using System.Windows.Threading;
-using System.Windows.Interactivity;
 using System.Windows.Forms;
 using System.Threading;
-using System.Reflection;
-using System.Drawing;
 using System.Windows.Media.Imaging;
+using Dynamo.Graph.Nodes.CustomNodes;
 
 namespace pCOLADnamespace
 {
@@ -45,8 +43,7 @@ namespace pCOLADnamespace
 
     #endregion
     public class pSHARE : NodeModel
-    {
-
+    {        
         #region properties
         public static string selectedImagePath;
         public static string searchFolder;
@@ -416,17 +413,7 @@ namespace pCOLADnamespace
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
             //you get here everytime that solution runs
-            //this was to figure out how Func works
-            ////Func<int, string> projection = x => "Value=" + x;
-            ////var x = new Func<int, string>(MyDataCollectorClass.projection);
-            ////int[] values = { 3, 7, 10 };
-            ////var strings = values.Select(MyDataCollectorClass.projection);
-
-            ////foreach (string s in strings)
-            ////{
-            ////    Console.WriteLine(s);
-            ////}
-
+            //var e = new Func<object, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREemptyInput);
             var t = new Func<List<List<string>>, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
             //after running the solution.

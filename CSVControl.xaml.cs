@@ -200,6 +200,7 @@ namespace pCOLADnamespace
                 IInvokeProvider invokeProv = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                 invokeProv.Invoke();
             }
+            Owner.Focus();
         }
 
 
@@ -230,7 +231,7 @@ namespace pCOLADnamespace
             //if this comment was red, next time you want to compare to this value, 
             //not the one stored in oldDataTable. So change it there in that case.
             //But this runs only after the change, so localDataTable is already updated.
-            //Where can I store the value before the update? It is a binding.
+            //Where can I store the value before the update? It is a binding. Use oldTextValue.
             if (lIt.IsChanged)
             {
                 oIt.textValue = lIt.oldTextValue;
