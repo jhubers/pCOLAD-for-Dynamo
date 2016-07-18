@@ -414,7 +414,7 @@ namespace pCOLADnamespace
         {
             //you get here everytime that solution runs
             //var e = new Func<object, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREemptyInput);
-            var t = new Func<List<List<string>>, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
+            var t = new Func<List<List<object>>, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
             //after running the solution.
             //string testj = MyDataCollectorClass.sharedFile;

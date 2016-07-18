@@ -25,7 +25,7 @@ namespace MyDataCollector
 {
     [IsVisibleInDynamoLibrary(false)]
     public static class MyDataCollectorClass
-    {              
+    {
         // later replace with an input
         public static string sharedFile; //the project csv file in DropBox        
         public static FileSystemWatcher CSVwatcher;
@@ -95,41 +95,37 @@ namespace MyDataCollector
         public static void addNewPararemeters()
         {
             //add the outputs of pSHARE to localDataTable so they can be shown in the display
-            //but before you have to build the common multiple, or use the union of dataTables
             //turn list of list of strings into List of DataTables
             List<DataTable> newParamTables = new List<DataTable>();
-            newParamTables.Add(localDataTable);
             foreach (List<string> ls in pSHAREoutputs)
             {
                 //with Automatic run the first ls has null in line two, giving errors!!!
-                //In fact you should not overwrite Old Values!!! Or you should put in Old Value before, or after.
-                DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls, "not localFile");
-                //With DataTable.Merge you overwrite existing records that have the same primary key (Parameter)
-                //That is not what you want. Only the outputs of pSHARE. E.g. the Comments that you type in
-                //the display should not be overwritten with those in the output. Same goes for Obstruction. 
-                //So Merging is not a good idea, or put in the right data before. E.g. get rid of comments !!!
-                //in pCOLLECT. Only in display, like obstruction.
-                //But what about extra attributes? If they are not your own. Don't overwrite. But in newParamTable
-                //you only have your own parameters! So no problem with that.
 
+                //ls is list with every two rows the headers or attributes of all pCOLLECTs. First check if parameter names are unique if 
+                //they are not yours, otherwise you should have had a warning already. If tey are yours just update the values in the merge.
+                DataTable newParamTable = MyDataCollector.Functions.ListToTable(ls, "not HistoryFile");
+                newParamTable.PrimaryKey = new DataColumn[] { newParamTable.Columns["Parameter"] };
+                //localDataTable.PrimaryKey = new DataColumn[] { localDataTable.Columns["Parameter"] };
+
+                //don't overwrite comments
                 foreach (DataRow dr in localDataTable.Rows)
                 {
-                    DataRow newDataRow = newParamTable.Rows.Find(dr["Parameter"]);
+                    DataRow newDataRow = newParamTable.Rows.Find(dr["Parameter"]);//check if the parameter exist already. If so copy the comment
                     if (newDataRow != null)
                     {
                         //Comments are not cumulative anymore. So newDataRow["Comments"].ToString() is always "".
-                        //Add the new comment to the existing if it is not there yet.
-                        if (!dr["Comments"].ToString().Contains(newDataRow["Comments"].ToString()))
-                        //if (!newDataRow["Comments"].Equals(dr["Comments"]))
-                        {
-                            newDataRow.BeginEdit();
-                            newDataRow["Comments"] = new Item(dr["Comments"].ToString() + "/" + newDataRow["Comments"].ToString());
-                            newDataRow.EndEdit();
-                        }
-                        else
-                        {
-                            newDataRow["Comments"] = dr["Comments"];
-                        }
+                        ////Add the new comment to the existing if it is not there yet.
+                        //if (!dr["Comments"].ToString().Contains(newDataRow["Comments"].ToString()))
+                        ////if (!newDataRow["Comments"].Equals(dr["Comments"]))
+                        //{
+                        //    newDataRow.BeginEdit();
+                        //    newDataRow["Comments"] = new Item(dr["Comments"].ToString() + "/" + newDataRow["Comments"].ToString());
+                        //    newDataRow.EndEdit();
+                        //}
+                        //else
+                        //{
+                        newDataRow["Comments"] = dr["Comments"];
+                        //}
                         //override the comments in pSHAREoutput with that from localDataTable
                         //newDataRow["Comments"] = dr["Comments"];
                         //there is no Column Obstruction and Old Value in newParamTable
@@ -166,13 +162,17 @@ namespace MyDataCollector
                 }
                 newParamTables.Add(newParamTable);
             }
+            DataTable mergedNewParamTables = Functions.MergeAll(newParamTables, "Parameter");
+            List<DataTable> allParamTables = new List<DataTable>();
+            allParamTables.Add(localDataTable);
+            allParamTables.Add(mergedNewParamTables);
             //merging tables needs more than 1 table of course. But if you connect only 1 pCOLLECT
             //you have at this point only 1 table. With one table you get the warning to put a List.Create
             //between pCOLLECT and pSHARE. But if you ignore that message, and hit the pSHARE button,
             //you get the warning to first hit the Run button and this keeps showing up.
-            if (newParamTables.Count > 1)
+            if (allParamTables.Count > 1)
             {
-                DataTable TblUnion = Functions.MergeAll(newParamTables, "Parameter");
+                DataTable TblUnion = Functions.MergeAll(allParamTables, "Parameter");
                 localDataTable = TblUnion;
                 //make a copy of localDataTable so you can return to it if changes are undone
                 //if (!formPopulate) // && !sharedFile.Contains("History"))
@@ -305,13 +305,48 @@ namespace MyDataCollector
         //    m.Add("Please make sure the file paths end with '.csv'");
         //    return m;
         //}
-        public static List<string> pSHAREinputs(List<List<string>> _Ninputs, string _ProjName, string _IdirPath, string _LdirPath, string _owner)
+        public static List<string> pSHAREinputs(List<List<object>> _NinputsO, string _ProjName, string _IdirPath, string _LdirPath, string _owner)
         {
+            //this runs every time you hit Run in Dynamo.            
+            List<string> m = new List<string>();
+            //check if object is list<list<string>>
+            //Type inputType = _NinputsO.GetType();
+            //Type compareType = Type.GetType("System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.String]]");
+            ////Type compareType = Type.GetType("SystemProtoCore.DSASM.StackValue");
+            //if (!inputType.Equals(compareType))
+            //{
+            //    string msg = "Please only connect lists of strings in right format...";
+            //    Message(null, new TextArgs(msg));
+            //    m.Add(msg);
+            //    return m;
+            //}
+            List<List<string>> _Ninputs = new List<List<string>>();
+            foreach (var listObjects in _NinputsO)
+            {
+                //_NinputsO consists of lists that consist of a list that consist of a first row with headers and a second row of Items.ToString()
+                List<string> listStrings = new List<string>();
+                for (int i = 0; i < listObjects.Count; i++)
+                {
+                    try
+                    {
+                        listStrings.Add((string)listObjects[i]);
+
+                    }
+                    catch (Exception)
+                    {
+                        string msg = "Please only connect lists of strings in right format...";
+                        Message(null, new TextArgs(msg));
+                        m.Add(msg);
+                        return m;
+                        throw;
+                    }
+                }
+                _Ninputs.Add(listStrings);
+            }
             //construct the file paths
             string _IfilePath = _IdirPath + "\\" + _ProjName + ".csv";
             string _LfilePath = _LdirPath + "\\" + _owner + "_" + _ProjName + ".csv";
             //check if the paths are *.csv files
-            List<string> m = new List<string>();
             if (!_IfilePath.EndsWith(".csv") || !_LfilePath.EndsWith(".csv"))
             {
                 Message(null, new TextArgs("Please make sure the file paths end with '.csv'"));
@@ -325,7 +360,7 @@ namespace MyDataCollector
                 m.Add("Please connect the owner name to pSHARE...");
                 return m;
             }
-            //this runs every time you hit Run in Dynamo.
+
             sharedFile = _IfilePath;
             localFile = _LfilePath;
             //contruct the path for the oldLocalFile
@@ -360,26 +395,26 @@ namespace MyDataCollector
             userName = _owner;
             pSHAREoutputs.Clear();
             bool error = false;
-            foreach (List<string> item in _Ninputs)
+            foreach (List<string> ls in _Ninputs)
             {
                 //If you connect only 1 pCOLLECT directly to pSHARE you get an error while merging datatables
                 //Strange enough _Niputs then is not a List<List<string>>, but a List<string>. And
                 //this doesn't give an error... But item is then the first line of pCOLLECT output (the headers).
                 //So in that case show a warning that you always should put a List.Create node in between.
-                if (item.Count ==0)
+                if (ls.Count == 0)
                 {
                     //user connected an empty list
                     msg = "Did you connect an empty list...?";
                     error = true;
                 }
-                if (item.Count == 1)
+                if (ls.Count == 1)
                 {
                     msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
                     error = true;
                 }
                 else
                 {
-                    pSHAREoutputs.Add(item);
+                    pSHAREoutputs.Add(ls);
                 }
             }
             if (error)
