@@ -43,7 +43,7 @@ namespace pCOLADnamespace
 
     #endregion
     public class pSHARE : NodeModel
-    {        
+    {
         #region properties
         public static string selectedImagePath;
         public static string searchFolder;
@@ -109,13 +109,16 @@ namespace pCOLADnamespace
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             //compares localDataTable with oldDataTable
-            Compare(); //updating MyPropDataTable is now inside Compare()
+            Compare();
+            //updating MyPropDataTable is now inside Compare()
             //MyPropDataTable = MyDataCollectorClass.localDataTable;
             //RaisePropertyChanged("MyPropDataTable");//is done automatically if you set MyPropDataTable
             //update the solution
-            this.OnNodeModified(forceExecute: true);
+
+            //but in automatic mode this causes recursion
+            //this.OnNodeModified(forceExecute: true);
             //make sure runtype is manual
-            runtype(dm);
+            //runtype(dm);
             //switch off the csv display if somebody changed shared file externally
             //you can not do it there, because detection of change is in MyDataCollector
             //and you don't have access to properties of pSHARE there, also related to watch()
@@ -721,7 +724,7 @@ namespace pCOLADnamespace
                 //close *.csv display
                 //but if user hit red X button top right than already closing and would give error
                 //to avoid running CancelCommand again set .Canceling to true
-                if (!_CSVControl.ClosingStarted)
+                if (_CSVControl != null && !_CSVControl.ClosingStarted)
                 {
                     _CSVControl.Canceling = true;
                     closeCSVControl();
@@ -1390,7 +1393,7 @@ namespace pCOLADnamespace
             //but if from the start there is no searchfolder, then files is empty
             if (files.Contains(fp))//it doesn't if user chose Cancel all the time
             {
-                for (int p = i0.ImageList.Count -1; p >=0 ; p--)
+                for (int p = i0.ImageList.Count - 1; p >= 0; p--)
                 //why? To find the right image with selectyedImagePath.
                 //Why not show a file selector, so you can delete several files at once and use common shortcuts
                 //to permanently delete or put in recycle bin? Because in History you would like to be able to find
@@ -1448,7 +1451,7 @@ namespace pCOLADnamespace
                             {
                                 movedFp = delDir + fn + "(1)" + ext;
                             }
-                        } 
+                        }
                         #endregion
                         //if this was the last file in the folder, you have to put pCOLADdummy.bmp back in
                         if (files.Count == 1)
@@ -1682,7 +1685,7 @@ namespace pCOLADnamespace
             //if this row contains my own parameter data then set the background to green
             //except if the cell is Obstruction (you don't obstruct your own value - just change it)
             //except the cell Comments, because comments to my parameters can be made by others!!!(later)
-            if ((MyDataCollectorClass.extShare || MyDataCollectorClass.firstRun ||!WasMyChanged) && dcn.ToString().Equals("Comments"))
+            if ((MyDataCollectorClass.extShare || MyDataCollectorClass.firstRun || !WasMyChanged) && dcn.ToString().Equals("Comments"))
             {
                 (dr[dcn] as MyDataCollector.Item).SetChanged();
                 return;

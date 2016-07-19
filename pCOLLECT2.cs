@@ -286,6 +286,7 @@ namespace pCOLADnamespace
         //    return Value;
         //}        
 
+        #region Serialization
         protected override void SerializeCore(XmlElement element, SaveContext context)
         {
             //this runs every 15 seconds or so... that disturbs my filesystemwatcher
@@ -326,6 +327,7 @@ namespace pCOLADnamespace
             }
         }
 
+        #endregion
         #region New BuildOutputAst
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {

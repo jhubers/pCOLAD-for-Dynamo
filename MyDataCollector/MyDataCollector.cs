@@ -309,6 +309,13 @@ namespace MyDataCollector
         {
             //this runs every time you hit Run in Dynamo.            
             List<string> m = new List<string>();
+            //construct the file paths
+            //check if necessary imputs are given
+            if (_ProjName == null || _IdirPath == null || _LdirPath == null || _NinputsO == null || _owner == null)
+            {
+                m.Add("Some inputs are missing...");
+                return m;
+            }
             //check if object is list<list<string>>
             //Type inputType = _NinputsO.GetType();
             //Type compareType = Type.GetType("System.Collections.Generic.List`1[System.Collections.Generic.List`1[System.String]]");
@@ -343,7 +350,6 @@ namespace MyDataCollector
                 }
                 _Ninputs.Add(listStrings);
             }
-            //construct the file paths
             string _IfilePath = _IdirPath + "\\" + _ProjName + ".csv";
             string _LfilePath = _LdirPath + "\\" + _owner + "_" + _ProjName + ".csv";
             //check if the paths are *.csv files
@@ -354,12 +360,12 @@ namespace MyDataCollector
                 return m;
             }
             //check if owner input is connected
-            if (_owner == null)
-            {
-                Message(null, new TextArgs("Please connect the owner name to pSHARE..."));
-                m.Add("Please connect the owner name to pSHARE...");
-                return m;
-            }
+            //if (_owner == null)
+            //{
+            //    Message(null, new TextArgs("Please connect the owner name to pSHARE..."));
+            //    m.Add("Please connect the owner name to pSHARE...");
+            //    return m;
+            //}
 
             sharedFile = _IfilePath;
             localFile = _LfilePath;
@@ -395,35 +401,51 @@ namespace MyDataCollector
             userName = _owner;
             pSHAREoutputs.Clear();
             bool error = false;
-            foreach (List<string> ls in _Ninputs)
+            try
             {
-                //If you connect only 1 pCOLLECT directly to pSHARE you get an error while merging datatables
-                //Strange enough _Niputs then is not a List<List<string>>, but a List<string>. And
-                //this doesn't give an error... But item is then the first line of pCOLLECT output (the headers).
-                //So in that case show a warning that you always should put a List.Create node in between.
-                if (ls.Count == 0)
+                foreach (List<string> ls in _Ninputs)
                 {
-                    //user connected an empty list
-                    msg = "Did you connect an empty list...?";
-                    error = true;
-                }
-                if (ls.Count == 1)
-                {
-                    msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
-                    error = true;
-                }
-                else
-                {
-                    pSHAREoutputs.Add(ls);
+                    //If you connect only 1 pCOLLECT directly to pSHARE you get an error while merging datatables
+                    //Strange enough _Niputs then is not a List<List<string>>, but a List<string>. And
+                    //this doesn't give an error... But item is then the first line of pCOLLECT output (the headers).
+                    //So in that case show a warning that you always should put a List.Create node in between.
+                    if (ls.Count == 0)
+                    {
+                        //user connected an empty list
+                        msg = "Did you connect an empty list...?";
+                        m.Add(msg);
+                        return m;
+                        //error = true;
+                    }
+                    if (ls.Count == 1)
+                    {
+                        msg = "Please put a List.Create node between pCOLLECT and pSHARE...";
+                        m.Add(msg);
+                        return m;
+                        //error = true;
+                    }
+                    else
+                    {
+                        pSHAREoutputs.Add(ls);
+                    }
                 }
             }
-            if (error)
+            catch (Exception ex)
             {
-                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                {
-                    MessageBox.Show(dv, msg);
-                }));
+                //dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                //{
+                //    MessageBox.Show(dv, msg);
+                //}));
+                MessageBox.Show("Last error: " + ex.Message);
+                throw;
             }
+            //if (error)
+            //{
+            //    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+            //    {
+            //        MessageBox.Show(dv, msg);
+            //    }));
+            //}
             //The inputs of the pCOLLECTs must be added to the display of the csv file, changing the localDataTable property.
             //Populate localDataTable with the csv file
             if (extShare)
