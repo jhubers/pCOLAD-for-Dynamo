@@ -11,6 +11,9 @@ using Dynamo.Graph.Nodes;
 using Dynamo.Graph;
 using System.Windows.Threading;
 using MyDataCollector;
+using Dynamo.Models;
+using Dynamo.Graph.Workspaces;
+using System.Windows.Media;
 
 namespace pCOLADnamespace
 {
@@ -50,6 +53,11 @@ namespace pCOLADnamespace
     public class pCOLLECT : NodeModel
     {
         private bool firstTime = true;
+        public static DynamoModel dm;
+        public static Dynamo.ViewModels.DynamoViewModel dvm;
+        public static NodeView nv;
+        public static DynamoView dv;
+
         private List<string> _outputListProp;
         public List<string> outputListProp
         {
@@ -75,6 +83,7 @@ namespace pCOLADnamespace
         /// <param name="workspace"></param>
         public pCOLLECT()
         {
+            //as soon as you add a pCOLLECT to the canvas you get here. 
             // When you create a UI node, you need to do the
             // work of setting up the ports yourself. To do this,
             // you can populate the InPortData and the OutPortData
@@ -325,6 +334,36 @@ namespace pCOLADnamespace
                 RegisterAllPorts();
                 break;
             }
+            //if (dm != null)
+            //{
+            //    runtype(dm);
+            //}
+        }
+        public void runtype(DynamoModel actual)
+        {
+            //!!!check if Automatic running is on
+            DynamoModel dm = actual;
+            foreach (var item in dm.Workspaces)
+            {
+                if (item.GetType() == typeof(HomeWorkspaceModel))
+                {
+                    HomeWorkspaceModel hm = (HomeWorkspaceModel)item;
+                    RunType rt = hm.RunSettings.RunType;
+                    if (rt == RunType.Automatic)
+                    {
+                        MyDataCollectorClass.AutoMaticMode = true;
+                        //dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                        //{
+                        //    System.Windows.MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
+                        //}));
+                        //hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
+                    }
+                    else
+                    {
+                        MyDataCollectorClass.AutoMaticMode = false;
+                    }
+                }
+            }
         }
 
         #endregion
@@ -474,17 +513,39 @@ namespace pCOLADnamespace
                 // Create an instance of our custom UI class (defined in xaml),
                 // and put it into the input grid.
                 var _pCOLLECTcontrol = new pCOLLECTcontrol();
+                pCOLLECT.nv = nodeView;
                 nodeView.inputGrid.Children.Add(_pCOLLECTcontrol);
 
                 // Set the data context for our control to be this class.
                 // Properties in this class which are data bound will raise 
                 // property change notifications which will update the UI.
                 _pCOLLECTcontrol.DataContext = model;
+
+                Dynamo.ViewModels.NodeViewModel vm = nodeView.ViewModel;
+                //NodeModel nm = vm.NodeModel;                
+                pCOLLECT.dvm = vm.DynamoViewModel;
+                //you need the DynamoModel to check the runtype
+                pCOLLECT.dm = dvm.Model;
+                MyDataCollectorClass.dm = pCOLLECT.dm;
+                ////looking for a window to use as owner for messages and _CSVcontrol
+                //pCOLLECT.dv = FindUpVisualTree<DynamoView>(nv);
+                //MyDataCollectorClass.dv = pCOLLECT.dv;
             }
             /// <summary>
             /// Here you can do any cleanup you require if you've assigned callbacks for particular 
             /// UI events on your node.
             /// </summary>
+            //private static T FindUpVisualTree<T>(DependencyObject initial) where T : DependencyObject
+            //{
+            //    DependencyObject current = initial;
+
+            //    while (current != null && current.GetType() != typeof(T))
+            //    {
+            //        current = VisualTreeHelper.GetParent(current);
+            //    }
+            //    return current as T;
+            //}
+
             public void Dispose() { }
 
         }
@@ -498,6 +559,11 @@ namespace pCOLADnamespace
         }
         private bool CanAddInput(object obj)
         {
+            //We need to know if Automatic mode is on. And this is first place to find out
+            if (dm != null)
+            {
+                runtype(dm);
+            }
             return true;
         }
         private void RemoveInput(object obj)

@@ -27,11 +27,13 @@ namespace MyDataCollector
     public static class MyDataCollectorClass
     {
         // later replace with an input
-        public static string sharedFile; //the project csv file in DropBox        
+        public static string sharedFile; //the project csv file in DropBox
+        public static string formerSharedFile; //a copy of the shared file path        
         public static FileSystemWatcher CSVwatcher;
         public static FileSystemWatcher ImagesWatcher;
         //public static string csvFile;//can be the sharedFile or the HistoryFile
         public static string localFile;//local copy of sharedFile
+        public static string formerLocalFile; //a copy of the localFile 
         public static string oldLocalFile;//before last changed localFile
         public static string userName;// = "Hans";
         public static bool formPopulate = false;
@@ -44,7 +46,7 @@ namespace MyDataCollector
         public static event EventHandler UpdateCSVControl = delegate { };
         public static event EventHandler<TextArgs> Message = delegate { };
         //private static DataTable mergedDataTable;
-        public static bool AutoPlay;
+        public static bool AutoMaticMode;
         public static string testValue;
         public static DateTime lastRead = DateTime.MinValue;
         public static DateTime lastWriteTime;
@@ -53,6 +55,7 @@ namespace MyDataCollector
         public static DynamoModel dm;
         public static bool firstRun = true;
         public static bool extShare = false;
+        //public static bool switching = false;
 
         public static void makeOldDataTable()
         {
@@ -366,9 +369,25 @@ namespace MyDataCollector
             //    m.Add("Please connect the owner name to pSHARE...");
             //    return m;
             //}
+            //store these so if you change solutions and you use different paths you can start over
+            formerSharedFile = sharedFile;
+            formerLocalFile = localFile;
 
             sharedFile = _IfilePath;
             localFile = _LfilePath;
+
+            if (!object.Equals(formerSharedFile, sharedFile) || !object.Equals(formerLocalFile, localFile))
+            {
+                //you switched solution has changed. Start over.
+                //switching = true;
+                firstRun = true;
+                formPopulate = false;
+                //UpdateCSVControl(null, EventArgs.Empty);
+            }
+            //else
+            //{
+            //    switching = false;
+            //}
             //contruct the path for the oldLocalFile
             string dir = Path.GetDirectoryName(_LfilePath);
             string fileName = Path.GetFileName(_LfilePath);
@@ -520,6 +539,10 @@ namespace MyDataCollector
             CSVwatcher.Changed += new FileSystemEventHandler(OnChanged);
             CSVwatcher.EnableRaisingEvents = true;
             ImagesWatcher = new FileSystemWatcher();
+            if (!Directory.Exists(Path.GetDirectoryName(MyDataCollectorClass.sharedFile) + "\\" + "Images" + "\\"))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(MyDataCollectorClass.sharedFile) + "\\" + "Images" + "\\");
+            }
             ImagesWatcher.Path = Path.GetDirectoryName(MyDataCollectorClass.sharedFile) + "\\" + "Images" + "\\";
             ImagesWatcher.NotifyFilter = NotifyFilters.LastWrite;
             ImagesWatcher.Filter = "*.*";//can not filter several types 
@@ -542,7 +565,7 @@ namespace MyDataCollector
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
             lastWriteTime = File.GetLastWriteTime(sharedFile);
             string msg = "Some changes occured in the shared information. I will start over... ";
-            //if (AutoPlay)
+            //if (AutoMaticMode)
             //{
             //    //stop watching because otherwise you get nummerous messages
             //    ImagesWatcher.EnableRaisingEvents = false;
@@ -575,12 +598,15 @@ namespace MyDataCollector
                      //makeOldDataTable();
                      //but hide the _CSVControl anyway to make clear something changed
                      //next line also runs when you hit Run, but is a way to hide the _CSVControl
-                     //UpdateCSVControl(null, EventArgs.Empty);
+                     UpdateCSVControl(null, EventArgs.Empty);
                      ImagesWatcher.EnableRaisingEvents = true;
                      CSVwatcher.EnableRaisingEvents = true;
                      extShare = true;
-                     //!!!try this
-                     dm.ForceRun();
+                     //if you are not in Automatic mode
+                     if (!AutoMaticMode)
+                     {
+                         dm.ForceRun();
+                     }
                  }));
                 //    }
                 //else

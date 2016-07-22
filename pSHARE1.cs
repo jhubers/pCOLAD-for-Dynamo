@@ -62,7 +62,6 @@ namespace pCOLADnamespace
                 RaisePropertyChanged("HistoryOn");
             }
         }
-        //public static bool AutoPlayOn = false;
         private bool CheckAllButton = false;
         private bool UncheckAllButton = false;
         private string _OnOffButton = "";
@@ -106,6 +105,7 @@ namespace pCOLADnamespace
                 System.Windows.MessageBox.Show(pSHARE.dv, e.Message);
             }));
         }
+        [STAThread]
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             //compares localDataTable with oldDataTable
@@ -114,11 +114,16 @@ namespace pCOLADnamespace
             //MyPropDataTable = MyDataCollectorClass.localDataTable;
             //RaisePropertyChanged("MyPropDataTable");//is done automatically if you set MyPropDataTable
             //update the solution
-
-            //but in automatic mode this causes recursion
-            //this.OnNodeModified(forceExecute: true);
-            //make sure runtype is manual
-            //runtype(dm);
+            //check if runtype is Automatic or Manual. This should be done before OnChange
+            if (dm!=null)
+            {
+            runtype(dm);
+            }
+            //in automatic mode forceExecute causes recursion
+            if (!MyDataCollectorClass.AutoMaticMode)
+            {
+                this.OnNodeModified(forceExecute: true);
+            }
             //switch off the csv display if somebody changed shared file externally
             //you can not do it there, because detection of change is in MyDataCollector
             //and you don't have access to properties of pSHARE there, also related to watch()
@@ -452,6 +457,7 @@ namespace pCOLADnamespace
                 if (_CSVControl != null)
                 {
                     _CSVControl.Close();
+                    _CSVControl = null;
                 }
                 //Application.Current.Windows throws a null error in Revit/Dynamo
 
@@ -473,7 +479,16 @@ namespace pCOLADnamespace
                     //the CSVControl should be created only once
                     //Dynamo.ViewModels.NodeViewModel vm = pSHARE.nv.ViewModel;
                     //NodeModel nm = vm.NodeModel;
-                    //Dynamo.ViewModels.DynamoViewModel dvm = vm.DynamoViewModel;                    
+                    //Dynamo.ViewModels.DynamoViewModel dvm = vm.DynamoViewModel;  
+                    //System.Windows.Application.Current.Dispatcher.Invoke((Action)delegate {
+                    //_CSVControl = new CSVControl();
+                    //});
+                    //avoid creating CSVControl from other thread than UI, because it has to be STA (single-threaded apartment)
+                    //but you get here also via watcher, CSVupdateHandler, ShowParams... So use switching as field.
+                    //if (MyDataCollectorClass.switching)
+                    //{
+                    //    return;
+                    //}
                     _CSVControl = new CSVControl();
 
                     //List<MyImageFolder> mifs = new List<MyImageFolder>();//contains MyImageFolder with prop MyImageFolderPath and List<MyImage>
@@ -620,16 +635,16 @@ namespace pCOLADnamespace
                     RunType rt = hm.RunSettings.RunType;
                     if (rt == RunType.Automatic)
                     {
-                        //MyDataCollectorClass.AutoPlay = true;
-                        dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                        {
-                            System.Windows.MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
-                        }));
-                        hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
+                        MyDataCollectorClass.AutoMaticMode = true;
+                        //dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                        //{
+                        //    System.Windows.MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
+                        //}));
+                        //hm.RunSettings.RunType = RunType.Manual;//is needed to avoid hanging when filesystemwatcher fires
                     }
                     else
                     {
-                        MyDataCollectorClass.AutoPlay = false;
+                        MyDataCollectorClass.AutoMaticMode = false;
                     }
                 }
             }
@@ -643,7 +658,7 @@ namespace pCOLADnamespace
             {
                 //if the user clicks the close button top right the .Close method gives an error!!!
                 _CSVControl.Close();
-
+                _CSVControl = null;                
             }
             //foreach (Window w in Application.Current.Windows)
             //{
@@ -710,12 +725,15 @@ namespace pCOLADnamespace
                 else
                 {
                     //MyPropDataTable = MyDataCollectorClass.localDataTable;
+                    if (!MyDataCollectorClass.AutoMaticMode)
+                    {
                     dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
                         System.Windows.MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
                     }));
                     //set the button to red again
                     RaisePropertyChanged("OnOff");
+                    }
                 }
             }
             else
@@ -1514,6 +1532,10 @@ namespace pCOLADnamespace
             #region newCompare
             // first reset all items
             //ClearChanged();
+            if (MyDataCollectorClass.localDataTable == null)
+            {
+                return;
+            }
             foreach (DataRow localDataRow in MyDataCollectorClass.localDataTable.Rows)
             {
                 DataRow oldDataRow = MyDataCollectorClass.oldDataTable.Rows.Find(localDataRow["Parameter"]);
