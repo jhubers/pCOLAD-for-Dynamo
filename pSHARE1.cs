@@ -128,11 +128,11 @@ namespace pCOLADnamespace
             //you can not do it there, because detection of change is in MyDataCollector
             //and you don't have access to properties of pSHARE there, also related to watch()
             //which is also there
-            if (!MyDataCollectorClass.formPopulate)
-            {
-                ShowParams(OnOff);//closes the CSVControl and sets the On property to false
-                RaisePropertyChanged("OnOff"); //sets the OnOff button to red
-            }
+            //if (!MyDataCollectorClass.formPopulate)
+            //{
+            //    ShowParams(OnOff);//closes the CSVControl and sets the On property to false
+            //    RaisePropertyChanged("OnOff"); //sets the OnOff button to red
+            //}
         }
         private int _rowIndex;
         public int RowIndex

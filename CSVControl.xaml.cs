@@ -37,6 +37,7 @@ namespace pCOLADnamespace
 
         private void myXamlTable_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
+            DataGridLength initialWidth = 100;
             //Set properties on the columns during auto-generation
             switch (e.Column.Header.ToString())
             {
@@ -59,7 +60,8 @@ namespace pCOLADnamespace
                     e.Column = commentCol;
                     e.Column.Header = e.PropertyName;
                     e.Column.HeaderTemplate = (DataTemplate)FindResource("commentHeader");
-                    //e.Column.Width = 100;
+                    //e.Column.Width = new DataGridLength(0,DataGridLengthUnitType.SizeToHeader);
+                    e.Column.Width = 100;
                     break;
 
                 default:
@@ -71,10 +73,10 @@ namespace pCOLADnamespace
                     col.CellStyle = (Style)FindResource("AvoidCellSelection");
                     e.Column = col;
                     e.Column.Header = e.PropertyName;
-                    //e.Column.Width = 100;
+                    //e.Column.Width = new DataGridLength(0, DataGridLengthUnitType.SizeToHeader);
+                    e.Column.Width = 100;
                     break;
             }
-
 
             //switch (e.Column.Header.ToString())
             //{

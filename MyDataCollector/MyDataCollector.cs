@@ -55,6 +55,8 @@ namespace MyDataCollector
         public static DynamoModel dm;
         public static bool firstRun = true;
         public static bool extShare = false;
+        private static string ProjectName;
+
         //public static bool switching = false;
 
         public static void makeOldDataTable()
@@ -310,7 +312,8 @@ namespace MyDataCollector
         //}
         public static List<string> pSHAREinputs(List<List<object>> _NinputsO, string _ProjName, string _IdirPath, string _LdirPath, string _owner)
         {
-            //this runs every time you hit Run in Dynamo.            
+            //this runs every time you hit Run in Dynamo.
+            ProjectName = _ProjName;
             List<string> m = new List<string>();
             //construct the file paths
             //check if necessary imputs are given
@@ -564,7 +567,7 @@ namespace MyDataCollector
             //show the message on top of Dynamo. Because it comes from a different thread
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
             lastWriteTime = File.GetLastWriteTime(sharedFile);
-            string msg = "Some changes occured in the shared information. I will start over... ";
+            string msg = "Some changes occured in " + ProjectName + " project. I will start over... ";
             //if (AutoMaticMode)
             //{
             //    //stop watching because otherwise you get nummerous messages
@@ -593,9 +596,9 @@ namespace MyDataCollector
                      File.Copy(sharedFile, localFile, true);
                      formPopulate = false;
                      //since you have to hit Run next three lines will run there
-                     //openCSV(sharedFile);
-                     //addNewPararemeters();
-                     //makeOldDataTable();
+                     openCSV(sharedFile);
+                     addNewPararemeters();
+                     makeOldDataTable();
                      //but hide the _CSVControl anyway to make clear something changed
                      //next line also runs when you hit Run, but is a way to hide the _CSVControl
                      UpdateCSVControl(null, EventArgs.Empty);
@@ -603,10 +606,11 @@ namespace MyDataCollector
                      CSVwatcher.EnableRaisingEvents = true;
                      extShare = true;
                      //if you are not in Automatic mode
-                     if (!AutoMaticMode)
-                     {
-                         dm.ForceRun();
-                     }
+                     //if (!AutoMaticMode)
+                     //{
+                     //dm.ForceRun();
+                     //openCSV(sharedFile);
+                     //}
                  }));
                 //    }
                 //else
