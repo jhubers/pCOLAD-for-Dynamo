@@ -351,7 +351,7 @@ namespace pCOLADnamespace
                     RunType rt = hm.RunSettings.RunType;
                     if (rt == RunType.Automatic)
                     {
-                        MyDataCollectorClass.AutoMaticMode = true;
+                        MyDataCollectorClass.AutoMaticMode = "true";
                         //dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                         //{
                         //    System.Windows.MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
@@ -360,7 +360,7 @@ namespace pCOLADnamespace
                     }
                     else
                     {
-                        MyDataCollectorClass.AutoMaticMode = false;
+                        MyDataCollectorClass.AutoMaticMode = "false";
                     }
                 }
             }
@@ -562,7 +562,10 @@ namespace pCOLADnamespace
             //We need to know if Automatic mode is on. And this is first place to find out
             if (dm != null)
             {
-                runtype(dm);
+                if (MyDataCollectorClass.AutoMaticMode=="")
+                {
+                    runtype(dm); 
+                }
             }
             return true;
         }

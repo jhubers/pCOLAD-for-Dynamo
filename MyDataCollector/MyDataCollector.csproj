@@ -35,27 +35,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DSCoreNodes">
-      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.0\DSCoreNodes.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.1\DSCoreNodes.dll</HintPath>
     </Reference>
     <Reference Include="DynamoCore">
-      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.0\DynamoCore.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.1\DynamoCore.dll</HintPath>
     </Reference>
     <Reference Include="DynamoCoreWpf">
-      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.0\DynamoCoreWpf.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.1\DynamoCoreWpf.dll</HintPath>
     </Reference>
     <Reference Include="DynamoServices">
-      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.0\DynamoServices.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.1\DynamoServices.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Prism">
-      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.0\Microsoft.Practices.Prism.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>C:\Program Files\Dynamo\Dynamo Core\1.1\Microsoft.Practices.Prism.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>

@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Windows.Media.Imaging;
 using Dynamo.Graph.Nodes.CustomNodes;
+using Dynamo.Events;
 
 namespace pCOLADnamespace
 {
@@ -115,12 +116,15 @@ namespace pCOLADnamespace
             //RaisePropertyChanged("MyPropDataTable");//is done automatically if you set MyPropDataTable
             //update the solution
             //check if runtype is Automatic or Manual. This should be done before OnChange
-            if (dm!=null)
+            if (dm != null)
             {
-            runtype(dm);
+                if (MyDataCollectorClass.AutoMaticMode == "")
+                {
+                    runtype(dm);
+                }
             }
             //in automatic mode forceExecute causes recursion
-            if (!MyDataCollectorClass.AutoMaticMode)
+            if (MyDataCollectorClass.AutoMaticMode == "false")
             {
                 this.OnNodeModified(forceExecute: true);
             }
@@ -540,7 +544,7 @@ namespace pCOLADnamespace
             {
                 dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 {
-                    System.Windows.MessageBox.Show(dv, "Exception: {0}", e.Message);
+                    System.Windows.MessageBox.Show(dv, "Exception: " + e.Message);
                 }));
             }
         }
@@ -567,6 +571,12 @@ namespace pCOLADnamespace
                 pSHARE.dvm = vm.DynamoViewModel;
                 //you need the DynamoModel to check the runtype
                 pSHARE.dm = dvm.Model;
+                //next line subscribes to event when Dynamo shuts down
+                dm.CleaningUp += dynFileClosing;
+                //next line subscribes to event that fires when closing workspace used for putting nodes into a custom node
+                //Dynamo.Events.WorkspaceEvents.WorkspaceRemoveStarted += WorkspaceClosing;
+                //next line subscribes to event that fires when closing dyn file or opening new or other                
+                Dynamo.Events.WorkspaceEvents.WorkspaceClearing += dynFileClosing;
                 MyDataCollectorClass.dm = pSHARE.dm;
                 //looking for a window to use as owner for messages and _CSVcontrol
                 pSHARE.dv = FindUpVisualTree<DynamoView>(nv);
@@ -575,8 +585,49 @@ namespace pCOLADnamespace
                 //first you need an instance of the DynamoModel//doesn't work and now because
                 //DynamoView is owner of _CSVcontrol is closes automatically
                 //dm.ShutdownStarted += closeCSVcontrolFrom_dm(dm);
+                //try to subscribe to closing of workspace (closing of a dyn file)
+                //HomeWorkspaceModel hwm = (HomeWorkspaceModel)vm.WorkspaceViewModel;
+                //dvm.RequestClose += dynFileClosing(dvm,EventArgs.Empty);
 
             }
+
+            private void WorkspaceClosing(WorkspacesModificationEventArgs args)
+            {
+                dynFileClosing();
+            }
+
+            private void dynFileClosing()
+            {
+                //check if there are no unshared comments
+                string clipboardComments = "";
+                foreach (DataRow r in MyDataCollectorClass.localDataTable.Rows)
+                {
+                    Item commentCheck = (Item)r["Comments"];
+                    if (commentCheck.IsMyChanged)
+                    {
+                        clipboardComments = clipboardComments + Environment.NewLine + commentCheck.textValue;
+                        //break;
+                    }
+                }
+                if (clipboardComments !="")
+                {
+                    clipboardComments.Remove(0, 1);
+                    System.Windows.Clipboard.SetText(clipboardComments);
+                    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+            {
+                DialogResult answer = (DialogResult)System.Windows.MessageBox.Show(dv, "You have changed and unshared comments. I'll copy them to the clipboard... ", "File closing can't be canceled in Dynamo 1.1...", MessageBoxButton.OK);
+
+                    //if (answer==DialogResult.Cancel)
+                    //{
+                    //    //next line should not have any influence because the command already started
+                    //    //request for improvement has been done in Dynamo GitHub under title:
+                    //    //Help voor package developers?  #6956
+                    //    //dvm.CloseHomeWorkspaceCommand.CanExecute(false);
+                    //}
+                }));
+
+                }            }
+
             /// <summary>
             /// Here you can do any cleanup you require if you've assigned callbacks for particular 
             /// UI events on your node.
@@ -635,7 +686,7 @@ namespace pCOLADnamespace
                     RunType rt = hm.RunSettings.RunType;
                     if (rt == RunType.Automatic)
                     {
-                        MyDataCollectorClass.AutoMaticMode = true;
+                        MyDataCollectorClass.AutoMaticMode = "true";
                         //dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                         //{
                         //    System.Windows.MessageBox.Show(pSHARE.dv, "Sorry, Automatic is not supported at this moment...");
@@ -644,7 +695,7 @@ namespace pCOLADnamespace
                     }
                     else
                     {
-                        MyDataCollectorClass.AutoMaticMode = false;
+                        MyDataCollectorClass.AutoMaticMode = "false";
                     }
                 }
             }
@@ -658,7 +709,7 @@ namespace pCOLADnamespace
             {
                 //if the user clicks the close button top right the .Close method gives an error!!!
                 _CSVControl.Close();
-                _CSVControl = null;                
+                _CSVControl = null;
             }
             //foreach (Window w in Application.Current.Windows)
             //{
@@ -725,14 +776,14 @@ namespace pCOLADnamespace
                 else
                 {
                     //MyPropDataTable = MyDataCollectorClass.localDataTable;
-                    if (!MyDataCollectorClass.AutoMaticMode)
+                    if (MyDataCollectorClass.AutoMaticMode == "false")
                     {
-                    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                    {
-                        System.Windows.MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
-                    }));
-                    //set the button to red again
-                    RaisePropertyChanged("OnOff");
+                        dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                        {
+                            System.Windows.MessageBox.Show(pSHARE.dv, "Please hit the Run button first...");
+                        }));
+                        //set the button to red again
+                        RaisePropertyChanged("OnOff");
                     }
                 }
             }
@@ -1092,7 +1143,6 @@ namespace pCOLADnamespace
             {
                 return;
             }
-
             if (searchFolder.Equals("empty"))
             #region fill files and Imagelist
             {
@@ -1205,8 +1255,13 @@ namespace pCOLADnamespace
             //if the user Canceled one of the renaming you will not get here because of the return;s
             foreach (KeyValuePair<string, string> entry in CopyDict)
             {
-                //don't have the watcher give an alert
+                //check if the targetfolder exist otherwise make it
+                if (!Directory.Exists(Path.GetDirectoryName(entry.Value)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(entry.Value));
+                }
                 File.Copy(entry.Key, entry.Value, true);
+                //don't have the watcher give an alert
                 while (!File.Exists(entry.Value))
                 {
                     Thread.Sleep(1000);
@@ -1264,6 +1319,10 @@ namespace pCOLADnamespace
                     ImageList.Add(im);
                 }
             }
+            if (!Directory.Exists(searchFolder))
+            {
+                Directory.CreateDirectory(searchFolder);
+            }
             if (System.Windows.Clipboard.GetDataObject() != null)
             {
                 System.Windows.IDataObject data = System.Windows.Clipboard.GetDataObject();
@@ -1272,6 +1331,7 @@ namespace pCOLADnamespace
                     SaveFileDialog saveFileDialog1 = new SaveFileDialog();
                     if (!searchFolder.Equals("empty"))
                     {
+                        //check if the searchFolder exists, if not make it
                         saveFileDialog1.CustomPlaces.Add(searchFolder);
                         saveFileDialog1.InitialDirectory = searchFolder;
                     }

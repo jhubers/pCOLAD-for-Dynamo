@@ -46,7 +46,7 @@ namespace MyDataCollector
         public static event EventHandler UpdateCSVControl = delegate { };
         public static event EventHandler<TextArgs> Message = delegate { };
         //private static DataTable mergedDataTable;
-        public static bool AutoMaticMode;
+        public static string AutoMaticMode = "";
         public static string testValue;
         public static DateTime lastRead = DateTime.MinValue;
         public static DateTime lastWriteTime;
