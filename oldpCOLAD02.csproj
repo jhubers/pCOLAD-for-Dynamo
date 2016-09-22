@@ -182,6 +182,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="MyDataCollector\MyDataCollector.csproj">
+      <Project>{497fc54c-6433-47f2-b92e-e500bc0df80e}</Project>
+      <Name>MyDataCollector</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\Writing.bmp" />
   </ItemGroup>
   <ItemGroup>
@@ -189,12 +196,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="MyDataCollector\MyDataCollector.csproj">
-      <Project>{497fc54c-6433-47f2-b92e-e500bc0df80e}</Project>
-      <Name>MyDataCollector</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

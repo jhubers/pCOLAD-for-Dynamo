@@ -13,8 +13,9 @@
              SizeToContent="WidthAndHeight" 
              MaxHeight="{DynamicResource {x:Static SystemParameters.MaximizedPrimaryScreenHeightKey}}"
              Top="{DynamicResource {x:Static SystemParameters.VirtualScreenTopKey}}"    
-             Title="pCOLAD" Closing="Window_Closing" Focusable="True" MouseDown="pCOLADwindow_MouseDown"
+             Title="pCOLAD" Closing="Window_Closing" Focusable="True" MouseLeftButtonDown="pCOLADwindow_MouseLeftButtonDown"
              >
+    <!--MouseDown="pCOLADwindow_MouseDown"-->
     <Window.Resources>
         <local:pSHARE x:Key="myDataContext"/>
         <local:BoolToOppositeBoolConverter x:Key="BoolToOppositeBoolConverter"
@@ -139,9 +140,10 @@
                 <TextBlock x:Name="CommentTextBlock"
             Text="{Binding TextValue, Mode=TwoWay}" TextTrimming="CharacterEllipsis"
             Background="{Binding Converter={StaticResource MyObjectToBackgroundConverter}, Mode=OneWay}"
-            MouseUp="CommentTextBlock_MouseUp" Tag="{Binding ElementName=CommentTextBox}" VerticalAlignment="Top"/>
+            MouseUp="CommentTextBlock_MouseUp" Tag="{Binding ElementName=CommentTextBox}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
                 <TextBox x:Name="CommentTextBox" Text="{Binding TextValue, Mode=TwoWay}" Visibility="Hidden"
-                         LostFocus="TextBox_LostFocus" Focusable="True" VerticalAlignment="Top" />
+                         LostFocus="TextBox_LostFocus" Focusable="True" VerticalAlignment="Stretch" 
+                         PreviewTextInput="CommentTextBox_PreviewTextInput"/>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="commentHeader">

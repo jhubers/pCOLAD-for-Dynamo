@@ -279,19 +279,40 @@ namespace MyDataCollector
         {
             if (!File.Exists(filename))
             {
-                MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                if (MyDataCollectorClass.dv == null)
                 {
-                    MessageBoxResult result = MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
+                    //this occurs when you start a dyn file while common and local files don't exist
+                    MessageBoxResult result = MessageBox.Show("We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
                     switch (result)
                     {
                         case MessageBoxResult.Yes:
+                            Directory.CreateDirectory(Path.GetDirectoryName(filename));
+                            //File.Create(filename).Close();
                             File.WriteAllText(filename, "Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
                             return;
                         case MessageBoxResult.No:
-                            MessageBox.Show(MyDataCollectorClass.dv, "Please connect the right file path and run the application again...", "pCOLAD");
+                            MessageBox.Show("Please connect the right file path and run the application again...", "pCOLAD");
                             return;
                     }
-                }));
+                }
+                else
+                {
+                    MyDataCollectorClass.dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                    {
+                        MessageBoxResult result2 = MessageBox.Show(MyDataCollectorClass.dv, "We couldn't find the file: " + filename + ". Would you like me to create it?", "pCOLAD", MessageBoxButton.YesNo);
+                        switch (result2)
+                        {
+                            case MessageBoxResult.Yes:
+                                Directory.CreateDirectory(Path.GetDirectoryName(filename));
+                                //File.Create(filename).Close();
+                                File.WriteAllText(filename, "Images;Comments;Parameter;New Value;Obstruction;Old Value;Owner;Importance;Date;Author");
+                                return;
+                            case MessageBoxResult.No:
+                                MessageBox.Show(MyDataCollectorClass.dv, "Please connect the right file path and run the application again...", "pCOLAD");
+                                return;
+                        }
+                    }));
+                }
             }
         }
 
@@ -404,7 +425,7 @@ namespace MyDataCollector
         }
         public static string ConvertToString(object obj)
         {
-            if (obj !=null)
+            if (obj != null)
             {
                 System.Globalization.CultureInfo customCultureInfo = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
                 customCultureInfo.NumberFormat.NumberDecimalSeparator = ".";

@@ -26,7 +26,6 @@ namespace MyDataCollector
     [IsVisibleInDynamoLibrary(false)]
     public static class MyDataCollectorClass
     {
-        // later replace with an input
         public static string sharedFile; //the project csv file in DropBox
         public static string formerSharedFile; //a copy of the shared file path        
         public static FileSystemWatcher CSVwatcher;
@@ -44,6 +43,7 @@ namespace MyDataCollector
         public static DataTable csvDataTable;
         public static DataTable oldDataTable;
         public static event EventHandler UpdateCSVControl = delegate { };
+        public static event EventHandler Update_pSHARE = delegate { };
         public static event EventHandler<TextArgs> Message = delegate { };
         //private static DataTable mergedDataTable;
         public static string AutoMaticMode = "";
@@ -342,12 +342,17 @@ namespace MyDataCollector
                 {
                     try
                     {
+                        string checkTypeString = listObjects[i].GetType().ToString();
+                        string msg = "Please only connect lists of strings in right format...";
+                        if (listObjects[i].GetType() != typeof(string))
+                        {
+                            m.Add(msg);
+                            return m;
+                        }
                         listStrings.Add((string)listObjects[i]);
-
                     }
                     catch (Exception)
                     {
-                        string msg = "Please only connect lists of strings in right format...";
                         Message(null, new TextArgs(msg));
                         m.Add(msg);
                         return m;
@@ -405,7 +410,11 @@ namespace MyDataCollector
             if (firstRun)
             {
                 //no need to check if localFile exists. In first run always overwrite with DropBox file
-                //But what if the user changes the paths?!!! You should keep track of that. Later.
+                //But what if the user changes the paths?!!! So check anyway.
+                if (!File.Exists(localFile))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(localFile));
+                }
                 File.Copy(_IfilePath, _LfilePath, true);
                 //copy local file to oldLocalFile if the latter don't exist
                 if (!File.Exists(oldLocalFile))
@@ -418,6 +427,7 @@ namespace MyDataCollector
                 //create filesystemwatcher also only once
                 watch();
                 openCSV(sharedFile);
+                DataTable outputTable = localDataTable.Copy();
                 makeOldDataTable();
             }
             userName = _owner;
@@ -483,6 +493,8 @@ namespace MyDataCollector
                 addNewPararemeters();
                 //now localDataTable contains the union of the csv file and the new parameters
                 //so, you can use the columns "Parameter" and "New Value"
+                //But if you use a parameter from pSHARE's output for a pCOLLECT
+                //you get a cyclic depency error.
                 for (int i = 0; i < localDataTable.Rows.Count; i++)
                 {
                     if (localDataTable.Rows[i]["Obstruction"].ToString() != "")
@@ -586,32 +598,56 @@ namespace MyDataCollector
                 //{
                 //Application.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                 //Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
-                 {
-                     //MessageBox.Show(Application.Current.MainWindow, msg);
-                     MessageBox.Show(dv, msg);
-                     //Change the background colour to red
+                if (dv == null)
+                {
+                    MessageBox.Show(msg);
+                    File.Copy(sharedFile, localFile, true);
+                    formPopulate = false;
+                    //since you have to hit Run next three lines will run there
+                    openCSV(sharedFile);
+                    addNewPararemeters();
+                    makeOldDataTable();
+                    //but hide the _CSVControl anyway to make clear something changed
+                    //next line also runs when you hit Run, but is a way to hide the _CSVControl
+                    UpdateCSVControl(null, EventArgs.Empty);
+                    Update_pSHARE(null, EventArgs.Empty);
+                    ImagesWatcher.EnableRaisingEvents = true;
+                    CSVwatcher.EnableRaisingEvents = true;
+                    extShare = true;
+                    //but pSHARE doesn't update
+                }
+                else
+                {
+                    dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
+                     {
+                         //MessageBox.Show(Application.Current.MainWindow, msg);
+                         MessageBox.Show(dv, msg);
+                         //Change the background colour to red
 
-                     //copy the sharedFile to the localFile
-                     File.Copy(sharedFile, localFile, true);
-                     formPopulate = false;
-                     //since you have to hit Run next three lines will run there
-                     openCSV(sharedFile);
-                     addNewPararemeters();
-                     makeOldDataTable();
-                     //but hide the _CSVControl anyway to make clear something changed
-                     //next line also runs when you hit Run, but is a way to hide the _CSVControl
-                     UpdateCSVControl(null, EventArgs.Empty);
-                     ImagesWatcher.EnableRaisingEvents = true;
-                     CSVwatcher.EnableRaisingEvents = true;
-                     extShare = true;
-                     //if you are not in Automatic mode
-                     //if (!AutoMaticMode)
-                     //{
-                     //dm.ForceRun();
-                     //openCSV(sharedFile);
-                     //}
-                 }));
+                         //copy the sharedFile to the localFile
+                         File.Copy(sharedFile, localFile, true);
+                         formPopulate = false;
+                         //since you have to hit Run next three lines will run there
+                         openCSV(sharedFile);
+                         addNewPararemeters();
+                         makeOldDataTable();
+                         //but hide the _CSVControl anyway to make clear something changed
+                         //next line also runs when you hit Run, but is a way to hide the _CSVControl
+                         UpdateCSVControl(null, EventArgs.Empty);
+                         Update_pSHARE(null, EventArgs.Empty);
+                         ImagesWatcher.EnableRaisingEvents = true;
+                         CSVwatcher.EnableRaisingEvents = true;
+                         extShare = true;
+                         //but pSHARE doesn't update
+
+                         //if you are not in Automatic mode
+                         //if (!AutoMaticMode)
+                         //{
+                         //dm.ForceRun();
+                         //openCSV(sharedFile);
+                         //}
+                     }));
+                }
                 //    }
                 //else
                 //{

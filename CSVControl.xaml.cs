@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls.Primitives;
 using System.IO;
+using System.Globalization;
 
 namespace pCOLADnamespace
 {
@@ -177,10 +178,6 @@ namespace pCOLADnamespace
             Owner.Focus();
         }
 
-
-        private void CommentChanged(object sender, RoutedEventArgs e)
-        {
-        }
         //static public void BringToFront(Panel pParent, ContentPresenter pToMove)
         //{
         //    try
@@ -287,20 +284,21 @@ namespace pCOLADnamespace
 
         }
 
-        private void pCOLADwindow_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            //You need a way to make a comment cell loose focus when you click
-            //somewhere else. E.g. the Share button.
-            try
-            {
-                pCOLADwindow.Share.Focus();
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("This occurs when clicked outside the comment...");
-                //throw;
-            }
-        }
+        //private void pCOLADwindow_MouseDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    //You need a way to make a comment cell loose focus when you click
+        //    //somewhere else. E.g. the Share button. But it should not interfere
+        //    //with the contextmenu of the images...!!!
+        //    try
+        //    {
+        //        pCOLADwindow.Share.Focus();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        MessageBox.Show("This occurs when clicked outside the comment...");
+        //        //throw;
+        //    }
+        //}
 
         private void myImage_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -459,10 +457,47 @@ namespace pCOLADnamespace
                 lIt.SetSame();
             }
         }
+        private Size MeasureTextBlockString(string candidate, TextBlock textBlock)
+        {
+            var formattedText = new FormattedText(
+                candidate,
+                CultureInfo.CurrentUICulture,
+                FlowDirection.LeftToRight,
+                new Typeface(textBlock.FontFamily, textBlock.FontStyle, textBlock.FontWeight, textBlock.FontStretch),
+                textBlock.FontSize,
+                Brushes.Black);
 
+            return new Size(formattedText.Width, formattedText.Height);
+        }
+        private Size MeasureTextBoxtring(string candidate, TextBox textBox)
+        {
+            var formattedText = new FormattedText(
+                candidate,
+                CultureInfo.CurrentUICulture,
+                FlowDirection.LeftToRight,
+                new Typeface(textBox.FontFamily, textBox.FontStyle, textBox.FontWeight, textBox.FontStretch),
+                textBox.FontSize,
+                Brushes.Black);
+
+            return new Size(formattedText.Width, formattedText.Height);
+        }
         private void CommentTextBlock_MouseUp(object sender, MouseButtonEventArgs e)
         {
             TextBlock tbl = (TextBlock)sender;
+            string tblText = tbl.Text;
+            //int tblTextLength = tblText.Length;
+            Size tblCalculatedSize = MeasureTextBlockString(tblText, tbl);
+            //Size tblDesiredSize = tbl.DesiredSize;
+            //Size tblRenderSize = tbl.RenderSize;
+            //double tblActualWidth = tbl.ActualWidth;
+            //Size tblSize = tblCalculatedSize;
+            double tblWidth = tblCalculatedSize.Width + 20;
+            //you should set the column width to a minimum length, or if the existing text
+            //in the clicked cell is longer to that value
+            if (tblWidth < 60)
+            {
+                tblWidth = 60;
+            }
             tbl.Visibility = Visibility.Hidden;
             TextBox tbx = (TextBox)tbl.Tag;
             tbx.SelectAll();
@@ -473,10 +508,45 @@ namespace pCOLADnamespace
             {
                 if ((string)myXamlTable.Columns[i].Header == "Comments")
                 {
-                    myXamlTable.Columns[i].Width = DataGridLength.Auto;
+                    //myXamlTable.Columns[i].Width = DataGridLength.Auto;
+                    myXamlTable.Columns[i].Width = new DataGridLength(tblWidth, DataGridLengthUnitType.Pixel);
                     break;
                 }
             }
+        }
+
+        private void CommentTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox tb = (TextBox)sender;
+            string tbText = tb.Text;
+            Size tbCaluculatedSize = MeasureTextBoxtring(tbText,tb);
+            double tbWidth = tbCaluculatedSize.Width + 20;
+            for (int i = 0; i < myXamlTable.Columns.Count; i++)
+            {
+                if ((string)myXamlTable.Columns[i].Header == "Comments")
+                {
+                    //myXamlTable.Columns[i].Width = DataGridLength.Auto;
+                    myXamlTable.Columns[i].Width = new DataGridLength(tbWidth, DataGridLengthUnitType.Pixel);
+                    break;
+                }
+            }
+        }
+
+        private void pCOLADwindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //You need a way to make a comment cell loose focus when you click
+            //somewhere else. E.g. the Share button. But it should not interfere
+            //with the contextmenu of the images...!!!
+            try
+            {
+                pCOLADwindow.Share.Focus();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("This occurs when clicked outside the comment...");
+                //throw;
+            }
+
         }
     }
     static class ExtensionHelpers

@@ -107,6 +107,11 @@ namespace pCOLADnamespace
             }));
         }
         [STAThread]
+        public void pSHAREupdateHandler(object o, EventArgs e)
+        {
+            this.OnNodeModified(forceExecute: true);
+        }
+        [STAThread]
         public void CSVUpdateHandler(object o, EventArgs e)
         {
             //compares localDataTable with oldDataTable
@@ -123,7 +128,9 @@ namespace pCOLADnamespace
                     runtype(dm);
                 }
             }
-            //in automatic mode forceExecute causes recursion
+            //in automatic mode forceExecute causes recursion, because in MyDataCollector pSHAREinputs routine
+            //you call the CSVUpdate handler
+            //So make a pSHARE update handler and call it in OnChange
             if (MyDataCollectorClass.AutoMaticMode == "false")
             {
                 this.OnNodeModified(forceExecute: true);
@@ -383,6 +390,7 @@ namespace pCOLADnamespace
         {
             //you get here as soon as you start your Dynamo file with a pSHARE node in it.
             MyDataCollectorClass.UpdateCSVControl += CSVUpdateHandler;
+            MyDataCollectorClass.Update_pSHARE += pSHAREupdateHandler;
             MyDataCollectorClass.Message += MessageHandler;
             InPortData.Add(new PortData("N", "Input (a List.CreateList) of pCOLLECT output(s)"));
             InPortData.Add(new PortData("PN", "Input a project name (Code Bolck)"));
@@ -424,7 +432,7 @@ namespace pCOLADnamespace
 
         public override IEnumerable<AssociativeNode> BuildOutputAst(List<AssociativeNode> inputAstNodes)
         {
-            //you get here everytime that solution runs
+            //you get here everytime that solution runs and input changed
             //var e = new Func<object, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREemptyInput);
             var t = new Func<List<List<object>>, string, string, string, string, List<string>>(MyDataCollectorClass.pSHAREinputs);
             //this it to prepare a function for the pSHARE custom node. It runs at the start. You can not debug during
@@ -588,7 +596,6 @@ namespace pCOLADnamespace
                 //try to subscribe to closing of workspace (closing of a dyn file)
                 //HomeWorkspaceModel hwm = (HomeWorkspaceModel)vm.WorkspaceViewModel;
                 //dvm.RequestClose += dynFileClosing(dvm,EventArgs.Empty);
-
             }
 
             private void WorkspaceClosing(WorkspacesModificationEventArgs args)
@@ -609,7 +616,7 @@ namespace pCOLADnamespace
                         //break;
                     }
                 }
-                if (clipboardComments !="")
+                if (clipboardComments != "")
                 {
                     clipboardComments.Remove(0, 1);
                     System.Windows.Clipboard.SetText(clipboardComments);
@@ -617,16 +624,17 @@ namespace pCOLADnamespace
             {
                 DialogResult answer = (DialogResult)System.Windows.MessageBox.Show(dv, "You have changed and unshared comments. I'll copy them to the clipboard... ", "File closing can't be canceled in Dynamo 1.1...", MessageBoxButton.OK);
 
-                    //if (answer==DialogResult.Cancel)
-                    //{
-                    //    //next line should not have any influence because the command already started
-                    //    //request for improvement has been done in Dynamo GitHub under title:
-                    //    //Help voor package developers?  #6956
-                    //    //dvm.CloseHomeWorkspaceCommand.CanExecute(false);
-                    //}
-                }));
+                //if (answer==DialogResult.Cancel)
+                //{
+                //    //next line should not have any influence because the command already started
+                //    //request for improvement has been done in Dynamo GitHub under title:
+                //    //Help voor package developers?  #6956
+                //    //dvm.CloseHomeWorkspaceCommand.CanExecute(false);
+                //}
+            }));
 
-                }            }
+                }
+            }
 
             /// <summary>
             /// Here you can do any cleanup you require if you've assigned callbacks for particular 
