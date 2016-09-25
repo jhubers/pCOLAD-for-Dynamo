@@ -607,6 +607,10 @@ namespace pCOLADnamespace
             {
                 //check if there are no unshared comments
                 string clipboardComments = "";
+                if (MyDataCollectorClass.localDataTable == null)
+                {
+                    return;
+                }
                 foreach (DataRow r in MyDataCollectorClass.localDataTable.Rows)
                 {
                     Item commentCheck = (Item)r["Comments"];
