@@ -26,6 +26,8 @@ namespace MyDataCollector
     [IsVisibleInDynamoLibrary(false)]
     public static class MyDataCollectorClass
     {
+
+        public static bool myShare = false; //used to avoid warning if you hit Share button yourself
         public static string sharedFile; //the project csv file in DropBox
         public static string formerSharedFile; //a copy of the shared file path        
         public static FileSystemWatcher CSVwatcher;
@@ -574,11 +576,16 @@ namespace MyDataCollector
         private static void OnChanged(object source, FileSystemEventArgs e)
         {
             //stop watching because otherwise you get nummerous messages (that doesn't work)
+            if (myShare)
+            {
+                return;
+            }
             ImagesWatcher.EnableRaisingEvents = false;
             CSVwatcher.EnableRaisingEvents = false;
             //show the message on top of Dynamo. Because it comes from a different thread
             //you need a dispatcher. Should not work if you save yourself. So disable in Share command.
             lastWriteTime = File.GetLastWriteTime(sharedFile);
+            //DateTime timeSpan = lastRead.AddSeconds(1);
             string msg = "Some changes occured in " + ProjectName + " project. I will start over... ";
             //if (AutoMaticMode)
             //{
@@ -588,6 +595,7 @@ namespace MyDataCollector
             //}
             if (lastWriteTime != lastRead)
             {
+                lastRead = lastWriteTime;
                 //if (Application.Current != null) //in Revit Application.Current is null!
                 //{
                 //if (!Application.Current.Dispatcher.CheckAccess())
@@ -613,8 +621,7 @@ namespace MyDataCollector
                     Update_pSHARE(null, EventArgs.Empty);
                     ImagesWatcher.EnableRaisingEvents = true;
                     CSVwatcher.EnableRaisingEvents = true;
-                    extShare = true;
-                    //but pSHARE doesn't update
+                    extShare = true;                    
                 }
                 else
                 {
@@ -682,7 +689,6 @@ namespace MyDataCollector
                 //    CSVwatcher.EnableRaisingEvents = true;
                 //}
                 //}
-                lastRead = lastWriteTime;
             }
             else
             {

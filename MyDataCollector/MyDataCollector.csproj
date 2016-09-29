@@ -149,12 +149,12 @@ REM echo f |xcopy /r /y “$(SolutionDir)\DynamoPackages\pCOLADpackage\*.*” �
       <Configs Include="$(OutDir)*.config" />
     </ItemGroup>
     <!--
-    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\dyf" />
-    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\extra" />
+    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLAD\dyf" />
+    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLAD\extra" />
 -->
-    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Configs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
+    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\bin\" />
+    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\extra\" />
+    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\bin\" />
+    <Copy SourceFiles="@(Configs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\extra\" />
   </Target>
 </Project>

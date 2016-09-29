@@ -319,6 +319,7 @@ namespace pCOLADnamespace
                         }
                     }
                 }
+                pSHAREupdateHandler(null, EventArgs.Empty);
             }
         }
         private void checkOldDataTable(string _cellContent, DataRow _dr)
@@ -895,7 +896,10 @@ namespace pCOLADnamespace
                     csv = Functions.ToCSV(myPropDataTable, "myPropDataTable");
                     //myPropDataTable = MyDataCollectorClass.localDataTable;
                     //avoid SystemFileWatcher to fire when you save the csv file yourself.
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+                    //this often doesn't work
+                    //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+                    //Thread.Sleep(2000);
+                    MyDataCollectorClass.myShare = true;
                     File.WriteAllText(MyDataCollectorClass.sharedFile, csv);
                     //in Grasshopper save to local is not done, but there you run automatically and reload
                     //and copy local the sharedFile every time. Here only at start of a session with pSHARE
@@ -958,46 +962,6 @@ namespace pCOLADnamespace
                     {
                         File.AppendAllText(historyFile, Environment.NewLine + historyCSV);
                     }
-                    #region old
-                    ////in order to see the changes in the display of the parameters you must update 
-                    ////the dependency property MyPropDataTable
-                    ////or simply set isChanged of all items to false
-                    ////no that doesn't go to the converter
-                    ////ClearChanged();
-                    ////myPropDataTable = MyDataCollectorClass.localDataTable;
-                    ////closeCSVControl();
-                    ////RaisePropertyChanged("MyPropDataTable");
-                    ////foreach (DataRow dr in myPropDataTable.Rows)
-                    ////{
-                    ////    foreach (DataColumn dc in myPropDataTable.Columns)
-                    ////    {
-                    ////        (dr[dc.ColumnName] as MyDataCollector.Item).IsChanged = false;
-                    ////    }
-                    ////}
-                    //MyDataCollectorClass.makeOldDataTable();
-                    //Compare();
-                    //ShowParams(OnOff);//closes the CSVControl and sets the On property to false
-                    //                  //RaisePropertyChanged("OnOff");
-                    //                  //CSVUpdateHandler compares localDataTable with oldDataTable
-                    //                  //updates the solution
-                    //                  //makes sure that runtype is manual
-                    //                  //switches pSHARE button to off the and closes the CSVcontrol
-                    //                  //CSVUpdateHandler(null, EventArgs.Empty);
-
-                    //////reset myPropDataTable to localDataTable to get rid of the time stamp
-                    ////myPropDataTable = MyDataCollectorClass.localDataTable;
-
-                    //////reset everything so next hit of OnOff button shows only new changes
-                    ////MyDataCollectorClass.formPopulate = false;
-                    //////since formPopulate is false you will read the csv file. But if it was just created
-                    //////there are no items
-                    ////MyDataCollectorClass.openCSV(MyDataCollectorClass.sharedFile);
-                    //////now MyDataCollectorClass.localDataTable is filled with the csv file (sharedFile)
-                    //////and MyDataCollectorClass.oldDataTable is filled with the oldLocalCopy
-                    ////MyDataCollectorClass.addNewPararemeters();
-                    //////now MyDataCollectorClass.localDataTable contains also the output of pSHARE if different
-                    ////Compare(); 
-                    #endregion
                     //checked if this is necessary are they different? No they are the same.
                     //myPropDataTable = MyDataCollectorClass.localDataTable.Copy();
                     //if you compare with oldDataTable, when was that updated? Should be the same as myPropDataTable at this moment...
@@ -1015,14 +979,14 @@ namespace pCOLADnamespace
                     ////ShowParams(OnOff);//creates a new CSVControl and sets the On property to true
                     oldCSV = String.Copy(csv);
                     ///oldCSV = csv;
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                   // MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     //find a way to close it automatically or make your own AutoMessageXaml
                     TempMessage tm = new TempMessage();
                     tm.MessageString = "CSV file successfully saved...";
                     MyDataCollector.TempMessageXAML tma = new TempMessageXAML();
                     tma.DataContext = tm;
                     tma.Show();
-
+                    MyDataCollectorClass.myShare = false;
                     //dm.ForceRun();
                     ////for Obstruction to show correctly you have to run twice. No idea why!!!
                     ////But Dynamo doesn't like this

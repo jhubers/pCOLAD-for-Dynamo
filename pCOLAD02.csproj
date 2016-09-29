@@ -215,20 +215,20 @@ Other similar extension points exist, see Microsoft.Common.targets.
   
   -->
   <Target Name="AfterBuild">
-    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\dyf" />
-    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLADpackage\extra" />
+    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLAD\dyf" />
+    <MakeDir Directories="$(SolutionDir)\DynamoPackages\pCOLAD\extra" />
     <ItemGroup>
       <Dlls Include="$(OutDir)*.dll" />
       <Pdbs Include="$(OutDir)*.pdb" />
       <Xmls Include="$(OutDir)*.xml" />
       <Configs Include="$(OutDir)*.config" />
-      <Pack Include="$(SolutionDir)\DynamoPackages\pCOLADpackage\**\*.*" />
+      <Pack Include="$(SolutionDir)\DynamoPackages\pCOLAD\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Configs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLADpackage\bin\" />
-    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\Dynamo Core\1.1\packages\pCOLADpackage\%(RecursiveDir)" />
-    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\Dynamo Revit\1.1\packages\pCOLADpackage\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Dlls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\bin\" />
+    <Copy SourceFiles="@(Pdbs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\extra\" />
+    <Copy SourceFiles="@(Xmls)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\bin\" />
+    <Copy SourceFiles="@(Configs)" DestinationFolder="$(SolutionDir)\DynamoPackages\pCOLAD\extra\" />
+    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\Dynamo Core\1.1\packages\pCOLAD\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Pack)" DestinationFolder="C:\Users\jhubers\AppData\Roaming\Dynamo\Dynamo Revit\1.1\packages\pCOLAD\%(RecursiveDir)" />
   </Target>
 </Project>
