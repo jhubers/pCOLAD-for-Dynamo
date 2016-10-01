@@ -692,6 +692,8 @@ namespace MyDataCollector
             }
             else
             {
+                ImagesWatcher.EnableRaisingEvents = true;
+                CSVwatcher.EnableRaisingEvents = true;
                 extShare = false;
             }
             // close the _CSVControl
