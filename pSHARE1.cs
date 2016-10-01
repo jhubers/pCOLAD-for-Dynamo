@@ -1112,11 +1112,15 @@ namespace pCOLADnamespace
                 sourcePaths = fd.FileNames.ToList();
                 if (sourcePaths.Count == 0)
                 {
+                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     return;
                 }
             }
             else
             {
+                MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                 return;
             }
             if (searchFolder.Equals("empty"))
@@ -1131,6 +1135,8 @@ namespace pCOLADnamespace
                 }
                 else
                 {
+                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     return;
                 }
                 //since searchFolder equals "empty" files is also empty
@@ -1219,6 +1225,8 @@ namespace pCOLADnamespace
                         if (!imageExtensions.Contains(extension))
                         {
                             System.Windows.MessageBox.Show("The file extension is not a valid image. Please try again...");
+                            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                             return;
                         }
                         //replace the fileName in dictionary CopyDict
@@ -1282,6 +1290,8 @@ namespace pCOLADnamespace
                 }
                 else
                 {
+                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     return;
                 }
                 //since searchFolder equals "empty" files is also empty
@@ -1328,6 +1338,8 @@ namespace pCOLADnamespace
                         //string dir = Path.GetDirectoryName(MyDataCollectorClass.sharedFile);
                         searchFolder = dir + "\\Images\\" + parName;
                         //searchFolder = Path.GetDirectoryName(selectedImagePath);
+                        MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                        MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                         return;
                     }
                     //if the overwriting a file is chosen, you get an IO error because the file is in use in the display
@@ -1421,10 +1433,14 @@ namespace pCOLADnamespace
                 if (result == DialogResult.OK)
                 {
                     searchFolder = fbd.SelectedPath;
+                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     return;
                 }
                 else
                 {
+                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     return;
                 }
             }
