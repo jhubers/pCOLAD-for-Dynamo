@@ -1003,7 +1003,7 @@ namespace pCOLADnamespace
                     dv.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() =>
                     {
                         System.Windows.MessageBox.Show(pSHARE.dv, "Exception: {0}", e.Message);
-                        MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                        //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                     }));
                 }
                 //pSHAREcontrol.myButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));               
@@ -1091,8 +1091,9 @@ namespace pCOLADnamespace
 
         private void _menuActionCopy(object obj)
         {
-            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = false;
-            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = false;
+            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+            MyDataCollectorClass.myShare = true;
             List<string> files = new List<string>();
             string[] filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp" };
             List<MyImage> ImageList = new List<MyImage>();
@@ -1112,15 +1113,17 @@ namespace pCOLADnamespace
                 sourcePaths = fd.FileNames.ToList();
                 if (sourcePaths.Count == 0)
                 {
-                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.myShare = false;
                     return;
                 }
             }
             else
             {
-                MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                MyDataCollectorClass.myShare = false;
                 return;
             }
             if (searchFolder.Equals("empty"))
@@ -1135,8 +1138,9 @@ namespace pCOLADnamespace
                 }
                 else
                 {
-                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.myShare = false;
                     return;
                 }
                 //since searchFolder equals "empty" files is also empty
@@ -1225,8 +1229,8 @@ namespace pCOLADnamespace
                         if (!imageExtensions.Contains(extension))
                         {
                             System.Windows.MessageBox.Show("The file extension is not a valid image. Please try again...");
-                            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
                             return;
                         }
                         //replace the fileName in dictionary CopyDict
@@ -1262,13 +1266,15 @@ namespace pCOLADnamespace
                 i0.ImageList.RemoveAt(0);
             }
             MyPropDataTable.AcceptChanges();
-            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            MyDataCollectorClass.myShare = false;
         }
         private void _menuActionAddFromClipBoard(Object obj)
         {
-            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = false;
-            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = false;
+            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+            MyDataCollectorClass.myShare = true;
             List<string> files = new List<string>();
             string[] filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp" };
             List<MyImage> ImageList = new List<MyImage>();
@@ -1290,8 +1296,9 @@ namespace pCOLADnamespace
                 }
                 else
                 {
-                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.myShare = false;
                     return;
                 }
                 //since searchFolder equals "empty" files is also empty
@@ -1338,8 +1345,9 @@ namespace pCOLADnamespace
                         //string dir = Path.GetDirectoryName(MyDataCollectorClass.sharedFile);
                         searchFolder = dir + "\\Images\\" + parName;
                         //searchFolder = Path.GetDirectoryName(selectedImagePath);
-                        MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                        MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                        //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                        //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                        MyDataCollectorClass.myShare = false;
                         return;
                     }
                     //if the overwriting a file is chosen, you get an IO error because the file is in use in the display
@@ -1410,13 +1418,15 @@ namespace pCOLADnamespace
             {
                 System.Windows.MessageBox.Show("Clipboard Empty !!");
             }
-            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            MyDataCollectorClass.myShare = false;
         }
         private void _menuActionDelete(Object obj)
         {
-            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = false;
-            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+            // MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = false;
+            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = false;
+            MyDataCollectorClass.myShare = true;
             List<string> files = new List<string>();
             string[] filters = new String[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp" };
             List<MyImage> ImageList = new List<MyImage>();
@@ -1433,14 +1443,16 @@ namespace pCOLADnamespace
                 if (result == DialogResult.OK)
                 {
                     searchFolder = fbd.SelectedPath;
-                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.myShare = false;
                     return;
                 }
                 else
                 {
-                    MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-                    MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+                    //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+                    MyDataCollectorClass.myShare = false;
                     return;
                 }
             }
@@ -1540,8 +1552,9 @@ namespace pCOLADnamespace
                     }
                 }
             }
-            MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-            MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
+            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            MyDataCollectorClass.myShare = false;
         }
         public static bool AreTablesTheSame(DataTable tbl1, DataTable tbl2)
         {
