@@ -390,6 +390,9 @@ namespace pCOLADnamespace
         public pSHARE()
         {
             //you get here as soon as you start your Dynamo file with a pSHARE node in it.
+            //next line is to force warnings of the file system watcher on the main thread. Not sure why this would solve problems...
+            //Would it cause the code to wait untill all calls of file watcher have been processed???
+            //MyDataCollectorClass.CSVwatcher.SynchronizingObject = (System.ComponentModel.ISynchronizeInvoke) this;
             MyDataCollectorClass.UpdateCSVControl += CSVUpdateHandler;
             MyDataCollectorClass.Update_pSHARE += pSHAREupdateHandler;
             MyDataCollectorClass.Message += MessageHandler;
@@ -1249,11 +1252,6 @@ namespace pCOLADnamespace
                     Directory.CreateDirectory(Path.GetDirectoryName(entry.Value));
                 }
                 File.Copy(entry.Key, entry.Value, true);
-                //don't have the watcher give an alert
-                while (!File.Exists(entry.Value))
-                {
-                    Thread.Sleep(1000);
-                }
                 //check if this filename is already in the ImageList
                 if (!i0.ImageFileNameList.Contains(Path.GetFileName(entry.Value)))
                 {
@@ -1266,8 +1264,8 @@ namespace pCOLADnamespace
                 i0.ImageList.RemoveAt(0);
             }
             MyPropDataTable.AcceptChanges();
-            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            //wait for the file watcher to execute all calls, becaus myShare is true, nothing should happen
+            Thread.Sleep(1000);
             MyDataCollectorClass.myShare = false;
         }
         private void _menuActionAddFromClipBoard(Object obj)
@@ -1376,8 +1374,6 @@ namespace pCOLADnamespace
                                 }
                                 //change the imageList property of this Item
                                 i0.ImageList[p] = new MyImage(fp);
-                                //change the PropDataTable so it updates in the xaml control
-                                MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier
                             }
                         }
                     }
@@ -1390,10 +1386,6 @@ namespace pCOLADnamespace
                             encoder.Frames.Add(BitmapFrame.Create(image));
                             encoder.Save(fileStream);
                         }
-                        while (!File.Exists(fp))
-                        {
-                            Thread.Sleep(1000);
-                        }
                         //add the image to the display if it was not a replacement
                         if (!files.Contains(fp))
                         {
@@ -1403,8 +1395,6 @@ namespace pCOLADnamespace
                             {
                                 i0.ImageList.RemoveAt(0);
                             }
-                            //change the PropDataTable so it updates in the xaml control
-                            MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier
                         }
                     }
 
@@ -1418,8 +1408,10 @@ namespace pCOLADnamespace
             {
                 System.Windows.MessageBox.Show("Clipboard Empty !!");
             }
-            //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
-            //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            //change the PropDataTable so it updates in the xaml control
+            MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier
+            //wait for file watcher to execute all calls
+            Thread.Sleep(1000);
             MyDataCollectorClass.myShare = false;
         }
         private void _menuActionDelete(Object obj)
@@ -1546,14 +1538,15 @@ namespace pCOLADnamespace
                             //change the imageList property of this Item
                             i0.ImageList.RemoveAt(p);
                         }
-                        //change the PropDataTable so it updates in the xaml control
-                        MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier                            
                         File.Move(fp, movedFp);
                     }
                 }
             }
             //MyDataCollectorClass.ImagesWatcher.EnableRaisingEvents = true;
             //MyDataCollectorClass.CSVwatcher.EnableRaisingEvents = true;
+            //change the PropDataTable so it updates in the xaml control
+            MyPropDataTable.AcceptChanges();//this sets the PropDataTable and runs the propertyChanged notifier                            
+            Thread.Sleep(1000);
             MyDataCollectorClass.myShare = false;
         }
         public static bool AreTablesTheSame(DataTable tbl1, DataTable tbl2)
